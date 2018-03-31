@@ -1,0 +1,14 @@
+{
+    "mongo": {
+        "host": "localhost",
+        "port": 27017,
+        "database": "Inventory-System",
+        "username": "",
+        "password": ""
+    },
+    "authenticate": {
+        "clientSession": {
+            "secretKey": "Inventory@123"
+        }
+    }
+}
