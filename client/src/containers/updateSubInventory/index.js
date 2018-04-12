@@ -6,7 +6,7 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { addInventory, setUpdatingInventory, updateInventory } from "./../../actions/InventoryActions";
+import { setUpdatingSubInventory, updateSubInventory } from "./../../actions/SubInventoryActions";
 
 function validate(values) {
     var errors = {
@@ -34,16 +34,14 @@ function validate(values) {
     else if (isNaN(Number(stock))){
         errors.stock = "Stock must be a number";
     }
-    else if (stock < 0){
-        errors.stock = "Stock must be larger than or equal to 0";
-    }
     return errors;
 }
 
-class AddInventory extends Component {
+class UpdateSubInventory extends Component {
     componentWillMount() {
-        //const idParam = this.props.location.pathname.split("/")[2]; // Hacky Way
+        const idParam = this.props.location.pathname.split("/")[2]; // Hacky Way
         const { dispatch } = this.props;
+        dispatch(setUpdatingSubInventory(idParam));
     }
     renderField({ input, meta: { touched, error }, ...custom }) {
         const hasError = touched && error !== undefined;
@@ -57,19 +55,23 @@ class AddInventory extends Component {
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
         values.token = token;
-        return dispatch(addInventory(values)).then(function (data) {
-            dispatch(push("/inventory"));
+        return dispatch(updateSubInventory(values)).then(function (data) {
+            dispatch(push("/subInventory"));
         });
+    }
+    onBack(){
+        const { dispatch } = this.props;
+        dispatch(push("/subInventory"));
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { token, user, isLoggingIn, addingInventoryError, inventory } = this.props.inventory;
+        const { token, user, isLoggingIn, updatingInventoriesError, inventory } = this.props.inventory;
         let error = null;
-        if (addingInventoryError) {
+        if (updatingInventoriesError) {
             error = (
                 <Message negative>
                     <Message.Header>Error while Adding Inventory</Message.Header>
-                    <p>{addingInventoryError}</p>
+                    <p>{updatingInventoriesError}</p>
                 </Message>
             )
         }
@@ -77,7 +79,7 @@ class AddInventory extends Component {
             <BaseLayout>
                 <Segment textAlign='center'>
                   <Container>
-                    <Header as="h2">Add Inventory</Header>
+                    <Header as="h2">Update Inventory</Header>
                     {error}
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>
                         <Form.Field inline>
@@ -92,7 +94,8 @@ class AddInventory extends Component {
                         <Form.Field inline>
                             <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>
                         </Form.Field>
-                        <Button loading={submitting} disabled={submitting} disabled={pristine || submitting}>Add Inventory</Button>
+                        <Button loading={submitting} disabled={submitting}>Update</Button>
+                        <Button onClick={this.onBack.bind(this)}>Cancel</Button>
                     </Form>
                     </Container>
                 </Segment>
@@ -102,20 +105,20 @@ class AddInventory extends Component {
 }
 
 function mapStatesToProps(state) {
-    const initialValues = state.inventory.inventory;
-    console.log(state.inventory);
+    const initialValues = state.subInventory.inventory;
+    //console.log(state.inventory);
     if (initialValues && initialValues.productName && initialValues.productName.en) {
         initialValues.productName = initialValues.productName.en;
     }
     return {
         initialValues: initialValues,
         auth: state.auth,
-        inventory: state.inventory,
+        inventory: state.subInventory,
         location: state.router.location
     }
 }
 
 export default connect(mapStatesToProps)(reduxForm({
-    form: "AddInventory",
+    form: "UpdateSubInventory",
     validate
-})(AddInventory));
+})(UpdateSubInventory));

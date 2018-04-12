@@ -1,12 +1,12 @@
 import validator from "validator";
 
-export function validateRequestInventory(data, callback) {
+export function validateCode(data, callback) {
     var errors = {};
+    if (!data.key) {
+        errors["key"] = "Key is Required";
+    }
     if (!data.sku) {
         errors["sku"] = "SKU is Required";
-    }
-    if (!data.stock) {
-        errors["stock"] = "Stock is Required";
     }
     if (Object.keys(errors).length === 0) {
         callback();

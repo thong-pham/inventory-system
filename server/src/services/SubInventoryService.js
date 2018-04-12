@@ -3,7 +3,9 @@ import async from "async";
 import {
     getSubInventoriesByCompany as getSubInventoriesByCompanyDAO,
     getSubInventories as getSubInventoriesDAO,
-} from "./../dao/mongo/impl/InventoryDAO";
+    getSubInventoryById as getSubInventoryByIdDAO,
+    updateSubInventoryById as updateSubInventoryByIdDAO,
+} from "./../dao/mongo/impl/SubInventoryDAO";
 //import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
 import { getNextInventoryId, getNextRequestId, getNextSubInventoryId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
@@ -13,8 +15,8 @@ export function updateSubInventory(data, callback) {
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (company !== 'Mother Company') {
-                const err = new Error("Only Mother Company can edit Inventory");
+            if (company === 'Mother Company') {
+                const err = new Error("Only Child Company can edit SubInventory");
                 waterfallCallback(err)
             }
             else if (isWorker || isStoreManager) {
@@ -27,7 +29,7 @@ export function updateSubInventory(data, callback) {
         },
         function (waterfallCallback) {
             const id = data.id;
-            getInventoryByIdDAO(id, function (err, inventory) {
+            getSubInventoryByIdDAO(id, function (err, inventory) {
                 if (err) {
                     waterfallCallback(err);
                 }
@@ -71,7 +73,7 @@ export function updateSubInventory(data, callback) {
                     }
                 }
                 const id = data.id;
-                updateInventoryByIdDAO(id, update, waterfallCallback);
+                updateSubInventoryByIdDAO(id, update, waterfallCallback);
             }
             else if (isWorker) {
                 const update = {
@@ -91,7 +93,7 @@ export function updateSubInventory(data, callback) {
                     }
                 }
                 const id = data.id;
-                updateInventoryByIdDAO(id, update, waterfallCallback);
+                updateSubInventoryByIdDAO(id, update, waterfallCallback);
             }
         }
     ], callback);
@@ -197,11 +199,10 @@ export function removeInventory(data, callback) {
     ], callback);
 }
 
-export function getSubInventories (userSession, callback){
-     const company = userSession.company;
+export function getSubInventoriesByCompany(company, callback){
      getSubInventoriesByCompanyDAO(company, callback);
 }
 
-export function getAllSubInventories (){
-
+export function getSubInventories (callback){
+    getSubInventoriesDAO(callback);
 }

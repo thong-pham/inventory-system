@@ -5,7 +5,7 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { getPendingRequests, approveRequest } from "./../../actions/RequestActions";
+import { getPendingRequests, approveRequest } from "./../../actions/OrderActions";
 
 class ApproveRequest extends Component {
     componentWillMount() {

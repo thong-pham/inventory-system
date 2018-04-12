@@ -1,0 +1,39 @@
+.mainContainer {
+    width: 100% !important;
+}
+.side-right {
+    width: 86%;
+}
+.side-left {
+    width : 260px !important;
+}
+
+.columnForInput {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.inputBox {
+    width: 100%;
+    height: 36px;
+}
+
+.columnForButton {
+  padding-top: 10;
+  padding-left: 22 !important;
+  padding-right: 35 !important;
+}
+
+.columnForChange {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+@media only screen and (max-width: 1280px) {
+    .side-right {
+        width: 79.5%;
+    }
+    .side-left {
+        width : 260px !important;
+    }
+}

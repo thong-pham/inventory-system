@@ -6,6 +6,8 @@ const InventorySchema = mongoose.Schema({
     id: { type: Number, required: true },
 
     sku: { type: String, required: true },
+
+    sub: [{type: String, required: false}],
     productName: {
         en: { type: String, required: true },
     },

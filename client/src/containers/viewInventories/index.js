@@ -6,7 +6,6 @@ import { push } from 'react-router-redux';
 import BaseLayout from "./../baseLayout";
 
 import { getInventories, deleteInventory, rejectEdit, getSubInventories, addToCart, trackNumber } from "./../../actions/InventoryActions";
-import { setRequestingInventory } from "./../../actions/RequestActions";
 
 class ViewInventory extends Component {
     componentWillMount() {

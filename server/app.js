@@ -30,13 +30,19 @@ app.use(function (req, res, next) {
 import init from "./src/dao/mongo/init";
 import users from "./src/routes/UserRoute";
 import inventories from "./src/routes/InventoryRoute";
+import subInventories from "./src/routes/SubInventoryRoute";
 import companies from "./src/routes/CompanyRoute";
-import requests from "./src/routes/RequestRoute";
+import orders from "./src/routes/OrderRoute";
+import carts from "./src/routes/CartRoute";
+import code from "./src/routes/CodeRoute";
 
 app.use('/users', users);
 app.use('/inventories', inventories);
+app.use('/subInventories', subInventories);
 app.use('/companies', companies);
-app.use('/requests', requests);
+app.use('/orders', orders);
+app.use('/carts', carts);
+app.use('/code', code);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -22,6 +22,12 @@ export function getSubInventoryBySku(sku, callback) {
     });
 }
 
+export function getSubInventoryById(id, callback) {
+    SubInventory.findOne({ "id": parseInt(id) }, function (err, inventory) {
+        callback(err, inventory)
+    });
+}
+
 export function getSubInventoriesByCompany(company, callback) {
     SubInventory.find({ "isRemoved": false, "company" : company }, function (err, inventories) {
         callback(err, inventories)

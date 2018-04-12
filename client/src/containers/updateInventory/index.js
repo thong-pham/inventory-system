@@ -16,14 +16,26 @@ function validate(values) {
     if (!sku || (sku + "").trim() === "") {
         errors.sku = "SKU is Required";
     }
+    else if (sku.length > 10) {
+        errors.sku = "Must be 10 characters or less";
+    }
     if (!productName || productName.trim() === "") {
         errors.productName = "Product Name is Required";
     }
     if (!price || (price + "").trim() === "") {
         errors.price = "Price is Required";
     }
+    else if (isNaN(Number(price))) {
+        errors.price = "Price must be a number";
+    }
     if (!stock || (stock + "").trim() === "") {
         errors.stock = "Stock is Required";
+    }
+    else if (isNaN(Number(stock))){
+        errors.stock = "Stock must be a number";
+    }
+    else if (stock < 0){
+        errors.stock = "Stock must be larger than or equal to 0";
     }
     return errors;
 }

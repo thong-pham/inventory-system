@@ -8,7 +8,8 @@ import inventoryReducer from "./../reducers/InventoryReducer";
 import userReducer from "./../reducers/UserReducer";
 import companyReducer from "./../reducers/CompanyReducer";
 import subInventoryReducer from "./../reducers/SubInventoryReducer";
-import requestReducer from "./../reducers/RequestReducer";
+import orderReducer from "./../reducers/OrderReducer";
+import codeReducer from "./../reducers/CodeReducer"
 
 export default combineReducers({
     router: routerReducer,
@@ -18,5 +19,6 @@ export default combineReducers({
     user: userReducer,
     company: companyReducer,
     subInventory: subInventoryReducer,
-    request: requestReducer
+    order: orderReducer,
+    code: codeReducer
 });

@@ -19,12 +19,15 @@ import AddInventory from "./containers/addInventory";
 import AddCompany from "./containers/addCompany";
 import ViewCompanies from "./containers/viewCompanies";
 import UpdateInventory from "./containers/updateInventory";
+import UpdateSubInventory from "./containers/updateSubInventory";
 import ViewInventories from "./containers/viewInventories";
 import ViewSubInventories from "./containers/viewSubInventories";
 import ApproveInventory from "./containers/approveInventory";
-import RequestInventory from "./containers/requestInventory";
 import ApproveRequest from "./containers/approveRequest";
 import ViewAndRequest from "./containers/viewAndRequest";
+import ViewOrders from "./containers/viewOrders";
+import ViewApprovedOrders from "./containers/viewApprovedOrders";
+import ViewCode from "./containers/viewCode";
 
 const history = createHistory();
 const logger = createLogger();
@@ -72,10 +75,13 @@ class App extends Component {
                             <Route exact path="/companies" component={ViewCompanies} />
                             <Route exact path="/inventory/approve" component={ApproveInventory} />
                             <Route path="/inventory/:id" component={UpdateInventory} />
-                            <Route path="/request/:id" component={RequestInventory} />
+                            <Route path="/subInventory/:id" component={UpdateSubInventory} />
                             <Route exact path="/inventory" component={ViewAndRequest} />
                             <Route exact path="/subInventory" component={ViewSubInventories} />
                             <Route exact path="/requests/approve" component={ApproveRequest} />
+                            <Route exact path="/orders" component={ViewOrders} />
+                            <Route exact path="/approvedOrders" component={ViewApprovedOrders} />
+                            <Route exact path="/code" component={ViewCode} />
                         </div>
                     </ConnectedRouter>
                 </Provider>

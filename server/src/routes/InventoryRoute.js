@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { createInventory, approveInventory, removeInventory,
         getInventories, getPendingInventories,
-        updateInventory, createRequest, getPendingRequests, approveRequest } from "./../services/InventoryService";
-import { getSubInventories } from "./../services/SubInventoryService";
-import { validateCreateInventory, validateRequestInventory } from "./../validators/InventoryValidator"
+        updateInventory, createRequest, getPendingRequests,
+        approveRequest, increaseByPhone, decreaseByPhone } from "./../services/InventoryService";
+import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
+import { validateCreateInventory, validateUpdateByPhone } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
@@ -185,8 +186,8 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
 });
 
 router.get('/sub', verifyAuthMiddleware, function (req, res, next) {
-    const userSession = req.session;
-    getSubInventories(userSession, function (err, inventories) {
+    const { company } = req.session;
+    getSubInventoriesByCompany(company, function (err, inventories) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -210,46 +211,63 @@ router.get('/pending', verifyAuthMiddleware, function (req, res, next) {
     });
 });
 
-router.get('/pendingRequests', verifyAuthMiddleware, function (req, res, next) {
-    getPendingRequests(function (err, requests) {
+router.post('/increaseByPhone', function (req, res, next) {
+    validateUpdateByPhone(req.body, function (err) {
         if (err) {
-            console.log(err);
-            res.status(500).send(err);
+            res.status(400).send(err);
         }
         else {
-            res.status(200).send(requests);
+            //const userSession = req.session;
+            const { code, quantity } = req.body;
+            const data = { code, quantity };
+            increaseByPhone(data, function (err, inventory) {
+                if (err) {
+                    if (err.message === "Not Enough Permission to update Inventory") {
+                        res.status(400).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send(err);
+                    }
+                }
+                else {
+                    const message = quantity + " items have been added";
+                    res.status(201).send(message);
+                }
+            });
         }
     });
 });
 
-router.put('/:id/approveRequest', verifyAuthMiddleware, function (req, res, next) {
-    const id = req.params.id;
-    if (id) {
-        const userSession = req.session;
-        const data = { id, userSession };
-        approveRequest(data, function (err, inventory) {
-            if (err) {
-                if (err.message === "Only Pending Requests can be approved") {
-                    res.status(400).send(err.message);
-                }
-                else if (err.message === "Not Enough Permission to approve Request") {
-                    res.status(400).send(err.message);
+router.post('/decreaseByPhone', function (req, res, next) {
+    validateUpdateByPhone(req.body, function (err) {
+        if (err) {
+            res.status(400).send(err);
+        }
+        else {
+            //const userSession = req.session;
+            const { code, quantity } = req.body;
+            const data = { code, quantity };
+            decreaseByPhone(data, function (err, inventory) {
+                if (err) {
+                    if (err.message === "Not Enough Permission to update Inventory") {
+                        res.status(400).send(err.message);
+                    }
+                    if (err.message === "Deduction exceeds the current stock") {
+                        res.status(400).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send(err);
+                    }
                 }
                 else {
-                    console.log(err);
-                    res.status(500).send(err);
+                    const message = quantity + " items have been deducted";
+                    res.status(201).send(message);
                 }
-            }
-            else {
-                res.status(200).send("A Request has been approved");
-            }
-        });
-    }
-    else {
-        res.status(400).send("id param required");
-    }
+            });
+        }
+    });
 });
-
-
 
 export default router;

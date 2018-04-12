@@ -5,6 +5,8 @@ import { push } from 'react-router-redux';
 
 import { logoutUser } from "./../../actions/AuthActions";
 
+import './../../styles/custom.css';
+
 class BaseLayout extends Component {
     componentWillMount() {
         const { token } = this.props.auth;
@@ -33,8 +35,14 @@ class BaseLayout extends Component {
         else if (menuItem === "approveInventory") {
             dispatch(push('/inventory/approve'));
         }
-        else if (menuItem === "approveRequest") {
-            dispatch(push('/requests/approve'));
+        else if (menuItem === "viewOrders") {
+            dispatch(push('/orders'));
+        }
+        else if (menuItem === "viewApprovedOrders") {
+            dispatch(push('/approvedOrders'));
+        }
+        else if (menuItem === "viewCode") {
+            dispatch(push('/code'));
         }
         else if (menuItem === "logout") {
             dispatch(logoutUser());
@@ -56,7 +64,7 @@ class BaseLayout extends Component {
         if (company === 'Mother Company'){
           if (isStoreManager) {
               dedicatedMenuItem = (
-                <Sidebar as={Menu} animation='slide along'  visible={true} icon='labeled' vertical inverted>
+                <Sidebar as={Menu} animation='slide along' className="side-left"  visible={true} icon='labeled' vertical inverted>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
                       <Icon name='cube' />
                         View Whole Inventories
@@ -73,9 +81,17 @@ class BaseLayout extends Component {
                       <Icon name='list ul' />
                         Pending Inventories
                     </Menu.Item>
-                    <Menu.Item onClick={this.handleClick.bind(this, "approveRequest")} >
+                    <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
                       <Icon name='list ul' />
-                        Pending Requests
+                        Pending Orders
+                    </Menu.Item>
+                    <Menu.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")} >
+                      <Icon name='checkmark box' />
+                        Approved Orders
+                    </Menu.Item>
+                    <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
+                      <Icon name='barcode' />
+                        Code Management
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
                       <Icon name='log out' />
@@ -96,7 +112,7 @@ class BaseLayout extends Component {
           }
           if (isWorker) {
               dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='slide along' visible={true} icon='labeled' vertical inverted>
+              <Sidebar as={Menu} animation='slide along' className="side-left" visible={true} icon='labeled' vertical inverted>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
                   <Icon name='cube' />
                     View Whole Inventories
@@ -104,10 +120,6 @@ class BaseLayout extends Component {
                 <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
                   <Icon name='add' />
                     Add Inventory
-                </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "approveInventory")} >
-                  <Icon name='list ul' />
-                    Pending Inventories
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
                   <Icon name='log out' />
@@ -128,7 +140,7 @@ class BaseLayout extends Component {
           }
           if (isAdmin) {
               dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='slide along'  visible={true} icon='labeled' vertical inverted>
+              <Sidebar as={Menu} animation='slide along' className="side-left" visible={true} icon='labeled' vertical inverted>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewUsers")}>
                   <Icon name='users' />
                     View Users
@@ -161,7 +173,7 @@ class BaseLayout extends Component {
         }
         else {
             dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='slide along'  visible={true} icon='labeled' vertical inverted>
+              <Sidebar as={Menu} animation='slide along' className="side-left" visible={true} icon='labeled' vertical inverted>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
                     <Icon name='cube' />
                       View Whole Inventories
@@ -170,9 +182,9 @@ class BaseLayout extends Component {
                     <Icon name='cube' />
                        {user.company} Inventory
                   </Menu.Item>
-                  <Menu.Item onClick={this.handleClick.bind(this, "approveRequest")} >
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
                     <Icon name='list ul' />
-                      Pending Requests
+                      Pending Orders
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
                    <Icon name='log out' />
@@ -193,10 +205,10 @@ class BaseLayout extends Component {
         }
 
         return (
-            <Container fluid>
-                <Sidebar.Pushable as={Segment}>
+            <Container textAlign='center' className="mainContainer">
+                <Sidebar.Pushable as={Segment} className="mainContainer">
                     {dedicatedMenuItem}
-                    <Sidebar.Pusher>
+                    <Sidebar.Pusher className="side-right">
                         {this.props.children}
                     </Sidebar.Pusher>
                 </Sidebar.Pushable>

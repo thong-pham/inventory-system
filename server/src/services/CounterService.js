@@ -16,6 +16,14 @@ export function getNextCompanyId(callback) {
     incrementCounter("company", callback);
 }
 
-export function getNextRequestId(callback) {
-    incrementCounter("request", callback);
+export function getNextOrderId(callback) {
+    incrementCounter("order", callback);
+}
+
+export function getNextCartId(callback) {
+    incrementCounter("cart", callback);
+}
+
+export function getNextCodeId(callback) {
+    incrementCounter("code", callback);
 }

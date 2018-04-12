@@ -1,0 +1,382 @@
+import async from "async";
+
+import {
+    createOrder as createOrderDAO,
+    getPendingOrders as getPendingOrdersDAO,
+    getOrderById as getOrderByIdDAO,
+    updateOrderById as updateOrderByIdDAO,
+    getPendingOrderByCompany as getPendingOrderByCompanyDAO,
+    changeOrderDetails as changeOrderDetailsDAO,
+    removeOrderById as removeOrderByIdDAO,
+    getApprovedOrders as getApprovedOrdersDAO
+
+} from "./../dao/mongo/impl/OrderDAO";
+
+import { updateCartById as updateCartByIdDAO,
+         removeCartById as removeCartByIdDAO,
+} from "./../dao/mongo/impl/CartDAO";
+
+import {
+    createSubInventory as createSubInventoryDAO,
+    getSubInventoryBySku as getSubInventoryBySkuDAO,
+    updateSubInventoryById as updateSubInventoryByIdDAO,
+} from "./../dao/mongo/impl/SubInventoryDAO";
+
+import { getNextOrderId, getNextSubInventoryId } from "./CounterService";
+
+import { getInventoryBySku as getInventoryBySkuDAO,
+         updateInventoryById as updateInventoryByIdDAO,
+} from "./../dao/mongo/impl/InventoryDAO";
+
+import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
+
+function getLatestHistory(inventory) {
+    let latestHistory = null
+    inventory.history.every(function (history) {
+        if (latestHistory) {
+            if ((new Date(history.timestamp)).getTime() > (new Date(latestHistory.timestamp)).getTime()) {
+                latestHistory = history;
+            }
+        }
+        else {
+            latestHistory = history;
+        }
+        return true;
+    });
+    return latestHistory;
+}
+
+function checkBalance(cart){
+    getInventoryBySkuDAO(cart.sku, function(err, inventory){
+       if (err){
+          return false;
+       }
+       else {
+            if (cart.quantity <= inventory.stock){
+                return [inventory, cart];
+            }
+            else {
+                //const err = new Error("This Order exceed the current stock");
+                return false;
+            }
+         }
+    });
+    return false;
+}
+
+export function createOrder(data, callback){
+   async.waterfall([
+     function (waterfallCallback){
+        getNextOrderId(function (err, counterDoc){
+            waterfallCallback(err, data, counterDoc);
+        });
+     },
+     function (data, counterDoc, waterfallCallback){
+          data.details.forEach(function(cart){
+              removeCartByIdDAO(cart.id, function(err, res){
+                  if (err){
+                      waterfallCallback(err);
+                  }
+              });
+          });
+         const { company, username } = data.userSession;
+         data.id = counterDoc.counter;
+         data.company = company;
+         data.username = username;
+         createOrderDAO(data, waterfallCallback);
+     }
+   ],callback);
+}
+
+export function approveOrder(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const { isStoreManager, isWorker } = getUserRoles(roles);
+            if (isStoreManager && company === 'Mother Company') {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to approve Order");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            const { company } = data.userSession;
+            const id = data.id;
+            getOrderByIdDAO(id, function (err, order) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else {
+                    if (order.status !== "pending"){
+                          const err = new Error("Only Pending Orders can be approved");
+                          waterfallCallback(err);
+                    }
+                    else {
+                          var inventories = [];
+                          var carts = [];
+                          order.details.forEach(function(cart){
+                              if (carts.length < order.details.length){
+                                  getInventoryBySkuDAO(cart.sku, function(err, inventory){
+                                     if (err){
+                                        waterfallCallback(err);
+                                     }
+                                     else {
+                                          if (cart.quantity <= inventory.stock){
+                                              inventories.push(inventory);
+                                              carts.push(cart);
+                                              if (carts.length === order.details.length){
+                                                  //console.log(carts.length);
+                                                  waterfallCallback(null, inventories, carts, order);
+                                              }
+
+                                          }
+                                          else {
+                                              const err = new Error("This Order exceed the current stock");
+                                              waterfallCallback(err);
+                                          }
+                                       }
+                                  });
+                               }
+                          });
+                     }
+                }
+            });
+        },
+        function (inventories, carts, order, waterfallCallback) {
+            //console.log(carts);
+            inventories.forEach(function(inventory){
+                const latestHistory = getLatestHistory(inventory);
+                //const id = data.id;
+                if (latestHistory.action === "created" || latestHistory.action === "updated" || latestHistory.action === "approvedOut") {
+                    var newStock = 0;
+                    carts.forEach(function(cart){
+                        if (cart.sku === inventory.sku){
+                            newStock = inventory.stock - cart.quantity;
+                        }
+                    });
+                    const update = {
+                        stock: newStock,
+                        $push: {
+                              history: {
+                              action: "approvedOut",
+                              userId: data.userSession.userId,
+                              timestamp: new Date()
+                              }
+                          }
+                      }
+                      updateInventoryByIdDAO(inventory.id, update, function(err, res){
+                          if (err){
+                              //console.log(err);
+                              waterfallCallback(err);
+                          }
+                      });
+                  }
+                  else {
+                      const err = new Error("Weird Flow in Inventory Approval");
+                      //console.log(err);
+                      waterfallCallback(err);
+                  }
+            });
+            waterfallCallback(null, carts, order);
+
+        },
+        function (carts, order, waterfallCallback){
+             const id = data.id;
+             const { company } = data.userSession;
+             carts.forEach(function(cart){
+               getCompanyByNameDAO(order.company, function (err, company){
+                   if (err){
+                       waterfallCallback(err)
+                   }
+                   else {
+                         var subSku = company.code.concat("-").concat(cart.sku);
+                         getSubInventoryBySkuDAO(subSku, function (err, subInv){
+                               if (subInv) {
+                                   var updateStock = subInv.stock + cart.quantity;
+                                   const update = {
+                                       stock: updateStock,
+                                       $push: {
+                                           history: {
+                                               action: "updated",
+                                               userId: data.userSession.userId,
+                                               timestamp: new Date(),
+                                               payload: {
+                                                   sku: subInv.sku,
+                                                   productName: subInv.productName,
+                                                   price: subInv.price,
+                                                   stock: updateStock,
+                                               }
+                                           }
+                                       }
+                                   }
+                                   updateSubInventoryByIdDAO(subInv.id, update, function(err, res){
+                                        if (err){
+                                            //console.log(err);
+                                            waterfallCallback(err);
+                                        }
+                                   });
+                               }
+                               else {
+                                   getNextSubInventoryId(function(err, counterDoc){
+                                       const subInv = {
+                                           id: counterDoc.counter,
+                                           sku: subSku,
+                                           stock: cart.quantity,
+                                           productName: { en: cart.productName.en},
+                                           price: 0,
+                                           company: company.name.en,
+                                           status: "approved",
+                                           history: [{
+                                               action: "accepted",
+                                               userId: data.userSession.userId,
+                                               timestamp: new Date()
+                                           }]
+                                       };
+                                       createSubInventoryDAO(subInv, function(err, res){
+                                            if (err){
+                                                //console.log(err);
+                                                waterfallCallback(err);
+                                            }
+                                       });
+                                   });
+                               }
+                          });
+                      }
+                });
+            });
+            waterfallCallback();
+        },
+        function (waterfallCallback){
+              const id = data.id;
+              const update = {
+                   status: "approved"
+              }
+              updateOrderByIdDAO(id, update, waterfallCallback);
+        }
+    ], callback);
+}
+
+export function changeOrder(data, callback){
+   async.waterfall([
+     function (waterfallCallback){
+        getOrderByIdDAO(data.orderId, function(err, order){
+            if (err){
+                waterfallCallback(err);
+            }
+            else if (order.status === 'approved')
+            {
+                const err = new Error("Only pending orders can be changed");
+                waterfallCallback(err);
+            }
+            else {
+                waterfallCallback(null, order.details);
+            }
+        });
+     },
+     function (details, waterfallCallback){
+         var temp = [];
+         const id = data.orderId;
+         details.forEach(function(cart){
+              if (cart.id === data.cartId){
+                  cart.quantity = data.quantity;
+                  temp.push(cart);
+              }
+              else {
+                  temp.push(cart);
+              }
+         });
+         temp.sort(compare);
+         const update = {
+            details: temp
+         }
+         changeOrderDetailsDAO(id, update, waterfallCallback);
+     }
+   ],callback);
+}
+
+export function removeOrder(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const { isStoreManager } = getUserRoles(roles);
+            if (company === 'Mother Company') {
+                const err = new Error("Only Child Company can remove Order");
+                waterfallCallback(err)
+            }
+            else if (isStoreManager) {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to remove Order");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const id = data.id;
+            getOrderByIdDAO(id, function (err, order) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else if (order) {
+                    if (order.company !== company){
+                        const err = new Error("Only Company created this order can remove it");
+                        waterfallCallback(err);
+                    }
+                    else if (order.status == "pending") {
+                        waterfallCallback(null, order);
+                    }
+                    else {
+                        const err = new Error("Only Pending Order can be removed");
+                        waterfallCallback(err);
+                    }
+                }
+                else {
+                    const err = new Error("Order Not Found");
+                    waterfallCallback(err);
+                }
+            });
+        },
+        function (order, waterfallCallback) {
+            const { roles } = data.userSession;
+            const { isStoreManager } = getUserRoles(roles);
+            if (isStoreManager) {
+                const id = data.id;
+                removeOrderByIdDAO(id, waterfallCallback);
+            }
+        }
+    ], callback);
+}
+
+function compare(a,b){
+    const idA = a.id;
+    const idB = b.id;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
+}
+
+function getUserRoles(roles) {
+    const isStoreManager = roles.indexOf("storeManager") >= 0;
+    return { isStoreManager }
+}
+
+export function getPendingOrders(callback) {
+    getPendingOrdersDAO(callback);
+}
+
+export function getApprovedOrders(callback) {
+    getApprovedOrdersDAO(callback);
+}
+
+export function getPendingOrderByCompany(company, callback) {
+    getPendingOrderByCompanyDAO(company, callback);
+}

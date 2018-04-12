@@ -5,30 +5,23 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { getInventories, deleteInventory, rejectEdit } from "./../../actions/InventoryActions";
-import { getSubInventories } from "./../../actions/SubInventoryActions";
+import { getSubInventories, getSubInventoriesByCompany } from "./../../actions/SubInventoryActions";
 
 class ViewSubInventory extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
-        //console.log(this.props);
         const { user } = this.props.auth;
         if (user.company !== 'Mother Company'){
-            dispatch(getSubInventories({ token: token }));
+            dispatch(getSubInventoriesByCompany({ token: token }));
         }
         else {
-            dispatch(push("/inventory"));
+            dispatch(getSubInventories({ token: token }));
         }
     }
     onPressEdit(inventory) {
         const { user } = this.props.auth;
         const { dispatch } = this.props;
-        if (user.company !== 'Mother Company'){
-            dispatch(rejectEdit());
-        }
-        else{
-           dispatch(push("/inventory/" + inventory.id));
-        }
+        dispatch(push("/subInventory/" + inventory.id));
 
     }
     onPressDelete(inventory) {
@@ -36,10 +29,6 @@ class ViewSubInventory extends Component {
         dispatch(deleteInventory({ token: token, inventory: inventory })).then(function (data) {
             dispatch(getInventories({ token: token }));
         });
-    }
-    onRequest(inventory){
-       const { dispatch } = this.props;
-       dispatch(push("/request/" + inventory.id));
     }
 
     render() {
@@ -76,12 +65,13 @@ class ViewSubInventory extends Component {
                     <Table.Cell>{inventory.sku}</Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
                     <Table.Cell>{inventory.status}</Table.Cell>
-                    <Table.Cell >{inventory.price}</Table.Cell>
-                    <Table.Cell >{inventory.stock}</Table.Cell>
-                    <Table.Cell >
+                    <Table.Cell>{inventory.price}</Table.Cell>
+                    <Table.Cell>{inventory.stock}</Table.Cell>
+                    { (user.company !== 'Mother Company') ? <Table.Cell >
                         <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
                         <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
-                    </Table.Cell>
+                    </Table.Cell> : null }
+                    { (user.company === 'Mother Company') ? <Table.Cell >{inventory.company}</Table.Cell> : null}
                 </Table.Row>
             )
         }, this);
@@ -96,7 +86,8 @@ class ViewSubInventory extends Component {
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Price</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Stock</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
+                            { (user.company !== 'Mother Company') ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null}
+                            { (user.company === 'Mother Company') ? <Table.HeaderCell width={1}>Company</Table.HeaderCell> : null}
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -108,13 +99,12 @@ class ViewSubInventory extends Component {
         return (
             <BaseLayout>
                 <Segment textAlign='center' >
-                    <Header as="h2">{user.company} - Inventory List</Header>
+                    { (user.company !== 'Mother Company') ? <Header as="h2">{user.company} - Inventory List</Header> : null}
+                    { (user.company === 'Mother Company') ? <Header as="h2">All Companies Inventory List</Header> : null}
                     {error}
-                    {/* <Segment loading={isFetchingInventories}> */}
                     <Container>
                         {tableView}
                     </Container>
-                    {/* </Segment> */}
                 </Segment>
             </BaseLayout>
         )

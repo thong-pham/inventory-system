@@ -32,6 +32,6 @@
     "redux-form": "^6.8.0",
     "redux-persist": "^4.8.3",
     "redux-thunk": "^2.2.0",
-    "semantic-ui-react": "^0.70.0"
+    "semantic-ui-react": "^0.79.1"
   }
 }

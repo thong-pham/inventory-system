@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
-import { Header, Segment, Input, Label, Form, Button, Message } from "semantic-ui-react";
+import { Header, Segment, Input, Label, Form, Button, Message, Container } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import { loginUser } from "./../../actions/AuthActions";
+
+import './../../styles/custom.css';
 
 function validate(values) {
     var errors = {};
@@ -44,7 +46,7 @@ class Login extends Component {
         )
     }
     onSubmit(values, dispatch) {
-        return dispatch(loginUser(values)).then(function (data) {      
+        return dispatch(loginUser(values)).then(function (data) {
             dispatch(push("/inventory"));
         });
     }
@@ -63,19 +65,23 @@ class Login extends Component {
             )
         }
         return (
-            <Segment textAlign='center'>
-                <Header as="h2">Login</Header>
-                {error}
-                <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>
-                    <Form.Field inline>
-                        <Field name="username" placeholder="Enter the username" component={this.renderField}></Field>
-                    </Form.Field>
-                    <Form.Field inline>
-                        <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
-                    </Form.Field>
-                    <Button loading={submitting} disabled={submitting}>Login</Button>
-                </Form>
-            </Segment>
+          <Container textAlign='center' className="mainContainer">
+            <Segment textAlign='center' className="mainContainer">
+              <Container>
+                  <Header as="h2">Login</Header>
+                  {error}
+                  <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>
+                      <Form.Field inline>
+                          <Field name="username" placeholder="Enter the username" component={this.renderField}></Field>
+                      </Form.Field>
+                      <Form.Field inline>
+                          <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
+                      </Form.Field>
+                      <Button loading={submitting} disabled={submitting}>Login</Button>
+                  </Form>
+                </Container>
+             </Segment>
+           </Container>
         )
     }
 }

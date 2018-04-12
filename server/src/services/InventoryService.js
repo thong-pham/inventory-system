@@ -10,10 +10,12 @@ import {
     getInventoryBySku as getInventoryBySkuDAO,
     createInventoryInTrash as createInventoryInTrashDAO,
     createSubInventory as createSubInventoryDAO,
+    updateInventoryBySku as updateInventoryBySkuDAO
 } from "./../dao/mongo/impl/InventoryDAO";
 //import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
-import { getNextInventoryId, getNextRequestId, getNextSubInventoryId } from "./CounterService";
+import { getNextInventoryId, getNextSubInventoryId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
+import { getCodeByKey as getCodeByKeyDAO } from "./../dao/mongo/impl/CodeDAO";
 
 export function createInventory(data, callback) {
     async.waterfall([
@@ -339,6 +341,66 @@ export function removeInventory(data, callback) {
         }
 
     ], callback);
+}
+
+export function increaseByPhone(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+          const key = data.code;
+          getCodeByKeyDAO(key, function(err, code){
+              if (err){
+                  waterfallCallback(err);
+              }
+              else{
+                  getInventoryBySkuDAO(code.sku, function(err, inventory){
+                      if (err){
+                          waterfallCallback(err);
+                      }
+                      else{
+                          var newStock = inventory.stock + data.quantity;
+                          const update = {
+                              stock : newStock
+                          }
+                          updateInventoryBySkuDAO(code.sku, update, waterfallCallback);
+                      }
+                  });
+              }
+          });
+      }
+    ],callback)
+}
+
+export function decreaseByPhone(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+          const key = data.code;
+          getCodeByKeyDAO(key, function(err, code){
+              if (err){
+                  waterfallCallback(err);
+              }
+              else{
+                  getInventoryBySkuDAO(code.sku, function(err, inventory){
+                      if (err){
+                          waterfallCallback(err);
+                      }
+                      else {
+                          if (data.quantity > inventory.stock){
+                              const err = new Error("Deduction exceeds the current stock");
+                              waterfallCallback(err);
+                          }
+                          else {
+                              var newStock = inventory.stock - data.quantity;
+                              const update = {
+                                 stock: newStock
+                              }
+                              updateInventoryBySkuDAO(code.sku, update, waterfallCallback);
+                          }
+                      }
+                  });
+              }
+          });
+      }
+    ],callback)
 }
 
 export function getInventories(callback) {

@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import Inventory from "./../schema/InventorySchema";
 import Trash from "./../schema/TrashSchema";
-import SubInventory from "./../schema/SubInventorySchema";
-import Request from "./../schema/RequestSchema";
 
 export function createInventory(data, callback) {
     const inventoryModel = new Inventory(data);
@@ -53,6 +51,13 @@ export function getPendingInventories(callback) {
 export function updateInventoryById(id, data, callback) {
     data.lastModifiedAt = new Date();
     Inventory.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, inventory) {
+        callback(err, inventory);
+    });
+}
+
+export function updateInventoryBySku(sku, data, callback) {
+    data.lastModifiedAt = new Date();
+    Inventory.findOneAndUpdate({ "sku": sku }, data, { "new": true }, function (err, inventory) {
         callback(err, inventory);
     });
 }

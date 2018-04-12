@@ -32,7 +32,34 @@ export const ADD_CART_STARTED = "ADD_CART_STARTED";
 export const ADD_CART_FULFILLED = "ADD_CART_FULFILLED";
 export const ADD_CART_REJECTED = "ADD_CART_REJECTED";
 
+export const GET_CARTS_STARTED = "GET_CARTS_STARTED";
+export const GET_CARTS_FULFILLED = "GET_CARTS_FULFILLED";
+export const GET_CARTS_REJECTED = "GET_CARTS_REJECTED";
+
+export const UPDATE_CART_STARTED = "UPDATE_CART_STARTED";
+export const UPDATE_CART_FULFILLED = "UPDATE_CART_FULFILLED";
+export const UPDATE_CART_REJECTED = "UPDATE_CART_REJECTED";
+
+export const DELETE_CART_STARTED = "DELETE_CART_STARTED";
+export const DELETE_CART_FULFILLED = "DELETE_CART_FULFILLED";
+export const DELETE_CART_REJECTED = "DELETE_CART_REJECTED";
+
+export const TRACK_NUMBER = "TRACK_NUMBER";
+export const OPEN_MODAL = "OPEN_MODAL";
+export const CLOSE_MODAL = "CLOSE_MODAL";
+export const OPEN_ADD = "OPEN_ADD";
+export const CLOSE_ADD = "CLOSE_ADD";
+export const ERROR_INPUT = "ERROR_INPUT";
+
+export const SUBMIT_ORDER_STARTED = "SUBMIT_ORDER_STARTED";
+export const SUBMIT_ORDER_FULFILLED = "SUBMIT_ORDER_FULFILLED";
+export const SUBMIT_ORDER_REJECTED = "SUBMIT_ORDER_REJECTED";
+
 const WS_URL = "http://localhost:3000/inventories/";
+
+const WS_URL_CART = "http://localhost:3000/carts/"
+
+const WS_URL_ORDER = "http://localhost:3000/orders/"
 
 export function addInventory(data) {
     return function (dispatch) {
@@ -157,64 +184,6 @@ export function updateInventory(inventory) {
     }
 }
 
-export function requestInventory(data) {
-    return function (dispatch) {
-        dispatch({ type: REQUEST_INVENTORY_STARTED });
-        return axios.post(WS_URL + "requestInventory", data)
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: REQUEST_INVENTORY_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: REQUEST_INVENTORY_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function getPendingRequests(data) {
-    return function (dispatch) {
-        dispatch({ type: GET_PENDING_REQUESTS_STARTED });
-        return axios.get(WS_URL + "pendingRequests", { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: GET_PENDING_REQUESTS_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: GET_PENDING_REQUESTS_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function approveRequest(data) {
-    const request = data.request;
-    return function (dispatch) {
-        dispatch({ type: APPROVE_REQUEST_STARTED });
-        return axios.put(WS_URL + request.id + "/approveRequest", null, { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: APPROVE_REQUEST_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: APPROVE_REQUEST_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
 export function rejectEdit(){
     return function (dispatch){
         const data = "Only Mother Company can edit Inventory";
@@ -222,14 +191,134 @@ export function rejectEdit(){
     }
 }
 
-export function addToCart(data){
-   return function (dispatch){
-       dispatch({ type : ADD_CART_STARTED, payload: data})
-   }
+export function addCart(data) {
+    return function (dispatch) {
+        dispatch({ type: ADD_CART_STARTED });
+        return axios.post(WS_URL_CART + "createCart", data)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: ADD_CART_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: ADD_CART_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function updateCart(cart) {
+    return function (dispatch) {
+        dispatch({ type: UPDATE_CART_STARTED });
+        return axios.put(WS_URL_CART + "updateCart/" + cart.id, cart)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: UPDATE_CART_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: UPDATE_CART_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function deleteCart(cart) {
+    return function (dispatch) {
+        dispatch({ type: DELETE_CART_STARTED });
+        return axios.delete(WS_URL_CART + cart.id, { headers: { Authorization: cart.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: DELETE_CART_FULFILLED, payload: cart });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: DELETE_CART_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function getCarts(data) {
+    return function (dispatch) {
+        dispatch({ type: GET_CARTS_STARTED });
+        return axios.get(WS_URL_CART, { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: GET_CARTS_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: GET_CARTS_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function submitOrder(data) {
+    return function (dispatch) {
+        dispatch({ type: SUBMIT_ORDER_STARTED });
+        return axios.post(WS_URL_ORDER, data)
+            .then(function (response){
+                return response.data;
+            })
+            .then(function (data){
+                dispatch({ type : SUBMIT_ORDER_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error){
+                  const response = error.response;
+                  dispatch({ type: SUBMIT_ORDER_REJECTED, payload: response });
+                  throw response;
+            })
+    }
+}
+
+export function showModal(data){
+    return function (dispatch) {
+        dispatch({type: OPEN_MODAL, payload: data });
+    }
+}
+
+export function errorInput(){
+    return function (dispatch) {
+        dispatch({type: ERROR_INPUT});
+    }
+}
+
+
+export function closeModal(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_MODAL });
+    }
+}
+
+export function openAdd(id){
+    return function (dispatch) {
+        dispatch({type: OPEN_ADD, payload: id });
+    }
+}
+
+export function closeAdd(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_ADD });
+    }
 }
 
 export function trackNumber(data){
    return function (dispatch){
-       dispatch({ type : ADD_CART_STARTED, payload: data})
+       dispatch({ type : TRACK_NUMBER, payload: data})
    }
 }
