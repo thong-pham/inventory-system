@@ -70,9 +70,7 @@ class ViewCompanies extends Component {
                     <Table.Footer fullWidth>
                     <Table.Row>
                       <Table.HeaderCell colSpan='4'>
-                        <Button floated='right' icon labelPosition='left' primary size='small' onClick={this.onPressAdd.bind(this)}>
-                          <Icon name='user' /> Add Company
-                        </Button>
+
                       </Table.HeaderCell>
                     </Table.Row>
                   </Table.Footer>
@@ -87,7 +85,11 @@ class ViewCompanies extends Component {
                     {/* <Segment loading={isFetchingInventories}> */}
                     <Container>
                         {tableView}
+
                     </Container>
+                    <Button floated='right' icon labelPosition='left' primary size='small' onClick={this.onPressAdd.bind(this)}>
+                      <Icon name='user' /> Add Company
+                    </Button>
                     {/* </Segment> */}
                 </Segment>
             </BaseLayout>

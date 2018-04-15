@@ -47,7 +47,12 @@ class Login extends Component {
     }
     onSubmit(values, dispatch) {
         return dispatch(loginUser(values)).then(function (data) {
-            dispatch(push("/inventory"));
+            if (data.user.roles.indexOf("admin") >= 0){
+                dispatch(push("/users"));
+            }
+            else {
+                dispatch(push("/inventory"));
+            }
         });
     }
     render() {
@@ -68,6 +73,7 @@ class Login extends Component {
           <Container textAlign='center' className="mainContainer">
             <Segment textAlign='center' className="mainContainer">
               <Container>
+                  <Header as="h2">Chakir Hospitality Inventory System</Header>
                   <Header as="h2">Login</Header>
                   {error}
                   <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>

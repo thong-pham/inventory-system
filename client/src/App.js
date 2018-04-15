@@ -6,11 +6,12 @@ import createHistory from 'history/createHashHistory';
 import { Route } from 'react-router';
 import { createLogger } from "redux-logger";
 import thunk from "redux-thunk";
-import { persistStore, autoRehydrate } from 'redux-persist'
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
 import { ConnectedRouter, routerMiddleware, push } from 'react-router-redux';
 
-import reducers from './reducers';
+import rootReducers from './reducers';
 
 import Login from "./containers/login";
 import AddUser from "./containers/addUser";
@@ -34,23 +35,28 @@ const logger = createLogger();
 
 const middleware = routerMiddleware(history)
 
+const config = {
+    key: 'primary',
+    storage: storage,
+    whitelist: ['auth']
+ }
+
+const reducers = persistReducer(config, rootReducers);
+
 const store = createStore(
     reducers,
     undefined,
     compose(
-        applyMiddleware(middleware, logger, thunk),
-        autoRehydrate()
+        applyMiddleware(middleware, logger, thunk)
     )
 )
-
-
 
 class App extends Component {
     state = {
         isLoading: true
     }
     componentWillMount() {
-        persistStore(store, { whitelist: ['auth'] }, () => {
+        persistStore(store, null, () => {
             this.setState({ isLoading: false });
             store.dispatch(push('/login'))
         })

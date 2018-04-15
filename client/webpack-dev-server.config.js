@@ -3,6 +3,7 @@ const path = require('path');
 
 const config = {
     // Entry points to the project
+    mode: 'production',
     entry: {
         main: [
             // only- means to only hot reload for successful updates
@@ -38,7 +39,7 @@ const config = {
                 exclude: /node_modules/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ["es2015", "react", "stage-2"],
+                    presets: ["env", "react", "stage-2"],
                     cacheDirectory: true,
                 },
             },

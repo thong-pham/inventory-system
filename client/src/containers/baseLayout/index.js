@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { Container, Segment, Sidebar, Menu, Icon, Message } from 'semantic-ui-react';
+import { Container, Segment, Sidebar, Menu, Icon, Message, Header } from 'semantic-ui-react';
 import { push } from 'react-router-redux';
 
 import { logoutUser } from "./../../actions/AuthActions";
@@ -205,7 +205,7 @@ class BaseLayout extends Component {
         }
 
         return (
-            <Container textAlign='center' className="mainContainer">
+            <Container textAlign='center' className="mainContainer">                
                 <Sidebar.Pushable as={Segment} className="mainContainer">
                     {dedicatedMenuItem}
                     <Sidebar.Pusher className="side-right">

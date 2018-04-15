@@ -91,8 +91,9 @@ class AddUser extends Component {
                         </Field>
                     </Form.Field>
                     <Form.Field inline>
-                        <Field name="company" component={renderSelectField} label="Select Company">
+                        <Field name="company" component={renderSelectField} label="Select Company">        
                             <option />
+                            <option value="Mother Company">Mother Company</option>
                              {Object.keys(companies).map(key =>
                                 <option key={key} value={companies[key].name.en}>{companies[key].name.en}</option>)}
                         </Field>

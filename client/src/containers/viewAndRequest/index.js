@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";

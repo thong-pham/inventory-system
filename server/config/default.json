@@ -1,14 +1,15 @@
 {
     "mongo": {
-        "host": "localhost",
-        "port": 27017,
-        "database": "Inventory-System",
-        "username": "",
-        "password": ""
+        "host": "ds115045.mlab.com",
+        "port": 15045,
+        "database": "inventory-system",
+        "username": "jackpham",
+        "password": "jackpham"
     },
     "authenticate": {
         "clientSession": {
-            "secretKey": "Inventory@123"
+            "secretKey": "Inventory@123",
+            "expiresIn": 36000
         }
     }
 }
