@@ -15,9 +15,10 @@ const initialState = {
 export default function (state = initialState, action) {
     switch (action.type) {
         case "persist/REHYDRATE": {
-            const data = action.payload;          
+            const data = action.payload;
             if (data) {
               data.auth.loggingInError = null;
+              data.auth.isLoggingIn = false;
               return {...state, ...data.auth};
             }
             return state;
