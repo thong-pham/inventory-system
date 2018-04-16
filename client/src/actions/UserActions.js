@@ -26,9 +26,7 @@ export const UPDATE_USER_REJECTED = "UPDATE_USER_REJECTED";
 
 export const SET_UPDATING_USER_FULFILLED = "SET_UPDATING_USER_FULFILLED";
 
-export const VIEW_COMPANIES = "VIEW_COMPANIES";
-
-const WS_URL = "http://34.238.40.17:3000/users/";
+const WS_URL = "http://34.238.40.177:3000/users/";
 
 export function addUser(data) {
     return function (dispatch) {
@@ -117,25 +115,6 @@ export function updateUser(user) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: UPDATE_USER_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function getCompanies(data) {
-    return function (dispatch) {
-        //dispatch({ type: GET_COMPANIES_STARTED });
-        return axios.get("http://34.238.40.177:3000/companies/", { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: VIEW_COMPANIES, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                //dispatch({ type: GET_COMPANIES_REJECTED, payload: response });
                 throw response;
             })
     }
