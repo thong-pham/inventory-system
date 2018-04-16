@@ -28,7 +28,7 @@ export const SET_UPDATING_USER_FULFILLED = "SET_UPDATING_USER_FULFILLED";
 
 export const VIEW_COMPANIES = "VIEW_COMPANIES";
 
-const WS_URL = "http://localhost:3000/users/";
+const WS_URL = "http://34.238.40.177:3000/users/";
 
 export function addUser(data) {
     return function (dispatch) {

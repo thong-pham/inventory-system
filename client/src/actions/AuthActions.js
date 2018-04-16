@@ -8,7 +8,7 @@ export const USER_LOGOUT_FULFILLED = "USER_LOGOUT_FULFILLED";
 
 export const VIEW_COMPANIES = "VIEW_COMPANIES";
 
-const WS_URL = "http://localhost:3000/users/";
+const WS_URL = "http://34.238.40.177:3000/users/";
 
 export function loginUser(data) {
     return function (dispatch) {
@@ -57,7 +57,7 @@ export function logoutUser() {
 export function getCompanies(data) {
     return function (dispatch) {
         //dispatch({ type: GET_COMPANIES_STARTED });
-        return axios.get("http://localhost:3000/companies/", { headers: { Authorization: data.token } })
+        return axios.get("http://34.238.40.177:3000/companies/", { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })

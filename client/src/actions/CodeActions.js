@@ -20,7 +20,7 @@ export const ADD_POPUP = "ADD_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_INPUT = "TRACK_INPUT";
 
-const WS_URL = "http://localhost:3000/code/";
+const WS_URL = "http://34.238.40.177:3000/code/";
 
 export function getAllCode(data) {
     return function (dispatch) {

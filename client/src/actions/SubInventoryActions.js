@@ -10,7 +10,7 @@ export const UPDATE_SUBINVENTORY_REJECTED = "UPDATE_SUBINVENTORY_REJECTED";
 
 export const SET_UPDATING_SUBINVENTORY_FULFILLED = "SET_UPDATING_SUBINVENTORY_FULFILLED";
 
-const WS_URL = "http://localhost:3000/subInventories/";
+const WS_URL = "http://34.238.40.177:3000/subInventories/";
 
 export function getSubInventoriesByCompany(data) {
     return function (dispatch) {
