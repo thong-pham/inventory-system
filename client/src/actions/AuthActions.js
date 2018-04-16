@@ -53,22 +53,3 @@ export function logoutUser() {
         dispatch({ type: USER_LOGOUT_FULFILLED });
     }
 }
-
-export function getCompanies(data) {
-    return function (dispatch) {
-        //dispatch({ type: GET_COMPANIES_STARTED });
-        return axios.get("http://34.238.40.177:3000/companies/", { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: VIEW_COMPANIES, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                //dispatch({ type: GET_COMPANIES_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}

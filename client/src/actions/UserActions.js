@@ -28,7 +28,7 @@ export const SET_UPDATING_USER_FULFILLED = "SET_UPDATING_USER_FULFILLED";
 
 export const VIEW_COMPANIES = "VIEW_COMPANIES";
 
-const WS_URL = "http://34.238.40.177:3000/users/";
+const WS_URL = "http://34.238.40.17:3000/users/";
 
 export function addUser(data) {
     return function (dispatch) {
@@ -76,45 +76,6 @@ export function getUsers(data) {
             })
     }
 }
-
-/*export function getPendingUsers(data) {
-    return function (dispatch) {
-        dispatch({ type: GET_PENDING_USERS_STARTED });
-        return axios.get(WS_URL + "pending", { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: GET_PENDING_USERS_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: GET_PENDING_USERS_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function approveUser(data) {
-    const user = data.user;
-    return function (dispatch) {
-        dispatch({ type: APPROVE_USER_STARTED });
-        return axios.put(WS_URL + user.id + "/approve", null, { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: APPROVE_USER_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: APPROVE_USER_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}*/
 
 export function deleteUser(data) {
     const user = data.user;
@@ -164,7 +125,7 @@ export function updateUser(user) {
 export function getCompanies(data) {
     return function (dispatch) {
         //dispatch({ type: GET_COMPANIES_STARTED });
-        return axios.get("http://localhost:3000/companies/", { headers: { Authorization: data.token } })
+        return axios.get("http://34.238.40.177:3000/companies/", { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })

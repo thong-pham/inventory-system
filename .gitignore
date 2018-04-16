@@ -58,3 +58,5 @@ typings/
 .env
 
 chakir-system.pem
+
+output.txt
