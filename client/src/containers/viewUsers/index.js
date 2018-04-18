@@ -84,28 +84,21 @@ class ViewUsers extends Component {
                     <Table.Body>
                         {usersView}
                     </Table.Body>
-                    <Table.Footer fullWidth>
-                    <Table.Row>
-                      <Table.HeaderCell colSpan='10'>
-                        <Button floated='right' icon labelPosition='left' primary size='small' onClick={this.onPressAdd.bind(this)}>
-                          <Icon name='user' /> Add User
-                        </Button>
-                      </Table.HeaderCell>
-                    </Table.Row>
-                  </Table.Footer>
                 </Table>
             )
         }
         return (
             <BaseLayout>
-                <Segment textAlign='center' >
+                <Segment textAlign='center' padded='very' >
                     <Header as="h2">User List</Header>
                     {error}
-                    {/* <Segment loading={isFetchingInventories}> */}
                     <Container>
                         {tableView}
+                        <Button floated='right' icon labelPosition='left' primary size='small' onClick={this.onPressAdd.bind(this)}>
+                          <Icon name='user' /> Add User
+                        </Button>
                     </Container>
-                    {/* </Segment> */}
+
                 </Segment>
             </BaseLayout>
         )

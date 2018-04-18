@@ -29,6 +29,7 @@ import ViewAndRequest from "./containers/viewAndRequest";
 import ViewOrders from "./containers/viewOrders";
 import ViewApprovedOrders from "./containers/viewApprovedOrders";
 import ViewCode from "./containers/viewCode";
+import ViewAccount from "./containers/viewAccount";
 
 const history = createHistory();
 const logger = createLogger();
@@ -88,6 +89,7 @@ class App extends Component {
                             <Route exact path="/orders" component={ViewOrders} />
                             <Route exact path="/approvedOrders" component={ViewApprovedOrders} />
                             <Route exact path="/code" component={ViewCode} />
+                            <Route exact path="/account" component={ViewAccount} />
                         </div>
                     </ConnectedRouter>
                 </Provider>

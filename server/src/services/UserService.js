@@ -6,8 +6,8 @@ import {
     createUser as createUserDAO,
     getUserById as getUserByIdDAO,
     getUsers as getUsersDAO,
-    getUserByEmail as getUserByEmailDAO,
     getUserByUsername as getUserByUsernameDAO,
+    updateUserById as updateUserByIdDAO,
 } from "./../dao/mongo/impl/UserDAO";
 import { generatePasswordHash, validatePasswordHash } from "./../utils/PasswordUtil";
 import JWTUtil from "./../utils/JWTUtil";
@@ -97,7 +97,8 @@ export function loginUser(data, callback) {
                 email: user.email,
                 roles: user.roles,
                 username: user.username,
-                company: user.company
+                company: user.company,
+                number: user.number
             }
             jwtUtilClientSession.signPayload(payload, function (err, token) {
                 waterfallCallback(err, token, userPayload);
@@ -106,7 +107,72 @@ export function loginUser(data, callback) {
     ], callback);
 }
 
-export function getUserById(id, callback) {
+export function changePassword(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            getUserByIdDAO(data.id, function(err, user){
+                  if (err){
+                      waterfallCallback(err);
+                  }
+                  else{
+                      waterfallCallback(null, user);
+                  }
+            });
+        },
+        function (user, waterfallCallback) {
+            validatePasswordHash(data.currentPass, user.passwordHash, function (err, isSame) {
+                waterfallCallback(err, user, isSame);
+            });
+        },
+        function (user, isSame, waterfallCallback) {
+            if (isSame === true) {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Invalid Password");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            generatePasswordHash(data.newPass, function (err, hash) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else {
+                    const update = {
+                        passwordHash: hash
+                    }
+                    updateUserByIdDAO(data.id, update, waterfallCallback);
+                }
+            })
+        }
+    ], callback);
+}
+
+export function updateInfo(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            getUserByIdDAO(data.id, function(err, user){
+                  if (err){
+                      waterfallCallback(err);
+                  }
+                  else{
+                      waterfallCallback(null, user);
+                  }
+            });
+        },
+        function (user, waterfallCallback) {
+            const update = {
+                name: data.newName,
+                number: data.newNumber,
+                email: data.newEmail
+            }
+            updateUserByIdDAO(data.id, update, waterfallCallback);
+        }
+    ], callback);
+}
+
+export function getUser(id, callback) {
     getUserByIdDAO(id, callback);
 }
 

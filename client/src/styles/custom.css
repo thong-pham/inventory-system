@@ -29,6 +29,10 @@
     padding-bottom: 0 !important;
 }
 
+.pwdBox {
+    width: 200px
+}
+
 @media only screen and (max-width: 1280px) {
     .side-right {
         width: 79.5%;

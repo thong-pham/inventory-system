@@ -42,3 +42,43 @@ export function validateLoginMember(data, callback) {
         callback(errors);
     }
 }
+
+export function validateChangePassword(data, callback) {
+    var errors = {};
+    if (!data.currentPass) {
+        errors.currentPass = "Current Password is Required";
+    }
+    if (!data.newPass) {
+        errors.newPass = "New Password is Required";
+    }
+    if (Object.keys(errors).length === 0) {
+        callback();
+    }
+    else {
+        callback(errors);
+    }
+}
+
+export function validateUpdateInfo(data, callback) {
+    var errors = {};
+    if (!data.newName) {
+        errors.newName = "Name is Required";
+    }
+    if (!data.newEmail) {
+        errors.newEmail = "Email is Required";
+    }
+    else {
+        if (!validator.isEmail(data.newEmail)) {
+            errors.newEmail = "Email Not Valid";
+        }
+    }
+    if (!data.newNumber) {
+        errors.newNumber = "Number is Required";
+    }
+    if (Object.keys(errors).length === 0) {
+        callback();
+    }
+    else {
+        callback(errors);
+    }
+}

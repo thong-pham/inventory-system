@@ -44,6 +44,9 @@ class BaseLayout extends Component {
         else if (menuItem === "viewCode") {
             dispatch(push('/code'));
         }
+        else if (menuItem === "viewAccount") {
+            dispatch(push('/account'));
+        }
         else if (menuItem === "logout") {
             dispatch(logoutUser());
             dispatch(push('/login'));
@@ -93,6 +96,10 @@ class BaseLayout extends Component {
                       <Icon name='barcode' />
                         Code Management
                     </Menu.Item>
+                    <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                      <Icon name='user' />
+                        User Account
+                    </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
                       <Icon name='log out' />
                         Logout
@@ -120,6 +127,10 @@ class BaseLayout extends Component {
                 <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
                   <Icon name='add' />
                     Add Inventory
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                  <Icon name='user' />
+                    User Account
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
                   <Icon name='log out' />
@@ -152,6 +163,10 @@ class BaseLayout extends Component {
                 <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
                   <Icon name='cube' />
                     View Whole Inventories
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                  <Icon name='user' />
+                    User Account
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
                  <Icon name='log out' />
@@ -186,6 +201,10 @@ class BaseLayout extends Component {
                     <Icon name='list ul' />
                       Pending Orders
                   </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                    <Icon name='user' />
+                      User Account
+                  </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
                    <Icon name='log out' />
                       Logout
@@ -205,7 +224,7 @@ class BaseLayout extends Component {
         }
 
         return (
-            <Container textAlign='center' className="mainContainer">                
+            <Container textAlign='center' className="mainContainer">
                 <Sidebar.Pushable as={Segment} className="mainContainer">
                     {dedicatedMenuItem}
                     <Sidebar.Pusher className="side-right">

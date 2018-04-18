@@ -7,7 +7,8 @@ import axios from 'axios';
 
 import BaseLayout from "./../baseLayout";
 
-import { addUser, getCompanies } from "./../../actions/UserActions";
+import { addUser } from "./../../actions/UserActions";
+import { getCompanies } from "./../../actions/CompanyActions";
 
 function validate(values) {
     var errors = {};
@@ -53,7 +54,8 @@ class AddUser extends Component {
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { addingUserError, isAddingUser, pendingUsers, companies } = this.props.user;
+        const { addingUserError, isAddingUser, pendingUsers } = this.props.user;
+        const { companies } = this.props.company;
         const renderSelectField = ({ input, label, type, meta: { touched, error }, children }) => (
               <div >
                   <label>{label}</label>
@@ -91,7 +93,7 @@ class AddUser extends Component {
                         </Field>
                     </Form.Field>
                     <Form.Field inline>
-                        <Field name="company" component={renderSelectField} label="Select Company">        
+                        <Field name="company" component={renderSelectField} label="Select Company">
                             <option />
                             <option value="Mother Company">Mother Company</option>
                              {Object.keys(companies).map(key =>
@@ -119,6 +121,7 @@ function mapStatesToProps(state) {
         initialValues: initialValues,
         auth: state.auth,
         user: state.user,
+        company: state.company,
         location: state.router.location
     }
 }
