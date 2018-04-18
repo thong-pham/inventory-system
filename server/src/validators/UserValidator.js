@@ -61,20 +61,15 @@ export function validateChangePassword(data, callback) {
 
 export function validateUpdateInfo(data, callback) {
     var errors = {};
-    if (!data.newName) {
+    /*if (!data.newName) {
         errors.newName = "Name is Required";
     }
     if (!data.newEmail) {
         errors.newEmail = "Email is Required";
     }
-    else {
-        if (!validator.isEmail(data.newEmail)) {
-            errors.newEmail = "Email Not Valid";
-        }
-    }
     if (!data.newNumber) {
         errors.newNumber = "Number is Required";
-    }
+    }*/
     if (Object.keys(errors).length === 0) {
         callback();
     }
