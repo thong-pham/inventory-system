@@ -38,6 +38,8 @@ class AddCompany extends Component {
         )
     }
     onSubmit(values, dispatch) {
+      const { token } = this.props.auth;
+      values.token = token;
         return dispatch(addCompany(values)).then(function (data) {
             dispatch(push("/companies"));
         });

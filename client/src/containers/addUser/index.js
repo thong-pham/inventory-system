@@ -48,6 +48,8 @@ class AddUser extends Component {
         )
     }
     onSubmit(values, dispatch) {
+        const { token } = this.props.auth;
+        values.token = token;
         return dispatch(addUser(values)).then(function (data) {
             dispatch(push("/users"));
         });

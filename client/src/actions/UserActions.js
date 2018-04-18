@@ -66,7 +66,8 @@ export function addUser(data) {
           password: data.password,
           name: "",
           email: "",
-          number: ""
+          number: "",
+          token: data.token
         };
         return axios.post(WS_URL + "createUser", user)
             .then(function (response) {

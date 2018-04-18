@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createCompany, getCompanyById, getCompanies } from "./../services/CompanyService";
-import { validateCreateCompany } from "./../validators/CompanyValidator"
+import { validateCreateCompany } from "./../validators/CompanyValidator";
+import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
 
@@ -30,7 +31,7 @@ const router = Router();
     });
 });*/
 
-router.post('/createCompany', function (req, res, next) {
+router.post('/createCompany',verifyAuthMiddleware, function (req, res, next) {
     validateCreateCompany(req.body, function (err) {
         if (err) {
             res.status(400).send(err);
@@ -60,7 +61,7 @@ router.post('/createCompany', function (req, res, next) {
 });
 
 
-router.get('/', function (req, res, next) {
+router.get('/',verifyAuthMiddleware, function (req, res, next) {
         getCompanies(function (err, companies) {
             if (err) {
                 console.log(err);
@@ -72,7 +73,7 @@ router.get('/', function (req, res, next) {
         });
 });
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id',verifyAuthMiddleware, function (req, res, next) {
     const id = req.params.id;
     if (id) {
         getCompanyById(id, function (err, company) {

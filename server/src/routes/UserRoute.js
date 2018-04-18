@@ -150,7 +150,7 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
         });
 });
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id',verifyAuthMiddleware, function (req, res, next) {
     const id = req.params.id;
     if (id) {
         getUser(id, function (err, user) {
