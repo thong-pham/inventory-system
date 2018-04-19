@@ -86,18 +86,7 @@ export default function (state = initialState, action) {
         }
         case DELETE_USER_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isDeletingUser: false, deletingsUsersError: error };
-        }
-        case GET_PENDING_USERS_STARTED: {
-            return { ...state, isFetchingPendingUsers: true };
-        }
-        case GET_PENDING_USERS_FULFILLED: {
-            const data = action.payload;
-            return { ...state, isFetchingPendingUsers: false, pendingUsers: data };
-        }
-        case GET_PENDING_USERS_REJECTED: {
-            const error = action.payload.data;
-            return { ...state, isFetchingPendingUsers: false, fetchingPendingUsersError: error };
+            return { ...state, isDeletingUser: false, deletingsUserError: error };
         }
         case UPDATE_USER_STARTED: {
             return { ...state, isUpdatingUser: true };
