@@ -6,7 +6,7 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { setUpdatingInventory, updateInventory } from "./../../actions/InventoryActions";
+import { setUpdatingInventory, updateInventory, clearInventory } from "./../../actions/InventoryActions";
 
 function validate(values) {
     var errors = {
@@ -65,7 +65,9 @@ class UpdateInventory extends Component {
     }
     onBack(){
       const { dispatch } = this.props;
-      dispatch(push("/inventory"));
+      dispatch(clearInventory()).then(function(data){
+          dispatch(push("/inventory"));
+      });
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;

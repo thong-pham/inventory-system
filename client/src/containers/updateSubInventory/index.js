@@ -6,7 +6,7 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { setUpdatingSubInventory, updateSubInventory } from "./../../actions/SubInventoryActions";
+import { setUpdatingSubInventory, updateSubInventory, clearInventory } from "./../../actions/SubInventoryActions";
 
 function validate(values) {
     var errors = {
@@ -60,8 +60,10 @@ class UpdateSubInventory extends Component {
         });
     }
     onBack(){
-        const { dispatch } = this.props;
-        dispatch(push("/subInventory"));
+      const { dispatch } = this.props;
+      dispatch(clearInventory()).then(function(data){
+          dispatch(push("/subInventory"));
+      });
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;

@@ -8,7 +8,7 @@ import axios from 'axios';
 import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
-import { setUpdatingUser, editUser } from "./../../actions/UserActions";
+import { setUpdatingUser, editUser, clearUser } from "./../../actions/UserActions";
 import { getCompanies } from "./../../actions/CompanyActions";
 
 function validate(values) {
@@ -34,8 +34,9 @@ class EditUser extends Component {
         const { token } = this.props.auth;
         const { dispatch } = this.props;
         const idParam = this.props.location.pathname.split("/")[2];
-        dispatch(getCompanies({ token: token }));
         dispatch(setUpdatingUser(idParam));
+        dispatch(getCompanies({ token: token }));
+
     }
     renderField({ input, meta: { touched, error }, ...custom }) {
         const hasError = touched && error !== undefined;
@@ -55,7 +56,9 @@ class EditUser extends Component {
     }
     onBack(){
       const { dispatch } = this.props;
-      dispatch(push("/users"));
+      dispatch(clearUser()).then(function(data){
+          dispatch(push("/users"));
+      });
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;

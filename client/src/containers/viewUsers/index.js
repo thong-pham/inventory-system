@@ -45,23 +45,26 @@ class ViewUsers extends Component {
             )
         }
         const usersView = users.map(function (user) {
-            return (
-                <Table.Row key={user.id}>
-                    <Table.Cell>{user.id}</Table.Cell>
-                    <Table.Cell>{user.username}</Table.Cell>
-                    <Table.Cell>{user.name.en}</Table.Cell>
-                    <Table.Cell>{user.email}</Table.Cell>
-                    <Table.Cell>{user.number}</Table.Cell>
-                    <Table.Cell>{user.roles}</Table.Cell>
-                    <Table.Cell>{user.company}</Table.Cell>
-                    <Table.Cell>{user.lastModifiedAt}</Table.Cell>
-                    <Table.Cell>{user.createdAt}</Table.Cell>
-                    <Table.Cell>
-                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, user)} />
-                        <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, user)} />
-                    </Table.Cell>
-                </Table.Row>
-            )
+            if (!(user.roles.indexOf("admin") >= 0))
+            {
+                return (
+                    <Table.Row key={user.id}>
+                        <Table.Cell>{user.id}</Table.Cell>
+                        <Table.Cell>{user.username}</Table.Cell>
+                        <Table.Cell>{user.name.en}</Table.Cell>
+                        <Table.Cell>{user.email}</Table.Cell>
+                        <Table.Cell>{user.number}</Table.Cell>
+                        <Table.Cell>{user.roles[0]}</Table.Cell>
+                        <Table.Cell>{user.company}</Table.Cell>
+                        <Table.Cell>{user.lastModifiedAt}</Table.Cell>
+                        <Table.Cell>{user.createdAt}</Table.Cell>
+                        <Table.Cell>
+                            <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, user)} />
+                            <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, user)} />
+                        </Table.Cell>
+                    </Table.Row>
+                )
+            }
         }, this);
         let tableView = <h4>No Users Found. Please Add Some </h4>
         if (users.length > 0) {

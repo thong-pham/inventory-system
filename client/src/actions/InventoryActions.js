@@ -25,7 +25,7 @@ export const UPDATE_INVENTORY_FULFILLED = "UPDATE_INVENTORY_FULFILLED";
 export const UPDATE_INVENTORY_REJECTED = "UPDATE_INVENTORY_REJECTED";
 
 export const SET_UPDATING_INVENTORY_FULFILLED = "SET_UPDATING_INVENTORY_FULFILLED";
-
+export const CLEAR_INVENTORY_FULFILLED = "CLEAR_INVENTORY_FULFILLED";
 export const REJECT_UPDATING_INVENTORY = "REJECT_UPDATING_INVENTORY";
 
 export const ADD_CART_STARTED = "ADD_CART_STARTED";
@@ -49,6 +49,8 @@ export const OPEN_MODAL = "OPEN_MODAL";
 export const CLOSE_MODAL = "CLOSE_MODAL";
 export const OPEN_ADD = "OPEN_ADD";
 export const CLOSE_ADD = "CLOSE_ADD";
+export const OPEN_PLUS = "OPEN_PLUS";
+export const CLOSE_PLUS = "CLOSE_PLUS";
 export const ERROR_INPUT = "ERROR_INPUT";
 
 export const SUBMIT_ORDER_STARTED = "SUBMIT_ORDER_STARTED";
@@ -158,13 +160,6 @@ export function deleteInventory(data) {
     }
 }
 
-export function setUpdatingInventory(id) {
-    return function (dispatch) {
-        dispatch({ type: SET_UPDATING_INVENTORY_FULFILLED, payload: id });
-    }
-}
-
-
 export function updateInventory(inventory) {
     return function (dispatch) {
         dispatch({ type: UPDATE_INVENTORY_STARTED });
@@ -181,13 +176,6 @@ export function updateInventory(inventory) {
                 dispatch({ type: UPDATE_INVENTORY_REJECTED, payload: response });
                 throw response;
             })
-    }
-}
-
-export function rejectEdit(){
-    return function (dispatch){
-        const data = "Only Mother Company can edit Inventory";
-        dispatch({ type : REJECT_UPDATING_INVENTORY, payload : data});
     }
 }
 
@@ -286,6 +274,18 @@ export function submitOrder(data) {
     }
 }
 
+export function setUpdatingInventory(id) {
+    return function (dispatch) {
+        dispatch({ type: SET_UPDATING_INVENTORY_FULFILLED, payload: id });
+    }
+}
+
+export function clearInventory() {
+    return function (dispatch) {
+        dispatch({ type: CLEAR_INVENTORY_FULFILLED });
+    }
+}
+
 export function showModal(data){
     return function (dispatch) {
         dispatch({type: OPEN_MODAL, payload: data });
@@ -317,8 +317,27 @@ export function closeAdd(){
     }
 }
 
+export function openPlus(id){
+    return function (dispatch) {
+        dispatch({type: OPEN_PLUS, payload: id });
+    }
+}
+
+export function closePlus(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_PLUS });
+    }
+}
+
 export function trackNumber(data){
    return function (dispatch){
        dispatch({ type : TRACK_NUMBER, payload: data})
    }
+}
+
+export function rejectEdit(){
+    return function (dispatch){
+        const data = "Only Mother Company can edit Inventory";
+        dispatch({ type : REJECT_UPDATING_INVENTORY, payload : data});
+    }
 }

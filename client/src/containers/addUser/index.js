@@ -55,6 +55,10 @@ class AddUser extends Component {
             dispatch(push("/users"));
         });
     }
+    onBack(){
+        const { dispatch } = this.props;
+        dispatch(push("/users"));
+    }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
         const { addingUserError, isAddingUser, pendingUsers } = this.props.user;
@@ -107,6 +111,7 @@ class AddUser extends Component {
                         <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
                     </Form.Field>
                     <Button loading={submitting} disabled={submitting}>Add User</Button>
+                    <Button onClick={this.onBack.bind(this)}>Cancel</Button>
                 </Form>
                 </Container>
             </Segment>

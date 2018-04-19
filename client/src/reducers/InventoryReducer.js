@@ -3,14 +3,14 @@ import { GET_INVENTORIES_STARTED, GET_INVENTORIES_FULFILLED, GET_INVENTORIES_REJ
 import { DELETE_INVENTORY_STARTED, DELETE_INVENTORY_FULFILLED, DELETE_INVENTORY_REJECTED } from "./../actions/InventoryActions";
 import { GET_PENDING_INVENTORIES_STARTED, GET_PENDING_INVENTORIES_FULFILLED, GET_PENDING_INVENTORIES_REJECTED } from "./../actions/InventoryActions";
 import { UPDATE_INVENTORY_STARTED, UPDATE_INVENTORY_FULFILLED, UPDATE_INVENTORY_REJECTED } from "./../actions/InventoryActions";
-import { SET_UPDATING_INVENTORY_FULFILLED } from "./../actions/InventoryActions";
+import { SET_UPDATING_INVENTORY_FULFILLED, CLEAR_INVENTORY_FULFILLED } from "./../actions/InventoryActions";
 import { REJECT_UPDATING_INVENTORY } from "./../actions/InventoryActions";
 import { APPROVE_INVENTORY_STARTED, APPROVE_INVENTORY_FULFILLED, APPROVE_INVENTORY_REJECTED } from "./../actions/InventoryActions";
 import { ADD_CART_STARTED, ADD_CART_FULFILLED, ADD_CART_REJECTED } from "./../actions/InventoryActions";
 import { UPDATE_CART_STARTED, UPDATE_CART_FULFILLED, UPDATE_CART_REJECTED } from "./../actions/InventoryActions";
 import { DELETE_CART_STARTED, DELETE_CART_FULFILLED, DELETE_CART_REJECTED } from "./../actions/InventoryActions";
 import { GET_CARTS_STARTED, GET_CARTS_FULFILLED, GET_CARTS_REJECTED } from "./../actions/InventoryActions";
-import { TRACK_NUMBER, OPEN_MODAL, CLOSE_MODAL, OPEN_ADD, CLOSE_ADD, ERROR_INPUT } from "./../actions/InventoryActions";
+import { TRACK_NUMBER, OPEN_MODAL, CLOSE_MODAL, OPEN_ADD, CLOSE_ADD, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT } from "./../actions/InventoryActions";
 import { SUBMIT_ORDER_STARTED, SUBMIT_ORDER_FULFILLED, SUBMIT_ORDER_REJECTED } from "./../actions/InventoryActions";
 
 const initialState = {
@@ -48,7 +48,8 @@ const initialState = {
     openAdd: null,
     addIcon: true,
     closeIcon: false,
-    errorInput: null
+    errorInput: null,
+    openPlus: null
 }
 
 export default function (state = initialState, action) {
@@ -103,11 +104,11 @@ export default function (state = initialState, action) {
         }
         case UPDATE_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isUpdatingInventory: false, inventory: null };
+            return { ...state, isUpdatingInventory: false, inventory: null, openPlus: null, quantity: null };
         }
         case UPDATE_INVENTORY_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isUpdatingInventory: false, updatingInventoriesError: error };
+            return { ...state, isUpdatingInventory: false, updatingInventoriesError: error, openPlus: null, quantity: null };
         }
         case APPROVE_INVENTORY_STARTED: {
             return { ...state, isApprovingInventory: true };
@@ -122,10 +123,13 @@ export default function (state = initialState, action) {
         }
         case SET_UPDATING_INVENTORY_FULFILLED: {
             const id = action.payload;
-            const inv = state.inventories.filter(function (element) {
+            const newInv = state.inventories.filter(function (element) {
                 return element.id == id;
             })[0];
-            return Object.assign({}, state, { inventory: inv });
+            return { ...state, inventory: newInv };
+        }
+        case CLEAR_INVENTORY_FULFILLED:{
+            return { ...state, inventory: null};
         }
         case REJECT_UPDATING_INVENTORY: {
             const error = action.payload;
@@ -207,10 +211,17 @@ export default function (state = initialState, action) {
         }
         case OPEN_ADD: {
           const data = action.payload;
-            return { ...state, openAdd : data, quantity: null, addIcon: false, closeIcon: true };
+            return { ...state, openAdd : data, quantity: null };
         }
         case CLOSE_ADD: {
-            return { ...state, openAdd : null, quantity: null, addIcon: true, closeIcon: false, errorInput: null };
+            return { ...state, openAdd : null, quantity: null, errorInput: null };
+        }
+        case OPEN_PLUS: {
+          const data = action.payload;
+            return { ...state, openPlus : data, quantity: null };
+        }
+        case CLOSE_PLUS: {
+            return { ...state, openPlus : null, quantity: null, errorInput: null };
         }
         case SUBMIT_ORDER_STARTED: {
             return {...state, isAddingOrder: true};

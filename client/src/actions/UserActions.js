@@ -37,6 +37,7 @@ export const CHANGE_INFO_FULFILLED = "CHANGE_INFO_FULFILLED";
 export const CHANGE_INFO_REJECTED = "CHANGE_INFO_REJECTED";
 
 export const SET_UPDATING_USER_FULFILLED = "SET_UPDATING_USER_FULFILLED";
+export const CLEAR_USER_FULFILLED = "CLEAR_USER_FULFILLED";
 
 export const GET_USER = "GET_USER";
 export const CHANGE_PASSWORD = "CHANGE_PASSWORD";
@@ -143,12 +144,6 @@ export function deleteUser(data) {
     }
 }
 
-export function setUpdatingUser(id) {
-    return function (dispatch) {
-        dispatch({ type: SET_UPDATING_USER_FULFILLED, payload: id });
-    }
-}
-
 export function editUser(user) {
     return function (dispatch) {
         dispatch({ type: UPDATE_USER_STARTED });
@@ -203,6 +198,18 @@ export function updateInfo(data){
                 dispatch({ type: CHANGE_INFO_REJECTED, payload: response });
                 throw response;
             })
+    }
+}
+
+export function setUpdatingUser(id) {
+    return function (dispatch) {
+        dispatch({ type: SET_UPDATING_USER_FULFILLED, payload: id });
+    }
+}
+
+export function clearUser() {
+    return function (dispatch) {
+        dispatch({ type: CLEAR_USER_FULFILLED });
     }
 }
 

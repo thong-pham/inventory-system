@@ -3,7 +3,7 @@ import { GET_USERS_STARTED, GET_USERS_FULFILLED, GET_USERS_REJECTED } from "./..
 import { DELETE_USER_STARTED, DELETE_USER_FULFILLED, DELETE_USER_REJECTED } from "./../actions/UserActions";
 import { GET_PENDING_USERS_STARTED, GET_PENDING_USERS_FULFILLED, GET_PENDING_USERS_REJECTED } from "./../actions/UserActions";
 import { UPDATE_USER_STARTED, UPDATE_USER_FULFILLED, UPDATE_USER_REJECTED } from "./../actions/UserActions";
-import { SET_UPDATING_USER_FULFILLED, CHANGE_PASSWORD, CLOSE_PASSWORD, TRACK_CURRENT, TRACK_NEW } from "./../actions/UserActions";
+import { SET_UPDATING_USER_FULFILLED, CLEAR_USER_FULFILLED, CHANGE_PASSWORD, CLOSE_PASSWORD, TRACK_CURRENT, TRACK_NEW } from "./../actions/UserActions";
 import { CHANGE_PASSWORD_STARTED, CHANGE_PASSWORD_FULFILLED, CHANGE_PASSWORD_REJECTED } from "./../actions/UserActions";
 import { CHANGE_NAME, CLOSE_NAME, CHANGE_EMAIL, CLOSE_EMAIL, CHANGE_NUMBER, CLOSE_NUMBER,
           TRACK_NAME, TRACK_NUMBER, TRACK_EMAIL, ERROR_INPUT,
@@ -104,7 +104,10 @@ export default function (state = initialState, action) {
             const newUser = state.users.filter(function (element) {
                 return element.id == id;
             })[0];
-            return Object.assign({}, state, { user : newUser });
+            return {...state, user: newUser };
+        }
+        case CLEAR_USER_FULFILLED:{
+            return { ...state, user: null };
         }
         case CHANGE_PASSWORD_STARTED: {
            return {...state, isChangingPass : true};
