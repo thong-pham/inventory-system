@@ -16,7 +16,7 @@ function validate(values) {
     if (!sku || (sku + "").trim() === "") {
         errors.sku = "SKU is Required";
     }
-    else if (sku.length > 10) {
+    else if (sku.length > 20) {
         errors.sku = "Must be 10 characters or less";
     }
     if (!productName || productName.trim() === "") {
