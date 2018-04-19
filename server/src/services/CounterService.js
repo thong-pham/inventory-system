@@ -27,3 +27,7 @@ export function getNextCartId(callback) {
 export function getNextCodeId(callback) {
     incrementCounter("code", callback);
 }
+
+export function getNextTrashId(callback) {
+    incrementCounter("trash", callback);
+}

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { createUser, getUser, loginUser, getUsers, changePassword, updateInfo } from "./../services/UserService";
+import { createUser, getUser, loginUser, getUsers, changePassword, updateInfo, removeUser, editUser } from "./../services/UserService";
 import { validateCreateMember, validateLoginMember,
-          validateChangePassword, validateUpdateInfo } from "./../validators/UserValidator";
+          validateChangePassword, validateUpdateInfo, validateEditUser } from "./../validators/UserValidator";
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
@@ -136,6 +136,60 @@ router.put('/updateInfo', verifyAuthMiddleware, function (req, res, next) {
             });
         }
     });
+});
+
+router.put('/editUser', verifyAuthMiddleware, function (req, res, next) {
+    validateEditUser(req.body, function (err) {
+        if (err) {
+            res.status(400).send(err);
+        }
+        else {
+            const { username, company, roles, id } = req.body;
+            const data = { username, company, roles, id };
+            editUser(data, function (err, user) {
+                if (err) {
+                    if (err.message === "Invalid Info") {
+                        res.status(400).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send(err);
+                    }
+                }
+                else {
+                    res.status(200).send(user);
+                }
+            });
+        }
+    });
+});
+
+router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        const userSession = req.session;
+        const data = { id, userSession };
+        removeUser(data, function (err, user) {
+            if (err) {
+                if (err.message === "Not Enough Permission to remove User") {
+                    res.status(402).send(err.message);
+                }
+                else if (err.message === "User Not Found") {
+                    res.status(404).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send("Remove Successfully");
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 router.get('/', verifyAuthMiddleware, function (req, res, next) {

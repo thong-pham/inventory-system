@@ -77,3 +77,22 @@ export function validateUpdateInfo(data, callback) {
         callback(errors);
     }
 }
+
+export function validateEditUser(data, callback) {
+    var errors = {};
+    if (!data.username) {
+        errors.username = "Username is Required";
+    }
+    if (!data.company) {
+        errors.company = "Company is Required";
+    }
+    if (!data.roles) {
+        errors.roles = "Role is Required";
+    }
+    if (Object.keys(errors).length === 0) {
+        callback();
+    }
+    else {
+        callback(errors);
+    }
+}

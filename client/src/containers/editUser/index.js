@@ -8,7 +8,7 @@ import axios from 'axios';
 import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
-import { addUser } from "./../../actions/UserActions";
+import { setUpdatingUser, editUser } from "./../../actions/UserActions";
 import { getCompanies } from "./../../actions/CompanyActions";
 
 function validate(values) {
@@ -29,15 +29,13 @@ function validate(values) {
     return errors;
 }
 
-class AddUser extends Component {
+class EditUser extends Component {
     componentWillMount() {
         const { token } = this.props.auth;
         const { dispatch } = this.props;
-        //dispatch(getUsers({token:token}));
+        const idParam = this.props.location.pathname.split("/")[2];
         dispatch(getCompanies({ token: token }));
-        //if (token) {
-        //    dispatch(push("/inventory"));
-        //}
+        dispatch(setUpdatingUser(idParam));
     }
     renderField({ input, meta: { touched, error }, ...custom }) {
         const hasError = touched && error !== undefined;
@@ -51,13 +49,17 @@ class AddUser extends Component {
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
         values.token = token;
-        return dispatch(addUser(values)).then(function (data) {
+        return dispatch(editUser(values)).then(function (data) {
             dispatch(push("/users"));
         });
     }
+    onBack(){
+      const { dispatch } = this.props;
+      dispatch(push("/users"));
+    }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { addingUserError, isAddingUser, pendingUsers } = this.props.user;
+        const { updatingUserError, isUpdatingUser, user } = this.props.user;
         const { companies } = this.props.company;
         const renderSelectField = ({ input, type, meta: { touched, error }, children }) => (
               <div className="selectDiv">
@@ -68,11 +70,11 @@ class AddUser extends Component {
                </div>
         )
         let error = null;
-        if (addingUserError) {
+        if (updatingUserError) {
             error = (
                 <Message negative>
-                    <Message.Header>Error while Add User</Message.Header>
-                    <p>{addingUserError}</p>
+                    <Message.Header>Error while Editing User</Message.Header>
+                    <p>{updatingUserError}</p>
                 </Message>
             )
         }
@@ -80,9 +82,9 @@ class AddUser extends Component {
           <BaseLayout>
             <Segment textAlign='center'>
                 <Container>
-                <Header as="h2">Add User</Header>
+                <Header as="h2">Edit User</Header>
                 {error}
-                <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isAddingUser}>
+                <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isUpdatingUser}>
                     <Form.Field inline>
                         <Field name="username" placeholder="Enter the username" component={this.renderField}></Field>
                     </Form.Field>
@@ -103,10 +105,8 @@ class AddUser extends Component {
                                 <option key={key} value={companies[key].name.en}>{companies[key].name.en}</option>)}
                         </Field>
                     </Form.Field>
-                    <Form.Field inline>
-                        <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
-                    </Form.Field>
-                    <Button loading={submitting} disabled={submitting}>Add User</Button>
+                    <Button loading={submitting} disabled={submitting}>Save Changes</Button>
+                    <Button onClick={this.onBack.bind(this)}>Cancel</Button>
                 </Form>
                 </Container>
             </Segment>
@@ -116,9 +116,15 @@ class AddUser extends Component {
 }
 
 function mapStatesToProps(state) {
-    const initialValues = state.user.user;
-    if (initialValues && initialValues.name && initialValues.id) {
-        initialValues.name = initialValues.name.en;
+    const user = state.user.user;
+    var initialValues = null;
+    if (user){
+        initialValues = {
+            id: user.id,
+            username: user.username,
+            roles: user.roles[0],
+            company: user.company
+        }
     }
     return {
         initialValues: initialValues,
@@ -129,7 +135,7 @@ function mapStatesToProps(state) {
     }
 }
 
-export default reduxForm({
-    form: "AddUser",
+export default connect(mapStatesToProps)(reduxForm({
+    form: "EditUser",
     validate
-})(connect(mapStatesToProps)(AddUser));
+})(EditUser));

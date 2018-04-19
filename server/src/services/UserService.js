@@ -8,6 +8,7 @@ import {
     getUsers as getUsersDAO,
     getUserByUsername as getUserByUsernameDAO,
     updateUserById as updateUserByIdDAO,
+    removeUserById as removeUserByIdDAO
 } from "./../dao/mongo/impl/UserDAO";
 import { generatePasswordHash, validatePasswordHash } from "./../utils/PasswordUtil";
 import JWTUtil from "./../utils/JWTUtil";
@@ -172,6 +173,60 @@ export function updateInfo(data, callback) {
     ], callback);
 }
 
+export function editUser(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            getUserByIdDAO(data.id, function(err, user){
+                  if (err){
+                      waterfallCallback(err);
+                  }
+                  else{
+                      waterfallCallback(null, user);
+                  }
+            });
+        },
+        function (user, waterfallCallback) {
+            const update = {
+                username: data.username,
+                company: data.company,
+                roles: data.roles
+            }
+            updateUserByIdDAO(data.id, update, waterfallCallback);
+        }
+    ], callback);
+}
+
+export function removeUser(data, callback){
+    async.waterfall([
+        function(waterfallCallback){
+            const { roles } = data.userSession;
+            const { isAdmin } = getUserRoles(roles);
+            if (isAdmin){
+                waterfallCallback();
+            }
+            else{
+                const err = new Error("Not Enough Permission to remove User");
+                waterfallCallback(err);
+            }
+        },
+        function(waterfallCallback){
+            const id = data.id;
+            getUserByIdDAO(id, function(err, user){
+                if (err){
+                    waterfallCallback(err);
+                }
+                else if (user){
+                    removeUserByIdDAO(id, waterfallCallback);
+                }
+                else {
+                    const err = new Error("User Not Found");
+                    waterfallCallback(err);
+                }
+            });
+        }
+    ],callback)
+}
+
 export function getUser(id, callback) {
     getUserByIdDAO(id, callback);
 }
@@ -182,4 +237,9 @@ export function getUsers(callback) {
 
 export function validateUserToken(token, callback) {
     jwtUtilClientSession.verifyToken(token, callback);
+}
+
+function getUserRoles(roles) {
+    const isAdmin = roles.indexOf("admin") >= 0;
+    return { isAdmin };
 }

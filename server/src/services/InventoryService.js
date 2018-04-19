@@ -8,12 +8,13 @@ import {
     getInventories as getInventoriesDAO,
     getPendingInventories as getPendingInventoriesDAO,
     getInventoryBySku as getInventoryBySkuDAO,
-    createInventoryInTrash as createInventoryInTrashDAO,
     createSubInventory as createSubInventoryDAO,
     updateInventoryBySku as updateInventoryBySkuDAO
 } from "./../dao/mongo/impl/InventoryDAO";
-//import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
-import { getNextInventoryId, getNextSubInventoryId } from "./CounterService";
+
+import { createInventoryInTrash as createInventoryInTrashDAO } from "./../dao/mongo/impl/TrashDAO";
+
+import { getNextInventoryId, getNextSubInventoryId, getNextTrashId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
 import { getCodeByKey as getCodeByKeyDAO } from "./../dao/mongo/impl/CodeDAO";
 
@@ -319,7 +320,6 @@ export function removeInventory(data, callback) {
                     }
                 }
                 const id = data.id;
-                //updateInventoryByIdDAO(id, update, waterfallCallback);
                 removeInventoryByIdDAO(id, waterfallCallback);
                 //createInventoryInTrashDAO(inventory, waterfallCallback);
             }
@@ -338,6 +338,22 @@ export function removeInventory(data, callback) {
                 const id = data.id;
                 updateInventoryByIdDAO(id, update, waterfallCallback);
             }*/
+        },
+        function(inventory, waterfallCallback){
+            getNextTrashId(function (err, counterDoc) {
+                waterfallCallback(err, inventory, counterDoc);
+            });
+        },
+        function(inventory, counterDoc, waterfallCallback){
+            const trash = {
+                id: counterDoc.counter,
+                sku: inventory.sku,
+                price: inventory.price,
+                stock: inventory.stock,
+                status: "removed",
+                productName: inventory.productName
+            }
+            createInventoryInTrashDAO(trash, waterfallCallback);
         }
 
     ], callback);

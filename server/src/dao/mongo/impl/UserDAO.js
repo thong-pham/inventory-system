@@ -38,3 +38,10 @@ export function updateUserById(id, data, callback) {
         callback(err, user);
     });
 }
+
+export function removeUserById(id, callback) {
+    //data.lastModifiedAt = new Date();
+    User.findOneAndRemove({ "id": parseInt(id) }, function (err, user) {
+        callback(err, user);
+    });
+}

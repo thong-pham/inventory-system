@@ -15,6 +15,7 @@ import rootReducers from './reducers';
 
 import Login from "./containers/login";
 import AddUser from "./containers/addUser";
+import EditUser from "./containers/editUser";
 import ViewUsers from "./containers/viewUsers";
 import AddInventory from "./containers/addInventory";
 import AddCompany from "./containers/addCompany";
@@ -77,6 +78,7 @@ class App extends Component {
                             <Route exact path="/login" component={Login} />
                             <Route exact path="/adduser" component={AddUser} />
                             <Route exact path="/users" component={ViewUsers} />
+                            <Route path="/user/:id" component={EditUser} />
                             <Route exact path="/inventory/add" component={AddInventory} />
                             <Route exact path="/addcompany" component={AddCompany} />
                             <Route exact path="/companies" component={ViewCompanies} />

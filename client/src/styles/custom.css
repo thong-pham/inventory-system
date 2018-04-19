@@ -33,6 +33,10 @@
     width: 200px
 }
 
+.selectDiv {
+    display: inline-grid
+}
+
 @media only screen and (max-width: 1280px) {
     .side-right {
         width: 79.5%;

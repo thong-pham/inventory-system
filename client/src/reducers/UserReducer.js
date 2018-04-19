@@ -13,13 +13,13 @@ import { CHANGE_NAME, CLOSE_NAME, CHANGE_EMAIL, CLOSE_EMAIL, CHANGE_NUMBER, CLOS
 
 const initialState = {
     users: [],
+    user: null,
     isAddingUser: false,
     addingUserError: null,
     isFetchingUsers: false,
     fetchingUsersError: null,
     isDeletingUser: false,
-    deletingsUsersError: null,
-    user: null,
+    deletingsUserError: null,
     isFetchingUser: false,
     fetchingUserError: null,
     isUpdatingUser: false,

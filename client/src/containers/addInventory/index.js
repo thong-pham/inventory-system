@@ -115,7 +115,8 @@ function mapStatesToProps(state) {
     }
 }
 
-export default connect(mapStatesToProps)(reduxForm({
+
+export default reduxForm({
     form: "AddInventory",
     validate
-})(AddInventory));
+})(connect(mapStatesToProps)(AddInventory));

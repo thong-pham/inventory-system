@@ -5,7 +5,7 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { getUsers, deleteUsers } from "./../../actions/UserActions";
+import { getUsers, deleteUser } from "./../../actions/UserActions";
 
 class ViewUsers extends Component {
     componentWillMount() {

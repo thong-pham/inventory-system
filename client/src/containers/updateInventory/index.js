@@ -69,7 +69,7 @@ class UpdateInventory extends Component {
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { token, user, isLoggingIn, updatingInventoriesError, inventory } = this.props.inventory;
+        const { token, isUpdatingInventory, updatingInventoriesError, inventory } = this.props.inventory;
         let error = null;
         if (updatingInventoriesError) {
             error = (
@@ -85,9 +85,9 @@ class UpdateInventory extends Component {
                   <Container>
                     <Header as="h2">Update Inventory</Header>
                     {error}
-                    <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>
+                    <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isUpdatingInventory}>
                         <Form.Field inline>
-                            <Field name="sku" placeholder="Enter the SKU" component={this.renderField}></Field>
+                            <Field name="sku" placeholder="Enter the SKU" component={this.renderField} disabled={true}></Field>
                         </Form.Field>
                         <Form.Field inline>
                             <Field name="productName" placeholder="Enter the Product Name" component={this.renderField}></Field>

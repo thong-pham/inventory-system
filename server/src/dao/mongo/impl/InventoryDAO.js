@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Inventory from "./../schema/InventorySchema";
-import Trash from "./../schema/TrashSchema";
 
 export function createInventory(data, callback) {
     const inventoryModel = new Inventory(data);
@@ -12,13 +11,6 @@ export function createInventory(data, callback) {
 export function createSubInventory(data, callback) {
     const subInventoryModel = new SubInventory(data);
     subInventoryModel.save(function (err, inventory) {
-        callback(err, inventory);
-    })
-}
-
-export function createInventoryInTrash(data, callback) {
-    const trashModel = new Trash(data);
-    trashModel.save(function (err, inventory) {
         callback(err, inventory);
     })
 }
