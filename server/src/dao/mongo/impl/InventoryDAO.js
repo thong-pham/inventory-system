@@ -28,7 +28,7 @@ export function getInventoryBySku(sku, callback) {
 }
 
 export function getInventories(callback) {
-    Inventory.find({ "isRemoved": false }, function (err, inventories) {
+    Inventory.find({ "isRemoved": false, "status": "approved" }, function (err, inventories) {
         callback(err, inventories)
     });
 }
