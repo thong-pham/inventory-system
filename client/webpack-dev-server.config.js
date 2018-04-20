@@ -18,9 +18,7 @@ const config = {
         inline: true,
         port: 4000, // Port Number
         host: '0.0.0.0', // Change to '0.0.0.0' for external facing server
-        allowedHosts: [
-            '.israhospitality.com'
-        ]
+        public: 'www.israhospitality.com'
     },
     devtool: 'eval',
     output: {

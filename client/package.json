@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --config webpack-dev-server.config.js --progress --inline --colors"
+    "start": "nohup webpack-dev-server --config webpack-dev-server.config.js --progress --inline --colors > output.txt &"
   },
   "author": "phminhthong88@gmail.com",
   "license": "ISC",
