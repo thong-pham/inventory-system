@@ -17,9 +17,6 @@ function validate(values) {
     if (!password || password.trim() === "") {
         errors.password = "Password is Required";
     }
-    if (!company || company.trim() === "") {
-        errors.company = "Company is Required";
-    }
     return errors;
 }
 

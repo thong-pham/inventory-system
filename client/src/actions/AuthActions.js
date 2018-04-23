@@ -8,7 +8,7 @@ export const USER_LOGOUT_FULFILLED = "USER_LOGOUT_FULFILLED";
 
 export const VIEW_COMPANIES = "VIEW_COMPANIES";
 
-const WS_URL = "http://34.238.40.177:3000/users/";
+const WS_URL = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/users/";
 
 export function loginUser(data) {
     return function (dispatch) {

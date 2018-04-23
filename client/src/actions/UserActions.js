@@ -55,7 +55,7 @@ export const TRACK_NUMBER = "TRACK_NUMBER";
 export const TRACK_EMAIL = "TRACK_EMAIL";
 export const ERROR_INPUT = "ERROR_INPUT";
 
-const WS_URL = "http://34.238.40.177:3000/users/";
+const WS_URL = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/users/";
 
 export function addUser(data) {
     return function (dispatch) {

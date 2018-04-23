@@ -57,11 +57,11 @@ export const SUBMIT_ORDER_STARTED = "SUBMIT_ORDER_STARTED";
 export const SUBMIT_ORDER_FULFILLED = "SUBMIT_ORDER_FULFILLED";
 export const SUBMIT_ORDER_REJECTED = "SUBMIT_ORDER_REJECTED";
 
-const WS_URL = "http://34.238.40.177:3000/inventories/";
+const WS_URL = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/inventories/";
 
-const WS_URL_CART = "http://34.238.40.177:3000/carts/"
+const WS_URL_CART = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/carts/"
 
-const WS_URL_ORDER = "http://34.238.40.177:3000/orders/"
+const WS_URL_ORDER = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/orders/"
 
 export function addInventory(data) {
     return function (dispatch) {
