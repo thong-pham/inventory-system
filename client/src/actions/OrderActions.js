@@ -24,7 +24,7 @@ export const CHANGE_POPUP = "CHANGE_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_NUMBER = "TRACK_NUMBER";
 
-const WS_URL = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/orders/";
+const WS_URL = "http://localhost:3000/orders/";
 
 export function getPendingOrders(data) {
     return function (dispatch) {

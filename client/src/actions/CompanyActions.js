@@ -26,7 +26,7 @@ export const UPDATE_COMPANY_REJECTED = "UPDATE_COMPANY_REJECTED";
 
 export const SET_UPDATING_COMPANY_FULFILLED = "SET_UPDATING_COMPANY_FULFILLED";
 
-const WS_URL = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/companies/";
+const WS_URL = "http://34.238.40.177:3000/companies/";
 
 export function addCompany(data) {
     return function (dispatch) {

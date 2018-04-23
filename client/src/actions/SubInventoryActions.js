@@ -10,7 +10,7 @@ export const UPDATE_SUBINVENTORY_REJECTED = "UPDATE_SUBINVENTORY_REJECTED";
 
 export const SET_UPDATING_SUBINVENTORY_FULFILLED = "SET_UPDATING_SUBINVENTORY_FULFILLED";
 
-const WS_URL = "https://chakir-inventory-1808761996.us-east-1.elb.amazonaws.com/subInventories/";
+const WS_URL = "http://localhost:3000/subInventories/";
 
 export function getSubInventoriesByCompany(data) {
     return function (dispatch) {
