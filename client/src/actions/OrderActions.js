@@ -24,7 +24,7 @@ export const CHANGE_POPUP = "CHANGE_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_NUMBER = "TRACK_NUMBER";
 
-const WS_URL = "http://localhost:3000/orders/";
+const WS_URL = "https://api.israhospitality.com/orders/";
 
 export function getPendingOrders(data) {
     return function (dispatch) {
