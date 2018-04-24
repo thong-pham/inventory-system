@@ -13,6 +13,9 @@ const config = {
     },
     // Server Configuration options
     devServer: {
+        headers:{
+          "Access-Control-Allow-Origin": "*"
+        },
         contentBase: 'build', // Relative directory for base of server
         hot: true, // Live-reload
         inline: true,

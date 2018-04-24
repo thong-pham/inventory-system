@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, X-Powered-By, Content-Length, Connection');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Origin, Accept, Content-Type, Authorization, X-Powered-By, Content-Length, Connection');
   res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
