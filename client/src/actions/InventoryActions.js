@@ -61,11 +61,11 @@ export const SUBMIT_ORDER_STARTED = "SUBMIT_ORDER_STARTED";
 export const SUBMIT_ORDER_FULFILLED = "SUBMIT_ORDER_FULFILLED";
 export const SUBMIT_ORDER_REJECTED = "SUBMIT_ORDER_REJECTED";
 
-const WS_URL = "http://localhost:3000/inventories/";
+const WS_URL = "https://api.israhospitality.com/inventories/";
 
-const WS_URL_CART = "http://localhost:3000/carts/"
+const WS_URL_CART = "https://api.israhospitality.com/carts/"
 
-const WS_URL_ORDER = "http://localhost:3000/orders/"
+const WS_URL_ORDER = "https://api.israhospitality.com/orders/"
 
 export function addInventory(data) {
     return function (dispatch) {
