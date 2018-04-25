@@ -8,7 +8,7 @@ export const USER_LOGOUT_FULFILLED = "USER_LOGOUT_FULFILLED";
 
 export const VIEW_COMPANIES = "VIEW_COMPANIES";
 
-const WS_URL = "http://localhost:3000/users/";
+const WS_URL = "https://api.israhospitality.com/users/";
 
 export function loginUser(data) {
     return function (dispatch) {

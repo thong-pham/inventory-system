@@ -20,7 +20,7 @@ export const DELETE_IMPORT_STARTED = "DELETE_IMPORT_STARTED";
 export const DELETE_IMPORT_FULFILLED = "DELETE_IMPORT_FULFILLED";
 export const DELETE_IMPORT_REJECTED = "DELETE_IMPORT_REJECTED";
 
-const WS_URL = "http://localhost:3000/inventories/";
+const WS_URL = "https://api.israhospitality.com/inventories/";
 
 export function getPendingImports(data) {
     return function (dispatch) {
