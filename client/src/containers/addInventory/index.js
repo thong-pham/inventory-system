@@ -16,9 +16,6 @@ function validate(values) {
     if (!sku || (sku + "").trim() === "") {
         errors.sku = "SKU is Required";
     }
-    else if (sku.length > 10) {
-        errors.sku = "Must be 10 characters or less";
-    }
     if (!productName || productName.trim() === "") {
         errors.productName = "Product Name is Required";
     }
@@ -63,7 +60,7 @@ class AddInventory extends Component {
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { token, user, isLoggingIn, addingInventoryError, inventory } = this.props.inventory;
+        const { token, user, isAddingInventory, addingInventoryError, inventory } = this.props.inventory;
         let error = null;
         if (addingInventoryError) {
             error = (
@@ -79,12 +76,12 @@ class AddInventory extends Component {
                   <Container>
                     <Header as="h2">Add Inventory</Header>
                     {error}
-                    <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>
+                    <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isAddingInventory}>
                         <Form.Field inline>
                             <Field name="sku" placeholder="Enter the SKU" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
-                            <Field name="productName" placeholder="Enter the Product Name" component={this.renderField}></Field>
+                            <Field name="productName" placeholder="Enter the Product Description" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
                             <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
@@ -103,7 +100,6 @@ class AddInventory extends Component {
 
 function mapStatesToProps(state) {
     const initialValues = state.inventory.inventory;
-    console.log(state.inventory);
     if (initialValues && initialValues.productName && initialValues.productName.en) {
         initialValues.productName = initialValues.productName.en;
     }

@@ -40,7 +40,7 @@ export default function (state = initialState, action) {
                    code.keys.push(data.key);
                 }
             });*/
-            return {...state, isAddingCode: false, openAdd: false, codeInput: null };
+            return {...state, isAddingCode: false, openAdd: false, codeInput: null, addingCodeError: null };
         }
         case ADD_CODE_REJECTED: {
             const data = action.payload.data;

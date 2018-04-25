@@ -20,6 +20,9 @@ class BaseLayout extends Component {
         if (menuItem === "addInventory") {
             dispatch(push('/inventory/add'));
         }
+        else if (menuItem === "importInventory") {
+            dispatch(push('/inventory/import'));
+        }
         else if (menuItem === "viewUsers") {
             dispatch(push('/users'));
         }
@@ -32,8 +35,8 @@ class BaseLayout extends Component {
         else if (menuItem === "viewSubInventories") {
             dispatch(push('/subInventory'));
         }
-        else if (menuItem === "approveInventory") {
-            dispatch(push('/inventory/approve'));
+        else if (menuItem === "approveImport") {
+            dispatch(push('/import/approve'));
         }
         else if (menuItem === "viewOrders") {
             dispatch(push('/orders'));
@@ -80,9 +83,9 @@ class BaseLayout extends Component {
                       <Icon name='add' />
                         Add Inventory
                     </Menu.Item>
-                    <Menu.Item onClick={this.handleClick.bind(this, "approveInventory")} >
+                    <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
                       <Icon name='list ul' />
-                        Pending Inventories
+                        Pending Import
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
                       <Icon name='list ul' />
@@ -124,9 +127,13 @@ class BaseLayout extends Component {
                   <Icon name='cube' />
                     View Whole Inventories
                 </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
+                <Menu.Item onClick={this.handleClick.bind(this, "importInventory")} >
                   <Icon name='add' />
-                    Add Inventory
+                    Import Inventory
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
+                  <Icon name='list ul' />
+                    Pending Import
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                   <Icon name='user' />

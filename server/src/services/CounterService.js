@@ -31,3 +31,7 @@ export function getNextCodeId(callback) {
 export function getNextTrashId(callback) {
     incrementCounter("trash", callback);
 }
+
+export function getNextImportId(callback) {
+    incrementCounter("import", callback);
+}

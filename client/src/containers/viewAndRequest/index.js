@@ -158,6 +158,7 @@ class ViewAndRequest extends Component {
 
     render() {
         const { user } = this.props.auth;
+        const isWorker = user.roles.indexOf("worker") >= 0;
         const { inventories, isFetchingInventories, fetchingInventoriesError, deletingsInventoriesError, updatingInventoriesError } = this.props.inventory;
         const { quantity, pendingCarts, modal, dimmer, modalCart, openAdd, openPlus, addIcon, closeIcon, errorInput } = this.props.inventory;
         let error = null;
@@ -244,12 +245,13 @@ class ViewAndRequest extends Component {
                                 </Grid.Row>
                               </Grid>  : null }
                     </Table.Cell>
-                    <Table.Cell >
+                    { (!isWorker) ?
+                      <Table.Cell >
                         { (user.company === 'Mother Company') ? <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} /> : null }
                         { (user.company === 'Mother Company') ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} /> : null }
                         { (user.company === 'Mother Company') ? <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} /> : null }
                         { (user.company !== 'Mother Company') ? <Button size='large' onClick={this.onOpenAdd.bind(this, inventory)}>Add</Button> : null }
-                    </Table.Cell>
+                    </Table.Cell> : null }
                 </Table.Row>
             )
         }, this);
@@ -274,11 +276,11 @@ class ViewAndRequest extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Product Name</Table.HeaderCell>
+                            <Table.HeaderCell width={2}>Product Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Price</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Stock</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
+                            { (!isWorker) ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>

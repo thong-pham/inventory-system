@@ -12,9 +12,13 @@ import {
     updateInventoryBySku as updateInventoryBySkuDAO
 } from "./../dao/mongo/impl/InventoryDAO";
 
+import { createImport as createImportDAO,
+        getPendingImports as getPendingImportsDAO
+    } from "./../dao/mongo/impl/ImportDAO";
+
 import { createInventoryInTrash as createInventoryInTrashDAO } from "./../dao/mongo/impl/TrashDAO";
 
-import { getNextInventoryId, getNextSubInventoryId, getNextTrashId } from "./CounterService";
+import { getNextInventoryId, getNextSubInventoryId, getNextTrashId, getNextImportId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
 import { getCodeByKey as getCodeByKeyDAO } from "./../dao/mongo/impl/CodeDAO";
 
@@ -362,26 +366,74 @@ export function removeInventory(data, callback) {
 export function increaseByPhone(data, callback){
     async.waterfall([
       function(waterfallCallback){
+          const { roles, company } = data.userSession;
+          const { isStoreManager, isWorker } = getUserRoles(roles);
           const key = data.code;
-          getCodeByKeyDAO(key, function(err, code){
-              if (err){
-                  waterfallCallback(err);
-              }
-              else{
-                  getInventoryBySkuDAO(code.sku, function(err, inventory){
+          if (company === 'Mother Company'){
+              if(isStoreManager)
+              {
+                  getCodeByKeyDAO(key, function(err, code){
                       if (err){
                           waterfallCallback(err);
                       }
                       else{
-                          var newStock = inventory.stock + data.quantity;
-                          const update = {
-                              stock : newStock
-                          }
-                          updateInventoryBySkuDAO(code.sku, update, waterfallCallback);
+                          getInventoryBySkuDAO(code.sku, function(err, inventory){
+                              if (err){
+                                  waterfallCallback(err);
+                              }
+                              else {
+                                  var add = 0;
+                                  if (isNaN(data.quantity)){
+                                      add = data.quantity;
+                                  }
+                                  else {
+                                      add = parseInt(data.quantity)
+                                  }
+                                  var newStock = inventory.stock + add;
+                                  const update = {
+                                      quantity : newStock
+                                  }
+                                  updateInventoryBySkuDAO(code.sku, update, waterfallCallback);
+                              }
+                          });
                       }
                   });
               }
-          });
+              else if (isWorker) {
+                  const key = data.code
+                  getNextImportId(function (err, counterDoc) {
+                        if (err){
+                            waterfallCallback(err);
+                        }
+                        else{
+                            getCodeByKeyDAO(key, function(err, code){
+                                 if (err){
+                                    waterfallCallback(err);
+                                 }
+                                 else{
+                                     const importData = {
+                                        id: counterDoc.counter,
+                                        code: data.code,
+                                        sku: code.sku,
+                                        quantity: data.quantity,
+                                        status: "pending"
+                                     }
+                                     createImportDAO(importData, waterfallCallback);
+                                 }
+                            });
+                        }
+                  });
+              }
+              else {
+                  const err = new Error("Not Enough Permission to import Inventory");
+                  waterfallCallback(err);
+              }
+          }
+          else {
+              const err = new Error("Not Enough Permission to import Inventory");
+              waterfallCallback(err);
+          }
+
       }
     ],callback)
 }
@@ -417,6 +469,10 @@ export function decreaseByPhone(data, callback){
           });
       }
     ],callback)
+}
+
+export function getPendingImports(callback){
+    getPendingImportsDAO(callback);
 }
 
 export function getInventories(callback) {

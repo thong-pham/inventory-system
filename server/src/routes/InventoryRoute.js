@@ -2,7 +2,9 @@ import { Router } from "express";
 import { createInventory, approveInventory, removeInventory,
         getInventories, getPendingInventories,
         updateInventory, createRequest, getPendingRequests,
-        approveRequest, increaseByPhone, decreaseByPhone } from "./../services/InventoryService";
+        approveRequest, increaseByPhone, decreaseByPhone,
+        getPendingImports
+       } from "./../services/InventoryService";
 import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
 import { validateCreateInventory, validateUpdateByPhone } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
@@ -198,31 +200,31 @@ router.get('/sub', verifyAuthMiddleware, function (req, res, next) {
     });
 });
 
-router.get('/pending', verifyAuthMiddleware, function (req, res, next) {
-    getPendingInventories(function (err, inventories) {
+router.get('/pendingImports', verifyAuthMiddleware, function (req, res, next) {
+    getPendingImports(function (err, imports) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
 
         }
         else {
-            res.status(200).send(inventories);
+            res.status(200).send(imports);
         }
     });
 });
 
-router.post('/increaseByPhone', function (req, res, next) {
+router.post('/increaseByPhone', verifyAuthMiddleware, function (req, res, next) {
     validateUpdateByPhone(req.body, function (err) {
         if (err) {
             res.status(400).send(err);
         }
         else {
-            //const userSession = req.session;
+            const userSession = req.session;
             const { code, quantity } = req.body;
-            const data = { code, quantity };
+            const data = { code, quantity, userSession };
             increaseByPhone(data, function (err, inventory) {
                 if (err) {
-                    if (err.message === "Not Enough Permission to update Inventory") {
+                    if (err.message === "Not Enough Permission to import Inventory") {
                         res.status(400).send(err.message);
                     }
                     else {

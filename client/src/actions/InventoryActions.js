@@ -28,6 +28,10 @@ export const SET_UPDATING_INVENTORY_FULFILLED = "SET_UPDATING_INVENTORY_FULFILLE
 export const CLEAR_INVENTORY_FULFILLED = "CLEAR_INVENTORY_FULFILLED";
 export const REJECT_UPDATING_INVENTORY = "REJECT_UPDATING_INVENTORY";
 
+export const IMPORT_INVENTORY_STARTED = "IMPORT_INVENTORY_STARTED";
+export const IMPORT_INVENTORY_FULFILLED = "IMPORT_INVENTORY_FULFILLED";
+export const IMPORT_INVENTORY_REJECTED = "IMPORT_INVENTORY_REJECTED";
+
 export const ADD_CART_STARTED = "ADD_CART_STARTED";
 export const ADD_CART_FULFILLED = "ADD_CART_FULFILLED";
 export const ADD_CART_REJECTED = "ADD_CART_REJECTED";
@@ -57,11 +61,11 @@ export const SUBMIT_ORDER_STARTED = "SUBMIT_ORDER_STARTED";
 export const SUBMIT_ORDER_FULFILLED = "SUBMIT_ORDER_FULFILLED";
 export const SUBMIT_ORDER_REJECTED = "SUBMIT_ORDER_REJECTED";
 
-const WS_URL = "https://api.israhospitality.com/inventories/";
+const WS_URL = "http://localhost:3000/inventories/";
 
-const WS_URL_CART = "https://api.israhospitality.com/carts/"
+const WS_URL_CART = "http://localhost:3000/carts/"
 
-const WS_URL_ORDER = "https://api.israhospitality.com/orders/"
+const WS_URL_ORDER = "http://localhost:3000/orders/"
 
 export function addInventory(data) {
     return function (dispatch) {
@@ -270,6 +274,25 @@ export function submitOrder(data) {
                   const response = error.response;
                   dispatch({ type: SUBMIT_ORDER_REJECTED, payload: response });
                   throw response;
+            })
+    }
+}
+
+export function importInventory(data) {
+    return function (dispatch) {
+        dispatch({ type: IMPORT_INVENTORY_STARTED });
+        return axios.post(WS_URL + "increaseByPhone", data)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: IMPORT_INVENTORY_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: IMPORT_INVENTORY_REJECTED, payload: response });
+                throw response;
             })
     }
 }

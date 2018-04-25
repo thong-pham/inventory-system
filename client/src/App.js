@@ -18,13 +18,14 @@ import AddUser from "./containers/addUser";
 import EditUser from "./containers/editUser";
 import ViewUsers from "./containers/viewUsers";
 import AddInventory from "./containers/addInventory";
+import ImportInventory from "./containers/importInventory";
 import AddCompany from "./containers/addCompany";
 import ViewCompanies from "./containers/viewCompanies";
 import UpdateInventory from "./containers/updateInventory";
 import UpdateSubInventory from "./containers/updateSubInventory";
 import ViewInventories from "./containers/viewInventories";
 import ViewSubInventories from "./containers/viewSubInventories";
-import ApproveInventory from "./containers/approveInventory";
+import ApproveImport from "./containers/approveImport";
 import ApproveRequest from "./containers/approveRequest";
 import ViewAndRequest from "./containers/viewAndRequest";
 import ViewOrders from "./containers/viewOrders";
@@ -80,9 +81,10 @@ class App extends Component {
                             <Route exact path="/users" component={ViewUsers} />
                             <Route path="/user/:id" component={EditUser} />
                             <Route exact path="/inventory/add" component={AddInventory} />
+                            <Route exact path="/inventory/import" component={ImportInventory} />
                             <Route exact path="/addcompany" component={AddCompany} />
                             <Route exact path="/companies" component={ViewCompanies} />
-                            <Route exact path="/inventory/approve" component={ApproveInventory} />
+                            <Route exact path="/import/approve" component={ApproveImport} />
                             <Route path="/inventory/:id" component={UpdateInventory} />
                             <Route path="/subInventory/:id" component={UpdateSubInventory} />
                             <Route exact path="/inventory" component={ViewAndRequest} />
