@@ -72,10 +72,10 @@ class BaseLayout extends Component {
                       <Icon name='cube' />
                         View Whole Inventories
                     </Menu.Item>
-                    <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
+                    {/*<Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
                       <Icon name='cube' />
                          View Sub-Inventories
-                    </Menu.Item>
+                    </Menu.Item>*/}
                     <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
                       <Icon name='add' />
                         Add Inventory
@@ -193,13 +193,17 @@ class BaseLayout extends Component {
                     <Icon name='cube' />
                       View Whole Inventories
                   </Menu.Item>
-                  <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
+                  {/*<Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
                     <Icon name='cube' />
                        {user.company} Inventory
-                  </Menu.Item>
+                  </Menu.Item>*/}
                   <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
                     <Icon name='list ul' />
                       Pending Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")} >
+                    <Icon name='checkmark box' />
+                      Approved Orders
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                     <Icon name='user' />

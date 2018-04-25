@@ -8,7 +8,8 @@ import {
     getPendingOrderByCompany as getPendingOrderByCompanyDAO,
     changeOrderDetails as changeOrderDetailsDAO,
     removeOrderById as removeOrderByIdDAO,
-    getApprovedOrders as getApprovedOrdersDAO
+    getApprovedOrders as getApprovedOrdersDAO,
+    getApprovedOrdersByCompany as getApprovedOrdersByCompanyDAO
 
 } from "./../dao/mongo/impl/OrderDAO";
 
@@ -46,24 +47,6 @@ function getLatestHistory(inventory) {
     return latestHistory;
 }
 
-function checkBalance(cart){
-    getInventoryBySkuDAO(cart.sku, function(err, inventory){
-       if (err){
-          return false;
-       }
-       else {
-            if (cart.quantity <= inventory.stock){
-                return [inventory, cart];
-            }
-            else {
-                //const err = new Error("This Order exceed the current stock");
-                return false;
-            }
-         }
-    });
-    return false;
-}
-
 export function createOrder(data, callback){
    async.waterfall([
      function (waterfallCallback){
@@ -82,7 +65,8 @@ export function createOrder(data, callback){
          const { company, username } = data.userSession;
          data.id = counterDoc.counter;
          data.company = company;
-         data.username = username;
+         data.createdBy = username;
+         data.approvedBy = " ";
          createOrderDAO(data, waterfallCallback);
      }
    ],callback);
@@ -92,7 +76,7 @@ export function approveOrder(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
+            const { isStoreManager } = getUserRoles(roles);
             if (isStoreManager && company === 'Mother Company') {
                 waterfallCallback();
             }
@@ -149,7 +133,8 @@ export function approveOrder(data, callback) {
             inventories.forEach(function(inventory){
                 const latestHistory = getLatestHistory(inventory);
                 //const id = data.id;
-                if (latestHistory.action === "created" || latestHistory.action === "updated" || latestHistory.action === "approvedOut") {
+                if (latestHistory.action === "created" || latestHistory.action === "updated" ||
+                    latestHistory.action === "approvedOut" || latestHistory.action === "approvedIn") {
                     var newStock = 0;
                     carts.forEach(function(cart){
                         if (cart.sku === inventory.sku){
@@ -179,10 +164,10 @@ export function approveOrder(data, callback) {
                       waterfallCallback(err);
                   }
             });
-            waterfallCallback(null, carts, order);
+            waterfallCallback(null, order);
 
         },
-        function (carts, order, waterfallCallback){
+        /*function (carts, order, waterfallCallback){
              const id = data.id;
              const { company } = data.userSession;
              carts.forEach(function(cart){
@@ -246,20 +231,42 @@ export function approveOrder(data, callback) {
                       }
                 });
             });
-            waterfallCallback();
-        },
-        function (waterfallCallback){
+            waterfallCallback(null, order);
+        },*/
+        function (order, waterfallCallback){
               const id = data.id;
-              const update = {
-                   status: "approved"
-              }
-              updateOrderByIdDAO(id, update, waterfallCallback);
+              const { username } = data.userSession;
+              getCompanyByNameDAO(order.company, function(err, company){
+                  if (err){
+                      waterfallCallback(err);
+                  }
+                  else {
+                      order.details.forEach(function(cart){
+                          cart.sku = company.code.concat("-").concat(cart.sku);
+                      });
+                      order.status = "approved";
+                      order.approvedBy = username;
+                      updateOrderByIdDAO(id, order, waterfallCallback);
+                  }
+              });
+
         }
     ], callback);
 }
 
 export function changeOrder(data, callback){
    async.waterfall([
+     function (waterfallCallback) {
+         const { roles, company } = data.userSession;
+         const { isStoreManager } = getUserRoles(roles);
+         if (isStoreManager && company === 'Mother Company') {
+             waterfallCallback();
+         }
+         else {
+             const err = new Error("Not Enough Permission to approve Order");
+             waterfallCallback(err);
+         }
+     },
      function (waterfallCallback){
         getOrderByIdDAO(data.orderId, function(err, order){
             if (err){
@@ -300,12 +307,12 @@ export function removeOrder(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager } = getUserRoles(roles);
+            const { isSales } = getUserRoles(roles);
             if (company === 'Mother Company') {
                 const err = new Error("Only Child Company can remove Order");
                 waterfallCallback(err)
             }
-            else if (isStoreManager) {
+            else if (isSales) {
                 waterfallCallback();
             }
             else {
@@ -314,7 +321,7 @@ export function removeOrder(data, callback) {
             }
         },
         function (waterfallCallback) {
-            const { roles, company } = data.userSession;
+            const { company } = data.userSession;
             const id = data.id;
             getOrderByIdDAO(id, function (err, order) {
                 if (err) {
@@ -326,7 +333,7 @@ export function removeOrder(data, callback) {
                         waterfallCallback(err);
                     }
                     else if (order.status == "pending") {
-                        waterfallCallback(null, order);
+                        removeOrderByIdDAO(id, waterfallCallback);
                     }
                     else {
                         const err = new Error("Only Pending Order can be removed");
@@ -338,14 +345,6 @@ export function removeOrder(data, callback) {
                     waterfallCallback(err);
                 }
             });
-        },
-        function (order, waterfallCallback) {
-            const { roles } = data.userSession;
-            const { isStoreManager } = getUserRoles(roles);
-            if (isStoreManager) {
-                const id = data.id;
-                removeOrderByIdDAO(id, waterfallCallback);
-            }
         }
     ], callback);
 }
@@ -366,7 +365,8 @@ function compare(a,b){
 
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
-    return { isStoreManager }
+    const isSales = roles.indexOf("sales") >= 0;
+    return { isStoreManager, isSales }
 }
 
 export function getPendingOrders(callback) {
@@ -375,6 +375,10 @@ export function getPendingOrders(callback) {
 
 export function getApprovedOrders(callback) {
     getApprovedOrdersDAO(callback);
+}
+
+export function getApprovedOrdersByCompany(company, callback) {
+    getApprovedOrdersByCompanyDAO(company, callback);
 }
 
 export function getPendingOrderByCompany(company, callback) {

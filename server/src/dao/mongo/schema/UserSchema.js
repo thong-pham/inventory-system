@@ -12,7 +12,7 @@ const MemberSchema = mongoose.Schema({
     company: { type: String, required: true },
     number: { type: String, required: false },
     passwordHash: { type: String, required: true },
-    roles: [{ type: String, required: true, enum: ["admin","storeManager","worker"] }],
+    roles: [{ type: String, required: true, enum: ["admin","storeManager","worker","sales"] }],
 
     createdAt: { type: Date, default: new Date },
     lastModifiedAt: { type: Date, default: new Date },

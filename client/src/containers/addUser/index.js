@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { reduxForm, Field } from "redux-form";
+import { reduxForm, Field, formValueSelector } from "redux-form";
 import { Header, Segment, Input, Label, Form, Button, Message, Menu, Dropdown, Container } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 import axios from 'axios';
@@ -59,11 +59,21 @@ class AddUser extends Component {
         const { dispatch } = this.props;
         dispatch(push("/users"));
     }
+
     render() {
-        const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
+        const { handleSubmit, pristine, initialValues, errors, submitting, roleOptions } = this.props;
         const { addingUserError, isAddingUser, pendingUsers } = this.props.user;
         const { companies } = this.props.company;
-        const renderSelectField = ({ input, type, meta: { touched, error }, children }) => (
+
+        const renderSelectCompany = ({ input, type, meta: { touched, error }, children }) => (
+              <div className="selectDiv">
+                  <select {...input}>
+                    {children}
+                  </select>
+                  {touched && error && <span>{error}</span>}
+               </div>
+        )
+        const renderSelectRoles = ({ input, type, meta: { touched, error }, children }) => (
               <div className="selectDiv">
                   <select {...input}>
                     {children}
@@ -91,22 +101,31 @@ class AddUser extends Component {
                         <Field name="username" placeholder="Enter the username" component={this.renderField}></Field>
                     </Form.Field>
                     <Form.Field inline>
-                        <label>Select Role</label>
-                          <Field name="roles" component={renderSelectField}>
-                            <option />
-                            <option value="storeManager">Store Manager</option>
-                            <option value="worker">Worker</option>
-                          </Field>
-                    </Form.Field>
-                    <Form.Field inline>
                         <label>Select Company</label>
-                        <Field name="company" component={renderSelectField}>
+                        <Field name="company" component={renderSelectCompany}>
                             <option />
                             <option value="Mother Company">Mother Company</option>
                              {Object.keys(companies).map(key =>
                                 <option key={key} value={companies[key].name.en}>{companies[key].name.en}</option>)}
                         </Field>
                     </Form.Field>
+                    { ((roleOptions) && (roleOptions === 'Mother Company')) ?
+                      <Form.Field inline>
+                        <label>Select Role</label>
+                          <Field name="roles" component={renderSelectRoles}>
+                            <option />
+                            <option value="storeManager">Store Manager</option>
+                            <option value="worker">Worker</option>
+                          </Field>
+                    </Form.Field> : null}
+                    { ((roleOptions) && (roleOptions !== 'Mother Company')) ?
+                      <Form.Field inline>
+                        <label>Select Role</label>
+                          <Field name="roles" component={renderSelectRoles}>
+                            <option />
+                            <option value="sales">Sales</option>
+                          </Field>
+                    </Form.Field> : null}
                     <Form.Field inline>
                         <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
                     </Form.Field>
@@ -125,15 +144,17 @@ function mapStatesToProps(state) {
     if (initialValues && initialValues.name && initialValues.id) {
         initialValues.name = initialValues.name.en;
     }
+    const selectRoles = selector(state, "company");
     return {
         initialValues: initialValues,
         auth: state.auth,
         user: state.user,
         company: state.company,
-        location: state.router.location
+        location: state.router.location,
+        roleOptions: selectRoles
     }
 }
-
+const selector = formValueSelector("AddUser");
 export default reduxForm({
     form: "AddUser",
     validate

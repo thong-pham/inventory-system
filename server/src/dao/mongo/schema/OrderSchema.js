@@ -17,7 +17,9 @@ const OrderSchema = mongoose.Schema({
 
     company: { type: String, required: true },
 
-    username: { type: String, required: true },
+    createdBy: { type: String, required: true },
+
+    approvedBy: { type: String, required: true },
 
     status: { type: String, required: true, enum: ["approved", "pending"] },
 

@@ -48,6 +48,25 @@ export function getPendingOrders(data) {
 export function getApprovedOrders(data) {
     return function (dispatch) {
         dispatch({ type: GET_APPROVED_ORDERS_STARTED });
+        return axios.get(WS_URL + "allApprovedOrders", { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: GET_APPROVED_ORDERS_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: GET_APPROVED_ORDERS_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function getApprovedOrdersByCompany(data) {
+    return function (dispatch) {
+        dispatch({ type: GET_APPROVED_ORDERS_STARTED });
         return axios.get(WS_URL + "approvedOrders", { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;

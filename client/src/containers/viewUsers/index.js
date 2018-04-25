@@ -56,7 +56,6 @@ class ViewUsers extends Component {
                         <Table.Cell>{user.number}</Table.Cell>
                         <Table.Cell>{user.roles[0]}</Table.Cell>
                         <Table.Cell>{user.company}</Table.Cell>
-                        <Table.Cell>{user.lastModifiedAt}</Table.Cell>
                         <Table.Cell>{user.createdAt}</Table.Cell>
                         <Table.Cell>
                             <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, user)} />
@@ -69,7 +68,7 @@ class ViewUsers extends Component {
         let tableView = <h4>No Users Found. Please Add Some </h4>
         if (users.length > 0) {
             tableView = (
-                <Table celled columns={10}>
+                <Table celled columns={9}>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>User ID</Table.HeaderCell>
@@ -79,7 +78,6 @@ class ViewUsers extends Component {
                             <Table.HeaderCell>Phone</Table.HeaderCell>
                             <Table.HeaderCell>Roles</Table.HeaderCell>
                             <Table.HeaderCell>Company</Table.HeaderCell>
-                            <Table.HeaderCell>Last Modified At</Table.HeaderCell>
                             <Table.HeaderCell>Created At</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Edit</Table.HeaderCell>
                         </Table.Row>

@@ -50,6 +50,13 @@ export function getPendingOrderByCompany(company, callback) {
     });
 }
 
+export function getApprovedOrdersByCompany(company, callback) {
+    Order.find({"status" : "approved", "company": company}, function (err, orders) {
+        //console.log(inventories);
+        callback(err, orders)
+    });
+}
+
 export function removeOrderById(id, callback) {
     //data.lastModifiedAt = new Date();
     Order.findOneAndRemove({ "id": parseInt(id) }, function (err, order) {

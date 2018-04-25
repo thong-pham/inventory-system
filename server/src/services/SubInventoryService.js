@@ -14,12 +14,12 @@ export function updateSubInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
+            const { isSales } = getUserRoles(roles);
             if (company === 'Mother Company') {
                 const err = new Error("Only Child Company can edit SubInventory");
                 waterfallCallback(err)
             }
-            else if (isWorker || isStoreManager) {
+            else if (isSales) {
                 waterfallCallback();
             }
             else {
@@ -50,8 +50,8 @@ export function updateSubInventory(data, callback) {
         },
         function (inventory, waterfallCallback) {
             const { roles } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (isStoreManager) {
+            const { isSales } = getUserRoles(roles);
+            if (isSales) {
                 const update = {
                     status: "approved",
                     sku: data.sku,
@@ -75,7 +75,7 @@ export function updateSubInventory(data, callback) {
                 const id = data.id;
                 updateSubInventoryByIdDAO(id, update, waterfallCallback);
             }
-            else if (isWorker) {
+            /*else if (isWorker) {
                 const update = {
                     status: "pending",
                     $push: {
@@ -94,15 +94,14 @@ export function updateSubInventory(data, callback) {
                 }
                 const id = data.id;
                 updateSubInventoryByIdDAO(id, update, waterfallCallback);
-            }
+            }*/
         }
     ], callback);
 }
 
 function getUserRoles(roles) {
-    const isStoreManager = roles.indexOf("storeManager") >= 0;
-    const isWorker = roles.indexOf("worker") >= 0;
-    return { isStoreManager, isWorker };
+    const isSales = roles.indexOf("sales") >= 0;
+    return { isSales };
 }
 
 function getLatestHistory(inventory) {
@@ -125,12 +124,12 @@ export function removeInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
+            const { isSales } = getUserRoles(roles);
             if (company !== 'Mother Company') {
                 const err = new Error("Only Mother Company can remove Inventory");
                 waterfallCallback(err)
             }
-            else if (isStoreManager) {
+            else if (isSales) {
                 waterfallCallback();
             }
             else {
@@ -161,8 +160,8 @@ export function removeInventory(data, callback) {
         },
         function (inventory, waterfallCallback) {
             const { roles } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (isStoreManager) {
+            const { isSales } = getUserRoles(roles);
+            if (isSales) {
                 const update = {
                     status: "approved",
                     isRemoved: true,

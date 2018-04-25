@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { createOrder, getPendingOrders, getPendingOrderByCompany, approveOrder, changeOrder, removeOrder, getApprovedOrders } from "./../services/OrderService";
+import { createOrder, getPendingOrders, getPendingOrderByCompany, approveOrder,
+        changeOrder, removeOrder, getApprovedOrders, getApprovedOrdersByCompany } from "./../services/OrderService";
 import { validateOrderInventory } from "./../validators/OrderValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -87,8 +88,22 @@ router.get('/all', verifyAuthMiddleware, function (req, res, next) {
     });
 });
 
-router.get('/approvedOrders', verifyAuthMiddleware, function (req, res, next) {
+router.get('/allApprovedOrders', verifyAuthMiddleware, function (req, res, next) {
     getApprovedOrders(function (err, orders) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+
+        }
+        else {
+            res.status(200).send(orders);
+        }
+    });
+});
+
+router.get('/approvedOrders', verifyAuthMiddleware, function (req, res, next) {
+    const company = req.session.company;
+    getApprovedOrdersByCompany(company, function (err, orders) {
         if (err) {
             console.log(err);
             res.status(500).send(err);

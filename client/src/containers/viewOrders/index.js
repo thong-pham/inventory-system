@@ -163,7 +163,7 @@ class ViewOrders extends Component {
                         </Item.Group>
                     </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>
-                    <Table.Cell >{order.username}</Table.Cell>
+                    <Table.Cell >{order.createdBy}</Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
                     <Table.Cell >
                         { (user.company !== 'Mother Company') ? <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, order)} /> : null }
@@ -181,7 +181,7 @@ class ViewOrders extends Component {
                             <Table.HeaderCell width={1}>Order Number</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Details</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Username</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Company</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>

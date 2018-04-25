@@ -8,7 +8,7 @@ import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
 //import { getInventories, deleteInventory, rejectEdit, getSubInventories, addToCart, trackNumber } from "./../../actions/InventoryActions";
-import { getApprovedOrders } from "./../../actions/OrderActions";
+import { getApprovedOrders, getApprovedOrdersByCompany } from "./../../actions/OrderActions";
 
 class ViewApprovedOrders extends Component {
     componentWillMount() {
@@ -18,7 +18,7 @@ class ViewApprovedOrders extends Component {
             dispatch(getApprovedOrders({ token: token }));
         }
         else {
-            dispatch(push("/inventory"));
+            dispatch(getApprovedOrdersByCompany({ token: token}));
         }
 
     }
@@ -43,7 +43,7 @@ class ViewApprovedOrders extends Component {
                         <Item.Header as='a'>ID {cart.id}</Item.Header>
                         <Item.Meta>Description</Item.Meta>
                         <Item.Description>
-                          <p>SKU : {cart.sku}</p>
+                          <p>Assigned SKU : <strong>{cart.sku}</strong></p>
                           <p>Product Name : {cart.productName.en}</p>
                           <p>Quantity : {cart.quantity}</p>
                         </Item.Description>
@@ -60,8 +60,9 @@ class ViewApprovedOrders extends Component {
                         </Item.Group>
                     </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>
-                    <Table.Cell >{order.username}</Table.Cell>
-                    <Table.Cell >{order.company}</Table.Cell>
+                    <Table.Cell >{order.createdBy}</Table.Cell>
+                    <Table.Cell >{order.approvedBy}</Table.Cell>
+                    { (user.company === 'Mother Company') ? <Table.Cell >{order.company}</Table.Cell> : null }
                 </Table.Row>
             )
         }, this);
@@ -74,8 +75,9 @@ class ViewApprovedOrders extends Component {
                             <Table.HeaderCell width={1}>Order Number</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Details</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Username</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Company</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Approved By</Table.HeaderCell>
+                            { (user.company === 'Mother Company') ? <Table.HeaderCell width={1}>Company</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -87,7 +89,7 @@ class ViewApprovedOrders extends Component {
         return (
           <BaseLayout>
               <Segment textAlign='center' >
-                  <Header as="h2">Approved Order List</Header>
+                  { (user.company === 'Mother Company') ? <Header as="h2">Approved Inventory List</Header> : <Header as="h2">{user.company} - Approved Order List</Header> }
                   {error}
                   <Container>
                       {tableView}

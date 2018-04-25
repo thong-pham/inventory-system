@@ -17,10 +17,17 @@ import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/Com
 export function createCart(data, callback){
    async.waterfall([
      function(waterfallCallback){
+        const { username } = data.userSession;
         getCartBySkuDAO(data.sku, function(err, cart){
             if (cart){
-                const err = new Error("SKU Already Exists");
-                waterfallCallback(err)
+                if (cart.username === username)
+                {
+                    const err = new Error("SKU Already Exists");
+                    waterfallCallback(err);
+                }
+                else {
+                    waterfallCallback();
+                }            
             }
             else {
                 waterfallCallback();
