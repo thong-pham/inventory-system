@@ -250,7 +250,7 @@ class ViewAndRequest extends Component {
                         { (user.company === 'Mother Company') ? <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} /> : null }
                         { (user.company === 'Mother Company') ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} /> : null }
                         { (user.company === 'Mother Company') ? <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} /> : null }
-                        { (user.company !== 'Mother Company') ? <Button size='large' onClick={this.onOpenAdd.bind(this, inventory)}>Add</Button> : null }
+                        { (user.company !== 'Mother Company') && (openAdd !== inventory.id) ? <Button size='large' onClick={this.onOpenAdd.bind(this, inventory)}>Add</Button> : null }
                     </Table.Cell> : null }
                 </Table.Row>
             )
