@@ -8,9 +8,7 @@ const OrderSchema = mongoose.Schema({
     details: [{
         id: { type: Number, required: true },
         sku: { type: String, required: true },
-        productName: {
-            en: { type: String, required: true },
-        },
+        mainSku: { type: String, required: true },
         quantity: { type: Number, required: true },
         status: { type: String, required: true, enum: ["added", "pending"] }
     }],

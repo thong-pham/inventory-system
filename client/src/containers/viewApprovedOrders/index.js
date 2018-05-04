@@ -25,7 +25,7 @@ class ViewApprovedOrders extends Component {
 
     render() {
         const { user } = this.props.auth;
-        const { approvedOrders, fetchingApprovedOrdersError } = this.props.order;
+        const { approvedOrders, isFetchingApprovedOrders, fetchingApprovedOrdersError } = this.props.order;
         let error = null;
         if (fetchingApprovedOrdersError) {
             error = (
@@ -43,8 +43,8 @@ class ViewApprovedOrders extends Component {
                         <Item.Header as='a'>ID {cart.id}</Item.Header>
                         <Item.Meta>Description</Item.Meta>
                         <Item.Description>
-                          <p>Assigned SKU : <strong>{cart.sku}</strong></p>
-                          <p>Product Name : {cart.productName.en}</p>
+                          { (user.company !== 'Mother Company') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
+                          { (user.company === 'Mother Company') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
                           <p>Quantity : {cart.quantity}</p>
                         </Item.Description>
                       </Item.Content>

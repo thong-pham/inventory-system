@@ -6,43 +6,13 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { addInventory, setUpdatingInventory, updateInventory, fillingData, errorInput } from "./../../actions/InventoryActions";
+import { addSubInventory, inputSKU, inputDesc, fillingData, errorInput } from "./../../actions/SubInventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,
           chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit
         } from "./../../actions/FeatureActions";
 
-function validate(values) {
-    var errors = {
-        batch: {}
-    };
-    const { sku, productName, price, stock } = values;
-    if (!sku || (sku + "").trim() === "") {
-        errors.sku = "SKU is Required";
-    }
-    if (!productName || productName.trim() === "") {
-        errors.productName = "Product Name is Required";
-    }
-    if (!price || (price + "").trim() === "") {
-        errors.price = "Price is Required";
-    }
-    else if (isNaN(Number(price))) {
-        errors.price = "Price must be a number";
-    }
-    if (!stock || (stock + "").trim() === "") {
-        errors.stock = "Stock is Required";
-    }
-    else if (isNaN(Number(stock))){
-        errors.stock = "Stock must be a number";
-    }
-    else if (stock < 0){
-        errors.stock = "Stock must be larger than or equal to 0";
-    }
-    return errors;
-}
-
-class AddInventory extends Component {
-    state = {};
+class AddSubInventory extends Component {
     componentWillMount() {
         const { dispatch } = this.props;
         const { token } = this.props.auth;
@@ -53,15 +23,7 @@ class AddInventory extends Component {
         dispatch(getSizes({ token: token }));
         dispatch(getUnits({ token: token }));
     }
-    renderField({ input, meta: { touched, error }, ...custom }) {
-        const hasError = touched && error !== undefined;
-        return (
-            <div>
-                <Input type="text" error={hasError} fluid {...input} {...custom} />
-                {hasError && <Label basic color="red" pointing>{error}</ Label>}
-            </div>
-        )
-    }
+
     handleChange(e, data){
           const { dispatch } = this.props;
           if (data.placeholder == "Choose an quality"){
@@ -138,22 +100,45 @@ class AddInventory extends Component {
                 sku: sku,
                 desc: desc
             }
-            dispatch(fillingData(data));
+            //dispatch(fillingData(data));
+            return data;
         }
     }
-    onSubmit(values, dispatch) {
+
+    handleSKU(e){
+        const { dispatch } = this.props;
+        dispatch(inputSKU(e.target.value));
+    }
+
+    handleDesc(e){
+        const { dispatch } = this.props;
+        dispatch(inputDesc(e.target.value));
+    }
+    onCreate() {
+        const { dispatch } = this.props;
         const { token } = this.props.auth;
-        const { generatedSKU, generatedDesc } = this.props.inventory;
-        if ((generatedSKU === null) || (generatedDesc === null)){
+        this.generateData();
+        var { sku, desc } = this.props.inventory;
+        const generatedSKU = this.generateData().sku;
+        const generatedDesc = this.generateData().desc;
+        //console.log(generatedSKU);
+        //console.log(generatedDesc);
+        if (desc === null){
+            desc = generatedDesc;
+        }
+        if (sku === null){
             dispatch(errorInput());
         }
         else {
-            values.token = token;
-            values.sku = generatedSKU;
-            values.productName = generatedDesc;
-            //console.log(values);
-            return dispatch(addInventory(values)).then(function (data) {
-                dispatch(push("/inventory"));
+            const inv = {
+                token: token,
+                sku: sku,
+                mainSku: generatedSKU,
+                productName: desc
+            }
+            //console.log(inv);
+            dispatch(addSubInventory(inv)).then(function(data){
+                dispatch(push("/subInventory"));
             });
         }
 
@@ -164,7 +149,7 @@ class AddInventory extends Component {
                 generatedSKU, generatedDesc, errorInput } = this.props.inventory;
         const { qualities, types, patterns, colors, sizes, units,
                 quality, type, pattern, color, size, unit } = this.props.feature;
-        const { value } = this.state;
+
         var qualityList = [];
         var typeList = [];
         var patternList = [];
@@ -335,27 +320,18 @@ class AddInventory extends Component {
                           </Grid.Column>
                         </Grid.Row>
                       </Grid>
-                    </Container>
-                    <Container className="featureBox">
-                        <Button onClick={this.generateData.bind(this)}>Generate</Button>
-                    </Container>
-                    <Container className="featureBox">
-                      <Grid.Row className="generatedRow">
-                        <Label basic pointing='right'>SKU</Label><p className="generatedText">{generatedSKU}</p>
-                      </Grid.Row>
-                      <Grid.Row>
-                        <Label basic pointing='right'>Description</Label><p className="generatedText">{generatedDesc}</p>
-                      </Grid.Row>
-                    </Container>
-                    <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isAddingInventory}>
-                        <Form.Field inline>
-                            <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
-                        </Form.Field>
-                        <Form.Field inline>
-                            <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>
-                        </Form.Field>
-                        <Button loading={submitting} disabled={submitting} disabled={pristine || submitting}>Add Inventory</Button>
-                    </Form>
+                     </Container>
+                      <Container className="featureBox">
+                        <Grid.Row className="generatedRow">
+                          <Label basic pointing='right'>SKU</Label><Input className="generatedText" onChange={this.handleSKU.bind(this)}/>
+                        </Grid.Row>
+                        <Grid.Row>
+                          <Label basic pointing='right'>Description</Label><Input className="generatedText" onChange={this.handleDesc.bind(this)}/>
+                        </Grid.Row>
+                      </Container>
+                      <Container className="featureBox">
+                          <Button onClick={this.onCreate.bind(this)}>Create</Button>
+                      </Container>
                     </Container>
                 </Segment>
             </BaseLayout>
@@ -364,18 +340,13 @@ class AddInventory extends Component {
 }
 
 function mapStatesToProps(state) {
-    const initialValues = state.inventory.inventory;
-    //console.log(initialValues);
+
     return {
-        initialValues: initialValues,
         auth: state.auth,
-        inventory: state.inventory,
+        inventory: state.subInventory,
         feature: state.feature,
         location: state.router.location
     }
 }
 
-export default connect(mapStatesToProps)(reduxForm({
-    form: "AddInventory",
-    validate
-})(AddInventory));
+export default connect(mapStatesToProps)(AddSubInventory);

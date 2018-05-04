@@ -102,7 +102,7 @@ export function approveOrder(data, callback) {
                           var carts = [];
                           order.details.forEach(function(cart){
                               if (carts.length < order.details.length){
-                                  getInventoryBySkuDAO(cart.sku, function(err, inventory){
+                                  getInventoryBySkuDAO(cart.mainSku, function(err, inventory){
                                      if (err){
                                         waterfallCallback(err);
                                      }
@@ -137,7 +137,7 @@ export function approveOrder(data, callback) {
                     latestHistory.action === "approvedOut" || latestHistory.action === "approvedIn") {
                     var newStock = 0;
                     carts.forEach(function(cart){
-                        if (cart.sku === inventory.sku){
+                        if (cart.mainSku === inventory.sku){
                             newStock = inventory.stock - cart.quantity;
                         }
                     });
@@ -164,92 +164,53 @@ export function approveOrder(data, callback) {
                       waterfallCallback(err);
                   }
             });
-            waterfallCallback(null, order);
+            waterfallCallback(null, carts, order);
 
         },
-        /*function (carts, order, waterfallCallback){
+        function (carts, order, waterfallCallback){
              const id = data.id;
              const { company } = data.userSession;
              carts.forEach(function(cart){
-               getCompanyByNameDAO(order.company, function (err, company){
-                   if (err){
-                       waterfallCallback(err)
-                   }
-                   else {
-                         var subSku = company.code.concat("-").concat(cart.sku);
-                         getSubInventoryBySkuDAO(subSku, function (err, subInv){
-                               if (subInv) {
-                                   var updateStock = subInv.stock + cart.quantity;
-                                   const update = {
-                                       stock: updateStock,
-                                       $push: {
-                                           history: {
-                                               action: "updated",
-                                               userId: data.userSession.userId,
-                                               timestamp: new Date(),
-                                               payload: {
-                                                   sku: subInv.sku,
-                                                   productName: subInv.productName,
-                                                   price: subInv.price,
-                                                   stock: updateStock,
-                                               }
-                                           }
+                 getSubInventoryBySkuDAO(cart.sku, function (err, subInv){
+                       if (subInv) {
+                           var updateStock = subInv.stock + cart.quantity;
+                           const update = {
+                               stock: updateStock,
+                               $push: {
+                                   history: {
+                                       action: "updated",
+                                       userId: data.userSession.userId,
+                                       timestamp: new Date(),
+                                       payload: {
+                                           sku: subInv.sku,
+                                           productName: subInv.productName,
+                                           price: subInv.price,
+                                           stock: updateStock,
                                        }
                                    }
-                                   updateSubInventoryByIdDAO(subInv.id, update, function(err, res){
-                                        if (err){
-                                            //console.log(err);
-                                            waterfallCallback(err);
-                                        }
-                                   });
                                }
-                               else {
-                                   getNextSubInventoryId(function(err, counterDoc){
-                                       const subInv = {
-                                           id: counterDoc.counter,
-                                           sku: subSku,
-                                           stock: cart.quantity,
-                                           productName: { en: cart.productName.en},
-                                           price: 0,
-                                           company: company.name.en,
-                                           status: "approved",
-                                           history: [{
-                                               action: "accepted",
-                                               userId: data.userSession.userId,
-                                               timestamp: new Date()
-                                           }]
-                                       };
-                                       createSubInventoryDAO(subInv, function(err, res){
-                                            if (err){
-                                                //console.log(err);
-                                                waterfallCallback(err);
-                                            }
-                                       });
-                                   });
-                               }
-                          });
-                      }
-                });
+                           }
+                           updateSubInventoryByIdDAO(subInv.id, update, function(err, res){
+                                if (err){
+                                    //console.log(err);
+                                    waterfallCallback(err);
+                                }
+                           });
+                       }
+                       else {
+                            const err = new Error("Inventory Not Found");
+                            waterfallCallback(err);
+                       }
+                  });
             });
             waterfallCallback(null, order);
-        },*/
+        },
         function (order, waterfallCallback){
               const id = data.id;
-              const { username } = data.userSession;
-              getCompanyByNameDAO(order.company, function(err, company){
-                  if (err){
-                      waterfallCallback(err);
-                  }
-                  else {
-                      order.details.forEach(function(cart){
-                          cart.sku = company.code.concat("-").concat(cart.sku);
-                      });
-                      order.status = "approved";
-                      order.approvedBy = username;
-                      updateOrderByIdDAO(id, order, waterfallCallback);
-                  }
-              });
-
+              const { username } = data.userSession;;
+              order.status = "approved";
+              order.approvedBy = username;
+              updateOrderByIdDAO(id, order, waterfallCallback);
         }
     ], callback);
 }
@@ -285,6 +246,7 @@ export function changeOrder(data, callback){
      function (details, waterfallCallback){
          var temp = [];
          const id = data.orderId;
+         console.log(details);
          details.forEach(function(cart){
               if (cart.id === data.cartId){
                   cart.quantity = data.quantity;
@@ -295,6 +257,7 @@ export function changeOrder(data, callback){
               }
          });
          temp.sort(compare);
+         console.log(temp);
          const update = {
             details: temp
          }

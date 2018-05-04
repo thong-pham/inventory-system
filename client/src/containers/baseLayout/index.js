@@ -18,10 +18,13 @@ class BaseLayout extends Component {
     handleClick(menuItem) {
         const { dispatch } = this.props;
         if (menuItem === "addInventory") {
-            dispatch(push('/inventory/add'));
+            dispatch(push('/addInventory'));
+        }
+        else if (menuItem === "addSubInventory") {
+            dispatch(push('/addSubInventory'));
         }
         else if (menuItem === "importInventory") {
-            dispatch(push('/inventory/import'));
+            dispatch(push('/importInventory'));
         }
         else if (menuItem === "viewUsers") {
             dispatch(push('/users'));
@@ -36,7 +39,7 @@ class BaseLayout extends Component {
             dispatch(push('/subInventory'));
         }
         else if (menuItem === "approveImport") {
-            dispatch(push('/import/approve'));
+            dispatch(push('/imports'));
         }
         else if (menuItem === "viewOrders") {
             dispatch(push('/orders'));
@@ -49,6 +52,9 @@ class BaseLayout extends Component {
         }
         else if (menuItem === "viewAccount") {
             dispatch(push('/account'));
+        }
+        else if (menuItem === "viewFeatures") {
+            dispatch(push('/feature'));
         }
         else if (menuItem === "logout") {
             dispatch(logoutUser());
@@ -98,6 +104,10 @@ class BaseLayout extends Component {
                     <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                       <Icon name='barcode' />
                         Code Management
+                    </Menu.Item>
+                    <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
+                      <Icon name='barcode' />
+                        Features Management
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                       <Icon name='user' />
@@ -196,14 +206,14 @@ class BaseLayout extends Component {
         else {
             dedicatedMenuItem = (
               <Sidebar as={Menu} animation='slide along' className="side-left" visible={true} icon='labeled' vertical inverted>
-                  <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
-                    <Icon name='cube' />
-                      View Whole Inventories
-                  </Menu.Item>
-                  {/*<Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
                     <Icon name='cube' />
                        {user.company} Inventory
-                  </Menu.Item>*/}
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "addSubInventory")} >
+                    <Icon name='add' />
+                      Add Inventory
+                  </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
                     <Icon name='list ul' />
                       Pending Orders

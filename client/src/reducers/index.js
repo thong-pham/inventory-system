@@ -11,6 +11,7 @@ import subInventoryReducer from "./../reducers/SubInventoryReducer";
 import orderReducer from "./../reducers/OrderReducer";
 import codeReducer from "./../reducers/CodeReducer";
 import importReducer from "./../reducers/ImportReducer";
+import featureReducer from "./../reducers/FeatureReducer";
 
 export default combineReducers({
     router: routerReducer,
@@ -22,5 +23,6 @@ export default combineReducers({
     subInventory: subInventoryReducer,
     order: orderReducer,
     code: codeReducer,
-    imports: importReducer
+    imports: importReducer,
+    feature: featureReducer
 });

@@ -29,7 +29,7 @@ class ViewUsers extends Component {
     }
     onPressAdd() {
         const { dispatch } = this.props;
-        dispatch(push("/adduser"));
+        dispatch(push("/addUser"));
     }
 
     render() {

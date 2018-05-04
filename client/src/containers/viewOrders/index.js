@@ -123,8 +123,8 @@ class ViewOrders extends Component {
                         <Item.Header as='a'>ID {cart.id}</Item.Header>
                         <Item.Meta>Description</Item.Meta>
                         <Item.Description>
-                          <p>SKU : {cart.sku}</p>
-                          <p>Product Name : {cart.productName.en}</p>
+                          { (user.company !== 'Mother Company') ? <p>SKU : {cart.sku}</p> : null }
+                          { (user.company === 'Mother Company') ? <p>SKU : {cart.mainSku}</p> : null }
                           <p>Quantity : {cart.quantity}</p>
                         </Item.Description>
                         <hr />

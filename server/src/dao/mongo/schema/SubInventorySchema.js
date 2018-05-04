@@ -6,6 +6,11 @@ const SubInventorySchema = mongoose.Schema({
     id: { type: Number, required: true },
 
     sku: { type: String, required: true },
+
+    mainSku: { type: String, required: true },
+
+    mainStock: { type: String, required: false },
+
     productName: {
         en: { type: String, required: true },
     },
@@ -17,7 +22,7 @@ const SubInventorySchema = mongoose.Schema({
     status: { type: String, required: true, enum: ["approved", "pending"] },
     history: [{
         _id: false,
-        action: { type: String, required: true, enum: ["accepted", "updated"] },
+        action: { type: String, required: true, enum: ["created", "updated"] },
         userId: { type: Number, required: true },
         timestamp: { type: Date, required: true },
         payload: { type: mongoose.Schema.Types.Mixed }

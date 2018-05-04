@@ -37,6 +37,19 @@
     display: inline-grid
 }
 
+.featureBox {
+    padding-bottom: 40px;
+}
+
+.generatedRow {
+    padding-bottom: 15px;
+}
+
+.generatedText {
+    display: inline;
+    padding-left: 20;
+}
+
 @media only screen and (max-width: 1280px) {
     .side-right {
         width: 79.5%;

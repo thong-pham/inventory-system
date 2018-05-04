@@ -56,16 +56,13 @@ export const CLOSE_ADD = "CLOSE_ADD";
 export const OPEN_PLUS = "OPEN_PLUS";
 export const CLOSE_PLUS = "CLOSE_PLUS";
 export const ERROR_INPUT = "ERROR_INPUT";
+export const FILL_DATA = "FILL_DATA";
 
 export const SUBMIT_ORDER_STARTED = "SUBMIT_ORDER_STARTED";
 export const SUBMIT_ORDER_FULFILLED = "SUBMIT_ORDER_FULFILLED";
 export const SUBMIT_ORDER_REJECTED = "SUBMIT_ORDER_REJECTED";
 
 const WS_URL = "https://api.israhospitality.com/inventories/";
-
-const WS_URL_CART = "https://api.israhospitality.com/carts/"
-
-const WS_URL_ORDER = "https://api.israhospitality.com/orders/"
 
 export function addInventory(data) {
     return function (dispatch) {
@@ -183,101 +180,6 @@ export function updateInventory(inventory) {
     }
 }
 
-export function addCart(data) {
-    return function (dispatch) {
-        dispatch({ type: ADD_CART_STARTED });
-        return axios.post(WS_URL_CART + "createCart", data)
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: ADD_CART_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: ADD_CART_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function updateCart(cart) {
-    return function (dispatch) {
-        dispatch({ type: UPDATE_CART_STARTED });
-        return axios.put(WS_URL_CART + "updateCart/" + cart.id, cart)
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: UPDATE_CART_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: UPDATE_CART_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function deleteCart(cart) {
-    return function (dispatch) {
-        dispatch({ type: DELETE_CART_STARTED });
-        return axios.delete(WS_URL_CART + cart.id, { headers: { Authorization: cart.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: DELETE_CART_FULFILLED, payload: cart });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: DELETE_CART_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function getCarts(data) {
-    return function (dispatch) {
-        dispatch({ type: GET_CARTS_STARTED });
-        return axios.get(WS_URL_CART, { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: GET_CARTS_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: GET_CARTS_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function submitOrder(data) {
-    return function (dispatch) {
-        dispatch({ type: SUBMIT_ORDER_STARTED });
-        return axios.post(WS_URL_ORDER, data)
-            .then(function (response){
-                return response.data;
-            })
-            .then(function (data){
-                dispatch({ type : SUBMIT_ORDER_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error){
-                  const response = error.response;
-                  dispatch({ type: SUBMIT_ORDER_REJECTED, payload: response });
-                  throw response;
-            })
-    }
-}
-
 export function importInventory(data) {
     return function (dispatch) {
         dispatch({ type: IMPORT_INVENTORY_STARTED });
@@ -363,4 +265,10 @@ export function rejectEdit(){
         const data = "Only Mother Company can edit Inventory";
         dispatch({ type : REJECT_UPDATING_INVENTORY, payload : data});
     }
+}
+
+export function fillingData(data){
+   return function (dispatch){
+       dispatch({ type : FILL_DATA, payload: data})
+   }
 }

@@ -1,14 +1,65 @@
 import async from "async";
 
 import {
+    createSubInventory as createSubInventoryDAO,
     getSubInventoriesByCompany as getSubInventoriesByCompanyDAO,
     getSubInventories as getSubInventoriesDAO,
     getSubInventoryById as getSubInventoryByIdDAO,
+    getSubInventoryBySku as getSubInventoryBySkuDAO,
     updateSubInventoryById as updateSubInventoryByIdDAO,
+    removeSubInventoryById as removeSubInventoryByIdDAO
 } from "./../dao/mongo/impl/SubInventoryDAO";
+import { getInventoryBySku as getInventoryBySkuDAO } from "./../dao/mongo/impl/InventoryDAO";
 //import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
 import { getNextInventoryId, getNextRequestId, getNextSubInventoryId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
+
+export function createSubInventory(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const { isSales } = getUserRoles(roles);
+            if (isSales) {
+                data.status = "approved";
+            }
+            if (data.status) {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to create Inventory");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            getSubInventoryBySkuDAO(data.sku, waterfallCallback);
+        },
+        function (inventory, waterfallCallback) {
+            if (inventory) {
+                const err = new Error("SKU Already Exists");
+                waterfallCallback(err);
+            }
+            else {
+                waterfallCallback();
+            }
+        },
+        function (waterfallCallback) {
+            getNextSubInventoryId(function (err, counterDoc) {
+                waterfallCallback(err, data, counterDoc);
+            });
+        },
+        function (data, counterDoc, waterfallCallback) {
+            const { company } = data.userSession;
+            data.id = counterDoc.counter;
+            data.company = company;
+            data.history = [{
+                action: "created",
+                userId: data.userSession.userId,
+                timestamp: new Date()
+            }]
+            createSubInventoryDAO(data, waterfallCallback);
+        }
+    ], callback);
+}
 
 export function updateSubInventory(data, callback) {
     async.waterfall([
@@ -120,13 +171,13 @@ function getLatestHistory(inventory) {
     return latestHistory;
 }
 
-export function removeInventory(data, callback) {
+export function removeSubInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isSales } = getUserRoles(roles);
-            if (company !== 'Mother Company') {
-                const err = new Error("Only Mother Company can remove Inventory");
+            if (company === 'Mother Company') {
+                const err = new Error("Only Child Company can remove Inventory");
                 waterfallCallback(err)
             }
             else if (isSales) {
@@ -139,7 +190,7 @@ export function removeInventory(data, callback) {
         },
         function (waterfallCallback) {
             const id = data.id;
-            getInventoryByIdDAO(id, function (err, inventory) {
+            getSubInventoryByIdDAO(id, function (err, inventory) {
                 if (err) {
                     waterfallCallback(err);
                 }
@@ -162,20 +213,9 @@ export function removeInventory(data, callback) {
             const { roles } = data.userSession;
             const { isSales } = getUserRoles(roles);
             if (isSales) {
-                const update = {
-                    status: "approved",
-                    isRemoved: true,
-                    $push: {
-                        history: {
-                            action: "removed",
-                            userId: data.userSession.userId,
-                            timestamp: new Date()
-                        }
-                    }
-                }
                 const id = data.id;
                 //updateInventoryByIdDAO(id, update, waterfallCallback);
-                removeInventoryByIdDAO(id, waterfallCallback);
+                removeSubInventoryByIdDAO(id, waterfallCallback);
                 //createInventoryInTrashDAO(inventory, waterfallCallback);
             }
             /*else if (isWorker) {
@@ -199,9 +239,47 @@ export function removeInventory(data, callback) {
 }
 
 export function getSubInventoriesByCompany(company, callback){
-     getSubInventoriesByCompanyDAO(company, callback);
+     getSubInventoriesByCompanyDAO(company, function(err, inventories){
+          if (err){
+              waterfallCallback(err);
+          }
+          else {
+              var newInv = [];
+              var count = 0;
+              inventories.forEach(function(inventory){
+                  getInventoryBySkuDAO(inventory.mainSku, function(err, inv){
+                      if (err){
+                          callback(err);
+                      }
+                      else if (inv) {
+                          inventory.mainStock = inv.stock;
+                          newInv.push(inventory);
+                          count += 1;
+                            if (count === inventories.length){
+                                //console.log(newInv);
+                                callback(null, newInv);
+                            }
+                      }
+                      else {
+                          inventory.mainStock = 0;
+                          newInv.push(inventory);
+                          count += 1;
+                          if (count === inventories.length){
+                              //console.log(newInv);
+                              callback(null, newInv);
+                          }
+                      }
+                  });
+              });
+          }
+     });
 }
 
 export function getSubInventories (callback){
     getSubInventoriesDAO(callback);
+}
+
+function getUserRoles(roles) {
+    const isSales = roles.indexOf("sales") >= 0;
+    return { isSales };
 }

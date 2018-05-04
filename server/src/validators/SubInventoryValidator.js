@@ -21,3 +21,22 @@ export function validateUpdateSubInventory(data, callback) {
         callback(errors);
     }
 }
+
+export function validateCreateSubInventory(data, callback) {
+    var errors = {};
+    if (!data.sku) {
+        errors["sku"] = "SKU is Required";
+    }
+    if (!data.mainSku) {
+        errors["mainSku"] = "Main SKU is Required";
+    }
+    if (!data.productName) {
+        errors["productName"] = "Product Name is Required";
+    }
+    if (Object.keys(errors).length === 0) {
+        callback();
+    }
+    else {
+        callback(errors);
+    }
+}

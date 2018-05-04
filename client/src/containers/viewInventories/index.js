@@ -1,18 +1,22 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { getInventories, deleteInventory, rejectEdit, getSubInventories, addToCart, trackNumber } from "./../../actions/InventoryActions";
+import { getInventories, deleteInventory, rejectEdit, updateInventory,
+         addCart, trackNumber, openPlus, closePlus, errorInput } from "./../../actions/InventoryActions";
 
-class ViewInventory extends Component {
+class ViewAndRequest extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
-        //console.log(this.props);
         const { user } = this.props.auth;
+        if (user.company !== 'Mother Company'){
+            dispatch(push("/subInventory"));
+        }
         dispatch(getInventories({ token: token }));
+
     }
     onPressEdit(inventory) {
         const { user } = this.props.auth;
@@ -25,31 +29,53 @@ class ViewInventory extends Component {
         }
 
     }
+    onOpenPlus(inventory){
+        const { dispatch } = this.props;
+        dispatch(openPlus(inventory.id));
+    }
+    onClosePlus () {
+        const { dispatch } = this.props;
+        dispatch(closePlus());
+    }
+    onAddInv(inventory){
+        const { dispatch, token } = this.props;
+        const { quantity } = this.props.inventory;
+        const { user } = this.props.auth;
+        if (isNaN(quantity) || quantity === null){
+            dispatch(errorInput());
+        }
+        else {
+            const newStock = inventory.stock + quantity;
+            const data = {
+                id: inventory.id,
+                sku: inventory.sku,
+                productName: inventory.productName.en,
+                price: inventory.price,
+                stock: newStock,
+                token: token
+            }
+            dispatch(updateInventory(data)).then(function(data){
+                dispatch(getInventories({ token: token }));
+            });
+        }
+    }
     onPressDelete(inventory) {
         const { token, dispatch } = this.props;
         dispatch(deleteInventory({ token: token, inventory: inventory })).then(function (data) {
             dispatch(getInventories({ token: token }));
         });
     }
-    handleOrder(e){
+    handleInput(e){
         const { token, dispatch } = this.props;
-        //console.log(e.target.value);
         dispatch(trackNumber(e.target.value));
-    }
-    /*onRequest(inventory){
-       const { dispatch } = this.props;
-       dispatch(setRequestingInventory(this.props.inventory.inventories, inventory.id));
-       dispatch(push("/request/" + inventory.id));
-    }*/
-    onRequest(inventory){
-        const { token, dispatch } = this.props;
-        dispatch(addToCart(inventory))
     }
 
     render() {
         const { user } = this.props.auth;
-        const { inventories, isFetchingInventories, fetchingInventoriesError, deletingsInventoriesError, updatingInventoriesError } = this.props.inventory;
-        const { quantity } = this.props.inventory;
+        const isWorker = user.roles.indexOf("worker") >= 0;
+        const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
+                deletingsInventoriesError, isUpdatingInventory, updatingInventoriesError } = this.props.inventory;
+        const { quantity, openPlus, errorInput } = this.props.inventory;
         let error = null;
         if (fetchingInventoriesError) {
             error = (
@@ -75,6 +101,14 @@ class ViewInventory extends Component {
               </Message>
           )
         }
+        else if (errorInput){
+          error = (
+              <Message negative>
+                  <Message.Header>Error while Inputing Value</Message.Header>
+                  <p>{errorInput}</p>
+              </Message>
+          )
+        }
         const inventoriesView = inventories.map(function (inventory) {
             return (
                 <Table.Row key={inventory.id}>
@@ -82,28 +116,51 @@ class ViewInventory extends Component {
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
                     <Table.Cell>{inventory.status}</Table.Cell>
                     <Table.Cell >{inventory.price}</Table.Cell>
-                    <Table.Cell >{inventory.stock}</Table.Cell>
                     <Table.Cell >
-                        { (user.company === 'Mother Company') ? <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} /> : null }
-                        { (user.company === 'Mother Company') ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} /> : null }
-                        { (user.company !== 'Mother Company') ? <Input placeholder='Quantity' onChange={this.handleOrder.bind(this)} /> : null}
-                        { (user.company !== 'Mother Company') ? <Button onClick={this.onRequest.bind(this, inventory)}>Request</Button> : null}
+                        {inventory.stock}
+                        <hr />
+                        { (openPlus === inventory.id) ?
+                            <Grid columns={2} divided>
+                              <Grid.Row>
+                                <Grid.Column className="columnForInput" textAlign='center'>
+                                    { (user.company === 'Mother Company') ? <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput.bind(this)} /> : null}
+                                </Grid.Column>
+                                    <Grid.Column className="columnForButton" textAlign='center'>
+                                        <Grid columns={2}>
+                                            <Grid.Row>
+                                                <Grid.Column textAlign='center'>
+                                                    { (user.company === 'Mother Company') ? <Icon name='checkmark' size='large' onClick={this.onAddInv.bind(this, inventory)} /> : null}
+                                                </Grid.Column>
+                                                <Grid.Column textAlign='center'>
+                                                    { (user.company === 'Mother Company') ? <Icon name='close' size='large' onClick={this.onClosePlus.bind(this)} /> : null }
+                                                </Grid.Column>
+                                            </Grid.Row>
+                                        </Grid>
+                                    </Grid.Column>
+                                </Grid.Row>
+                              </Grid>  : null }
                     </Table.Cell>
+                    { (!isWorker) ?
+                      <Table.Cell >
+                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
+                        <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
+                        <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} />
+                    </Table.Cell> : null }
                 </Table.Row>
             )
         }, this);
         let tableView = <h4>No Inventories Found. Please Add Some </h4>
         if (inventories.length > 0) {
             tableView = (
-                <Table celled fixed>
+                <Table celled fixed color='blue'>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Product Name</Table.HeaderCell>
+                            <Table.HeaderCell width={2}>Product Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Price</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Stock</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
+                            <Table.HeaderCell width={2}>Stock</Table.HeaderCell>
+                            { (!isWorker) ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -112,14 +169,17 @@ class ViewInventory extends Component {
                 </Table>
             )
         }
+
         return (
-                <Container>
-                    <Header as="h2">Inventory List</Header>
-                        {error}
-                        {/* <Segment loading={isFetchingInventories}> */}
-                        {tableView}
-                        {quantity}
-                </Container>
+          <BaseLayout>
+              <Segment textAlign='center'>
+                  <Container>
+                      <Header as="h2">Inventory List</Header>
+                      {error}
+                      {tableView}
+                  </Container>
+              </Segment>
+          </BaseLayout>
         )
     }
 }
@@ -132,4 +192,4 @@ function mapStatesToProps(state) {
     }
 }
 
-export default connect(mapStatesToProps)(ViewInventory);
+export default connect(mapStatesToProps)(ViewAndRequest);

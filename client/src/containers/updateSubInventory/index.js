@@ -88,7 +88,7 @@ class UpdateSubInventory extends Component {
                             <Field name="sku" placeholder="Enter the SKU" component={this.renderField} disabled={true}></Field>
                         </Form.Field>
                         <Form.Field inline>
-                            <Field name="productName" placeholder="Enter the Product Name" component={this.renderField}></Field>
+                            <Field name="productName" placeholder="Enter the Product Description" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
                             <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>

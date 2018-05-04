@@ -8,8 +8,8 @@ export function validateCart(data, callback) {
     if (!data.quantity) {
         errors["quantity"] = "Quantity is Required";
     }
-    if (!data.productName) {
-        errors["productName"] = "Product Name is Required";
+    if (!data.mainSku) {
+        errors["mainSku"] = "Main SKU is Required";
     }
     if (Object.keys(errors).length === 0) {
         callback();

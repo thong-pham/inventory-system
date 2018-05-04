@@ -1,9 +1,41 @@
 import { Router } from "express";
-import { getSubInventoriesByCompany, getSubInventories, updateSubInventory } from "./../services/SubInventoryService";
-import { validateUpdateSubInventory } from "./../validators/SubInventoryValidator"
+import { getSubInventoriesByCompany, getSubInventories, updateSubInventory, createSubInventory, removeSubInventory } from "./../services/SubInventoryService";
+import { validateUpdateSubInventory, validateCreateSubInventory } from "./../validators/SubInventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
+
+router.post('/', verifyAuthMiddleware, function (req, res, next) {
+    validateCreateSubInventory(req.body, function (err) {
+        if (err) {
+            res.status(400).send(err);
+        }
+        else {
+            const userSession = req.session;
+            const price = 0;
+            const stock = 0;
+            const { sku, mainSku, productName } = req.body;
+            const data = { sku, mainSku, productName: { en: productName }, price, stock, userSession };
+            createSubInventory(data, function (err, inventory) {
+                if (err) {
+                    if (err.message === "Not Enough Permission to create Inventory") {
+                        res.status(400).send(err.message);
+                    }
+                    else if (err.message === "SKU Already Exists"){
+                       res.status(401).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send(err);
+                    }
+                }
+                else {
+                    res.status(201).send(inventory);
+                }
+            });
+        }
+    });
+});
 
 router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
     const id = req.params.id;
@@ -49,9 +81,9 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
     if (id) {
         const userSession = req.session;
         const data = { id, userSession };
-        removeInventory(data, function (err, inventory) {
+        removeSubInventory(data, function (err, inventory) {
             if (err) {
-                if (err.message === "Only Mother Company can remove Inventory"){
+                if (err.message === "Only Child Company can remove Inventory"){
                    res.status(401).send(err.message);
                 }
                 else if (err.message === "Not Enough Permission to remove Inventory") {

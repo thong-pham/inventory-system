@@ -35,3 +35,27 @@ export function getNextTrashId(callback) {
 export function getNextImportId(callback) {
     incrementCounter("import", callback);
 }
+
+export function getNextQualityId(callback) {
+    incrementCounter("quality", callback);
+}
+
+export function getNextTypeId(callback) {
+    incrementCounter("type", callback);
+}
+
+export function getNextPatternId(callback) {
+    incrementCounter("pattern", callback);
+}
+
+export function getNextColorId(callback) {
+    incrementCounter("color", callback);
+}
+
+export function getNextSizeId(callback) {
+    incrementCounter("size", callback);
+}
+
+export function getNextUnitId(callback) {
+    incrementCounter("unit", callback);
+}

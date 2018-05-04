@@ -1,7 +1,8 @@
-import { GET_CODES_STARTED, GET_CODES_FULFILLED, GET_CODES_REJECTED } from "./../actions/CodeActions";
-import { ADD_CODE_STARTED, ADD_CODE_FULFILLED, ADD_CODE_REJECTED } from "./../actions/CodeActions";
-import { DELETE_CODE_STARTED, DELETE_CODE_FULFILLED, DELETE_CODE_REJECTED } from "./../actions/CodeActions";
-import { ADD_POPUP, CLOSE_POPUP, TRACK_INPUT } from "./../actions/CodeActions";
+import { GET_CODES_STARTED, GET_CODES_FULFILLED, GET_CODES_REJECTED,
+        ADD_CODE_STARTED, ADD_CODE_FULFILLED, ADD_CODE_REJECTED,
+        DELETE_CODE_STARTED, DELETE_CODE_FULFILLED, DELETE_CODE_REJECTED,
+        ADD_POPUP, CLOSE_POPUP, TRACK_INPUT
+        } from "./../actions/CodeActions";
 
 const initialState = {
     codes: [],

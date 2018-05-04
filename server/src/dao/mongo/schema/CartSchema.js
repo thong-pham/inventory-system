@@ -5,9 +5,7 @@ const CartSchema = mongoose.Schema({
 
     sku: { type: String, required: true },
 
-    productName: {
-        en: { type: String, required: true },
-    },
+    mainSku: { type: String, required: true },
 
     quantity: { type: Number, required: true },
 

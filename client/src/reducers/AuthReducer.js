@@ -1,6 +1,7 @@
-import { USER_LOGIN_STARTED, USER_LOGIN_FULFILLED, USER_LOGIN_REJECTED, USER_LOGOUT_FULFILLED } from "./../actions/AuthActions";
-import { USER_REGISTER_STARTED, USER_REGISTER_FULFILLED, USER_REGISTER_REJECTED } from "./../actions/AuthActions";
-import { VIEW_COMPANIES } from "./../actions/AuthActions";
+import { USER_LOGIN_STARTED, USER_LOGIN_FULFILLED, USER_LOGIN_REJECTED, USER_LOGOUT_FULFILLED,
+         USER_REGISTER_STARTED, USER_REGISTER_FULFILLED, USER_REGISTER_REJECTED,
+         VIEW_COMPANIES
+         } from "./../actions/AuthActions";
 
 const initialState = {
     token: null,
