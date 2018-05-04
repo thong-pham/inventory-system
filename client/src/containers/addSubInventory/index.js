@@ -325,9 +325,9 @@ class AddSubInventory extends Component {
                         <Grid.Row className="generatedRow">
                           <Label basic pointing='right'>SKU</Label><Input className="generatedText" onChange={this.handleSKU.bind(this)}/>
                         </Grid.Row>
-                        <Grid.Row>
+                        {/*<Grid.Row>
                           <Label basic pointing='right'>Description</Label><Input className="generatedText" onChange={this.handleDesc.bind(this)}/>
-                        </Grid.Row>
+                        </Grid.Row>*/}
                       </Container>
                       <Container className="featureBox">
                           <Button onClick={this.onCreate.bind(this)}>Create</Button>

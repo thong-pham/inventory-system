@@ -32,35 +32,13 @@ export const IMPORT_INVENTORY_STARTED = "IMPORT_INVENTORY_STARTED";
 export const IMPORT_INVENTORY_FULFILLED = "IMPORT_INVENTORY_FULFILLED";
 export const IMPORT_INVENTORY_REJECTED = "IMPORT_INVENTORY_REJECTED";
 
-export const ADD_CART_STARTED = "ADD_CART_STARTED";
-export const ADD_CART_FULFILLED = "ADD_CART_FULFILLED";
-export const ADD_CART_REJECTED = "ADD_CART_REJECTED";
-
-export const GET_CARTS_STARTED = "GET_CARTS_STARTED";
-export const GET_CARTS_FULFILLED = "GET_CARTS_FULFILLED";
-export const GET_CARTS_REJECTED = "GET_CARTS_REJECTED";
-
-export const UPDATE_CART_STARTED = "UPDATE_CART_STARTED";
-export const UPDATE_CART_FULFILLED = "UPDATE_CART_FULFILLED";
-export const UPDATE_CART_REJECTED = "UPDATE_CART_REJECTED";
-
-export const DELETE_CART_STARTED = "DELETE_CART_STARTED";
-export const DELETE_CART_FULFILLED = "DELETE_CART_FULFILLED";
-export const DELETE_CART_REJECTED = "DELETE_CART_REJECTED";
-
 export const TRACK_NUMBER = "TRACK_NUMBER";
-export const OPEN_MODAL = "OPEN_MODAL";
-export const CLOSE_MODAL = "CLOSE_MODAL";
-export const OPEN_ADD = "OPEN_ADD";
-export const CLOSE_ADD = "CLOSE_ADD";
+export const OPEN_MINUS = "OPEN_MINUS";
+export const CLOSE_MINUS = "CLOSE_MINUS";
 export const OPEN_PLUS = "OPEN_PLUS";
 export const CLOSE_PLUS = "CLOSE_PLUS";
 export const ERROR_INPUT = "ERROR_INPUT";
 export const FILL_DATA = "FILL_DATA";
-
-export const SUBMIT_ORDER_STARTED = "SUBMIT_ORDER_STARTED";
-export const SUBMIT_ORDER_FULFILLED = "SUBMIT_ORDER_FULFILLED";
-export const SUBMIT_ORDER_REJECTED = "SUBMIT_ORDER_REJECTED";
 
 const WS_URL = "https://api.israhospitality.com/inventories/";
 
@@ -211,34 +189,21 @@ export function clearInventory() {
     }
 }
 
-export function showModal(data){
-    return function (dispatch) {
-        dispatch({type: OPEN_MODAL, payload: data });
-    }
-}
-
 export function errorInput(){
     return function (dispatch) {
         dispatch({type: ERROR_INPUT});
     }
 }
 
-
-export function closeModal(){
+export function openMinus(id){
     return function (dispatch) {
-        dispatch({type: CLOSE_MODAL });
+        dispatch({type: OPEN_MINUS, payload: id });
     }
 }
 
-export function openAdd(id){
+export function closeMinus(){
     return function (dispatch) {
-        dispatch({type: OPEN_ADD, payload: id });
-    }
-}
-
-export function closeAdd(){
-    return function (dispatch) {
-        dispatch({type: CLOSE_ADD });
+        dispatch({type: CLOSE_MINUS });
     }
 }
 

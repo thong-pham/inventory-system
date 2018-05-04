@@ -6,7 +6,7 @@ import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
          UPDATE_INVENTORY_STARTED, UPDATE_INVENTORY_FULFILLED, UPDATE_INVENTORY_REJECTED,
          SET_UPDATING_INVENTORY_FULFILLED, CLEAR_INVENTORY_FULFILLED, REJECT_UPDATING_INVENTORY,
          APPROVE_INVENTORY_STARTED, APPROVE_INVENTORY_FULFILLED, APPROVE_INVENTORY_REJECTED,
-         TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA
+         TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA, OPEN_MINUS, CLOSE_MINUS
          } from "./../actions/InventoryActions";
 
 const initialState = {
@@ -30,6 +30,7 @@ const initialState = {
     quantity: null,
     errorInput: null,
     openPlus: null,
+    openMinus: null,
     generatedSKU: null,
     generatedDesc: null
 }
@@ -86,11 +87,11 @@ export default function (state = initialState, action) {
         }
         case UPDATE_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isUpdatingInventory: false, inventory: null, openPlus: null, quantity: null };
+            return { ...state, isUpdatingInventory: false, inventory: null, openPlus: null, openMinus: null, quantity: null };
         }
         case UPDATE_INVENTORY_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isUpdatingInventory: false, updatingInventoriesError: error, openPlus: null, quantity: null };
+            return { ...state, isUpdatingInventory: false, updatingInventoriesError: error, openPlus: null, openMinus: null, quantity: null };
         }
         case APPROVE_INVENTORY_STARTED: {
             return { ...state, isApprovingInventory: true };
@@ -135,10 +136,17 @@ export default function (state = initialState, action) {
         }
         case OPEN_PLUS: {
           const data = action.payload;
-            return { ...state, openPlus : data, quantity: null };
+            return { ...state, openPlus : data, quantity: null, openMinus: null };
         }
         case CLOSE_PLUS: {
             return { ...state, openPlus : null, quantity: null, errorInput: null };
+        }
+        case OPEN_MINUS: {
+          const data = action.payload;
+            return { ...state, openMinus : data, quantity: null, openPlus: null };
+        }
+        case CLOSE_MINUS: {
+            return { ...state, openMinus : null, quantity: null, errorInput: null };
         }
         case ERROR_INPUT: {
             const error = "Invalid Input";

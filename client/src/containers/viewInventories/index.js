@@ -6,7 +6,7 @@ import { push } from 'react-router-redux';
 import BaseLayout from "./../baseLayout";
 
 import { getInventories, deleteInventory, rejectEdit, updateInventory,
-         addCart, trackNumber, openPlus, closePlus, errorInput } from "./../../actions/InventoryActions";
+         trackNumber, openPlus, closePlus, openMinus, closeMinus, errorInput } from "./../../actions/InventoryActions";
 
 class ViewAndRequest extends Component {
     componentWillMount() {
@@ -37,6 +37,14 @@ class ViewAndRequest extends Component {
         const { dispatch } = this.props;
         dispatch(closePlus());
     }
+    onOpenMinus(inventory){
+        const { dispatch } = this.props;
+        dispatch(openMinus(inventory.id));
+    }
+    onCloseMinus () {
+        const { dispatch } = this.props;
+        dispatch(closeMinus());
+    }
     onAddInv(inventory){
         const { dispatch, token } = this.props;
         const { quantity } = this.props.inventory;
@@ -46,6 +54,31 @@ class ViewAndRequest extends Component {
         }
         else {
             const newStock = inventory.stock + quantity;
+            const data = {
+                id: inventory.id,
+                sku: inventory.sku,
+                productName: inventory.productName.en,
+                price: inventory.price,
+                stock: newStock,
+                token: token
+            }
+            dispatch(updateInventory(data)).then(function(data){
+                dispatch(getInventories({ token: token }));
+            });
+        }
+    }
+    onMinusInv(inventory){
+        const { dispatch, token } = this.props;
+        const { quantity } = this.props.inventory;
+        const { user } = this.props.auth;
+        if (isNaN(quantity) || quantity === null){
+            dispatch(errorInput());
+        }
+        else if(quantity > inventory.stock){
+            dispatch(errorInput());
+        }
+        else {
+            const newStock = inventory.stock - quantity;
             const data = {
                 id: inventory.id,
                 sku: inventory.sku,
@@ -75,7 +108,7 @@ class ViewAndRequest extends Component {
         const isWorker = user.roles.indexOf("worker") >= 0;
         const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
                 deletingsInventoriesError, isUpdatingInventory, updatingInventoriesError } = this.props.inventory;
-        const { quantity, openPlus, errorInput } = this.props.inventory;
+        const { quantity, openPlus, openMinus, errorInput } = this.props.inventory;
         let error = null;
         if (fetchingInventoriesError) {
             error = (
@@ -123,28 +156,49 @@ class ViewAndRequest extends Component {
                             <Grid columns={2} divided>
                               <Grid.Row>
                                 <Grid.Column className="columnForInput" textAlign='center'>
-                                    { (user.company === 'Mother Company') ? <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput.bind(this)} /> : null}
+                                    <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput.bind(this)} />
                                 </Grid.Column>
                                     <Grid.Column className="columnForButton" textAlign='center'>
                                         <Grid columns={2}>
                                             <Grid.Row>
                                                 <Grid.Column textAlign='center'>
-                                                    { (user.company === 'Mother Company') ? <Icon name='checkmark' size='large' onClick={this.onAddInv.bind(this, inventory)} /> : null}
+                                                    <Icon name='add' size='large' onClick={this.onAddInv.bind(this, inventory)} />
                                                 </Grid.Column>
                                                 <Grid.Column textAlign='center'>
-                                                    { (user.company === 'Mother Company') ? <Icon name='close' size='large' onClick={this.onClosePlus.bind(this)} /> : null }
+                                                    <Icon name='close' size='large' onClick={this.onClosePlus.bind(this)} />
                                                 </Grid.Column>
                                             </Grid.Row>
                                         </Grid>
                                     </Grid.Column>
                                 </Grid.Row>
                               </Grid>  : null }
+                              { (openMinus === inventory.id) ?
+                                  <Grid columns={2} divided>
+                                    <Grid.Row>
+                                      <Grid.Column className="columnForInput" textAlign='center'>
+                                          <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput.bind(this)} />
+                                      </Grid.Column>
+                                          <Grid.Column className="columnForButton" textAlign='center'>
+                                              <Grid columns={2}>
+                                                  <Grid.Row>
+                                                      <Grid.Column textAlign='center'>
+                                                          <Icon name='minus' size='large' onClick={this.onMinusInv.bind(this, inventory)} />
+                                                      </Grid.Column>
+                                                      <Grid.Column textAlign='center'>
+                                                          <Icon name='close' size='large' onClick={this.onCloseMinus.bind(this)} />
+                                                      </Grid.Column>
+                                                  </Grid.Row>
+                                              </Grid>
+                                          </Grid.Column>
+                                      </Grid.Row>
+                                    </Grid>  : null }
                     </Table.Cell>
                     { (!isWorker) ?
                       <Table.Cell >
                         <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
                         <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
                         <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} />
+                        <Icon name='minus' size='large' onClick={this.onOpenMinus.bind(this, inventory)} />
                     </Table.Cell> : null }
                 </Table.Row>
             )
