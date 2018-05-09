@@ -3,7 +3,7 @@ const path = require('path');
 
 const config = {
     // Entry points to the project
-    mode: 'development',
+    mode: 'production',
     entry: {
         main: [
             // only- means to only hot reload for successful updates
