@@ -29,7 +29,6 @@ import ViewSubInventories from "./containers/viewSubInventories";
 import ApproveImport from "./containers/approveImport";
 import ViewInventories from "./containers/viewInventories";
 import ViewOrders from "./containers/viewOrders";
-import ViewOrderDetails from "./containers/viewOrderDetails";
 import ViewApprovedOrders from "./containers/viewApprovedOrders";
 import ViewCode from "./containers/viewCode";
 import ViewAccount from "./containers/viewAccount";
@@ -92,7 +91,6 @@ class App extends Component {
                             <Route exact path="/inventory" component={ViewInventories} />
                             <Route exact path="/subInventory" component={ViewSubInventories} />
                             <Route exact path="/orders" component={ViewOrders} />
-                            <Route path="/order/:id" component={ViewOrderDetails} />
                             <Route exact path="/approvedOrders" component={ViewApprovedOrders} />
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />
