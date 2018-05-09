@@ -100,6 +100,8 @@ export function approveOrder(data, callback) {
                     else {
                           var inventories = [];
                           var carts = [];
+                          var denies = [];
+                          var count = 0;
                           order.details.forEach(function(cart){
                               if (carts.length < order.details.length){
                                   getInventoryBySkuDAO(cart.mainSku, function(err, inventory){
@@ -110,6 +112,7 @@ export function approveOrder(data, callback) {
                                           if (cart.quantity <= inventory.stock){
                                               inventories.push(inventory);
                                               carts.push(cart);
+                                              count += 1;
                                               if (carts.length === order.details.length){
                                                   //console.log(carts.length);
                                                   waterfallCallback(null, inventories, carts, order);
@@ -117,8 +120,22 @@ export function approveOrder(data, callback) {
 
                                           }
                                           else {
-                                              const err = new Error("This Order exceed the current stock");
-                                              waterfallCallback(err);
+                                              const deny = {
+                                                  cartId: cart.id,
+                                                  mainStock: inventory.stock
+                                              }
+                                              denies.push(deny);
+
+                                              count += 1;
+                                              if (count === order.details.length){
+                                                  const err = new Error("This Order exceeds the current stock");
+                                                  const data = {
+                                                      err: err,
+                                                      denies: denies,
+                                                      id: order.id
+                                                  }
+                                                  waterfallCallback(data);
+                                              }
                                           }
                                        }
                                   });

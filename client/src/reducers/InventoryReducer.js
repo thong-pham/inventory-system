@@ -43,7 +43,7 @@ export default function (state = initialState, action) {
         case ADD_INVENTORY_FULFILLED: {
             const data = action.payload;
             const newInventory = state.inventories.concat([data]);
-            return { ...state, isAddingInventory: false, inventories: newInventory };
+            return { ...state, isAddingInventory: false, inventories: newInventory, addingInventoryError: null };
         }
         case ADD_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -65,7 +65,7 @@ export default function (state = initialState, action) {
         }
         case DELETE_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isDeletingInventory: false };
+            return { ...state, isDeletingInventory: false, deletingsInventoriesError: null };
         }
         case DELETE_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -87,7 +87,7 @@ export default function (state = initialState, action) {
         }
         case UPDATE_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isUpdatingInventory: false, inventory: null, openPlus: null, openMinus: null, quantity: null };
+            return { ...state, isUpdatingInventory: false, inventory: null, openPlus: null, openMinus: null, quantity: null, updatingInventoriesError: null };
         }
         case UPDATE_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -98,7 +98,7 @@ export default function (state = initialState, action) {
         }
         case APPROVE_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isApprovingInventory: false, inventory: null };
+            return { ...state, isApprovingInventory: false, inventory: null, approvingInventoryError: null };
         }
         case APPROVE_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -123,7 +123,7 @@ export default function (state = initialState, action) {
         }
         case IMPORT_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isImportingInventory: false, };
+            return { ...state, isImportingInventory: false, importingInventoryError: null };
         }
         case IMPORT_INVENTORY_REJECTED: {
             const error = action.payload.data;

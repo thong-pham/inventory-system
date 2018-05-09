@@ -85,7 +85,7 @@ export default function (state = initialState, action) {
         }
         case DELETE_IMPORT_FULFILLED: {
             const data = action.payload;
-            return {...state, isDeletingImport: false };
+            return {...state, isDeletingImport: false, deletingImportError: null };
         }
         case DELETE_IMPORT_REJECTED: {
             const data = action.payload.data;

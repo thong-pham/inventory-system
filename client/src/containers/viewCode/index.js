@@ -1,19 +1,29 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Grid } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Input, Grid, Accordion } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getAllCode, addPopUp, closePopUp, trackInput, submitCode, deleteCode } from "./../../actions/CodeActions";
+import { getAllCode, addPopUp, closePopUp, trackInput,
+          submitCode, deleteCode, getCodeByCompany } from "./../../actions/CodeActions";
+
+import { getCompanies } from "./../../actions/CompanyActions";
 
 class ViewCode extends Component {
+    state = { activeIndex: null };
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        dispatch(getAllCode({token: token}));
+        if (user.company === 'Mother Company'){
+              dispatch(getAllCode({token: token}));
+        }
+        else {
+              dispatch(getCodeByCompany({token: token}));
+        }
+        dispatch(getCompanies({token: token}));
     }
     onPressAdd(sku) {
         const { dispatch } = this.props;
@@ -22,8 +32,14 @@ class ViewCode extends Component {
     }
     onPressDelete(keyCode) {
         const { token, dispatch } = this.props;
+        const { user } = this.props.auth;
         dispatch(deleteCode({ token: token, keyCode: keyCode })).then(function(data){
-            dispatch(getAllCode({token: token}));
+              if (user.company === 'Mother Company'){
+                    dispatch(getAllCode({token: token}));
+              }
+              else {
+                    dispatch(getCodeByCompany({token: token}));
+              }
         });
     }
 
@@ -35,13 +51,21 @@ class ViewCode extends Component {
     onPressConfirm(code){
         const { dispatch, token } = this.props;
         const { codeInput } = this.props.code;
+        const { user } = this.props.auth;
         const data = {
            token: token,
            sku: code.sku,
+           mainSku: code.mainSku,
            key: codeInput
         }
+
         dispatch(submitCode(data)).then(function(data){
-            dispatch(getAllCode({token: token}));
+            if (user.company === 'Mother Company'){
+                  dispatch(getAllCode({token: token}));
+            }
+            else {
+                  dispatch(getCodeByCompany({token: token}));
+            }
         });
     }
 
@@ -50,9 +74,19 @@ class ViewCode extends Component {
         dispatch(closePopUp());
     }
 
+    handleClick = (e, titleProps) => {
+        const { index } = titleProps
+        const { activeIndex } = this.state
+        const newIndex = activeIndex === index ? null : index
+
+        this.setState({ activeIndex: newIndex })
+    }
+
     render() {
+        const { activeIndex } = this.state;
         const { user } = this.props.auth;
         const { codes, fetchingCodesError, addingCodeError, openAdd, codeInput } = this.props.code;
+        const { companies } = this.props.company;
         let error = null;
         if (fetchingCodesError) {
             error = (
@@ -70,6 +104,45 @@ class ViewCode extends Component {
                 </Message>
             )
         }
+        const skuViewForBigCompany = codes.map(function (code, index) {
+          const accordionView = companies.map(function(company){
+            const codeView = code.keys.map(function(keyCode, index){
+               return (
+                 <div key={index}>
+                   <Grid columns={1}>
+                     <Grid.Row>
+                         <Grid.Column>
+                             {(keyCode.company === company.name.en) ? <p>{keyCode.value}</p> : null }
+                           </Grid.Column>
+                     </Grid.Row>
+                   </Grid>
+                 </div>
+               )
+            },this);
+            const match = company.id + code.sku;
+            return (
+              <div key={company.id}>
+                <Accordion fluid styled>
+                  <Accordion.Title active={activeIndex === match} index={match} onClick={this.handleClick}>
+                    <Icon name='dropdown' />
+                     {company.name.en}
+                  </Accordion.Title>
+                  <Accordion.Content active={activeIndex === match}>
+                    {codeView}
+                  </Accordion.Content>
+                </Accordion>
+              </div>
+             )
+          },this);
+            return (
+                <Table.Row key={index}>
+                    <Table.Cell>{code.sku}</Table.Cell>
+                    <Table.Cell>
+                        {accordionView}
+                    </Table.Cell>
+                </Table.Row>
+            )
+        }, this);
         const skuView = codes.map(function (code, index) {
            const codeView = code.keys.map(function(keyCode, index){
               return (
@@ -77,10 +150,10 @@ class ViewCode extends Component {
                   <Grid columns={2}>
                     <Grid.Row>
                         <Grid.Column>
-                          <p>{keyCode.value}</p>
-                        </Grid.Column>
+                           <p>{keyCode.value} { (user.company === 'Mother Company') ? <span> || {keyCode.company}</span> : null }</p>
+                          </Grid.Column>
                         <Grid.Column textAlign='right'>
-                          <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/>
+                          { (user.company !== 'Mother Company') ? <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/> : null }
                         </Grid.Column>
                     </Grid.Row>
                   </Grid>
@@ -114,9 +187,10 @@ class ViewCode extends Component {
                               </Grid.Row>
                             </Grid> : null}
                     </Table.Cell>
-                    <Table.Cell>
-                        <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
-                    </Table.Cell>
+                      { (user.company !== 'Mother Company') ?
+                        <Table.Cell>
+                            <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
+                        </Table.Cell> : null }
                 </Table.Row>
             )
         }, this);
@@ -127,13 +201,16 @@ class ViewCode extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Paring Codes</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Scanning Codes</Table.HeaderCell>
+                            {(user.company !== 'Mother Company') ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
-                    <Table.Body>
+                    {(user.company !== 'Mother Company') ? <Table.Body>
                         {skuView}
-                    </Table.Body>
+                    </Table.Body> : null }
+                    {(user.company === 'Mother Company') ? <Table.Body>
+                        {skuViewForBigCompany}
+                    </Table.Body> : null }
                 </Table>
             )
         }
@@ -156,7 +233,8 @@ function mapStatesToProps(state) {
         token: state.auth.token,
         code: state.code,
         inventory: state.inventory,
-        auth: state.auth
+        auth: state.auth,
+        company: state.company
     }
 }
 

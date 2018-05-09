@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCode, getAllCode, removeCode } from "./../services/CodeService";
+import { createCode, getAllCode, removeCode, getCodeByCompany } from "./../services/CodeService";
 import { validateCode } from "./../validators/CodeValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -8,12 +8,12 @@ const router = Router();
 router.post('/',verifyAuthMiddleware, function (req, res, next) {
     validateCode(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            res.status(401).send(err);
         }
         else {
             const userSession = req.session;
-            const { key, sku} = req.body;
-            const data = { key, sku, userSession };
+            const { key, sku, mainSku} = req.body;
+            const data = { key, sku, mainSku, userSession };
             createCode(data, function (err, code) {
                 if (err) {
                     if (err.message === "Code Already Exists") {
@@ -60,8 +60,10 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
     }
 });
 
-router.get('/:id', verifyAuthMiddleware, function (req, res, next) {
-    getPendingCodes(function (err, codes) {
+
+router.get('/',verifyAuthMiddleware, function (req, res, next) {
+    //const key = req.body.key;
+    getAllCode(function (err, codes) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -73,9 +75,9 @@ router.get('/:id', verifyAuthMiddleware, function (req, res, next) {
     });
 });
 
-router.get('/',verifyAuthMiddleware, function (req, res, next) {
-    //const key = req.body.key;
-    getAllCode(function (err, codes) {
+router.get('/company',verifyAuthMiddleware, function (req, res, next) {
+    const company = req.session.company;
+    getCodeByCompany(company, function (err, codes) {
         if (err) {
             console.log(err);
             res.status(500).send(err);

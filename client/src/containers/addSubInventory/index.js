@@ -6,7 +6,7 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { addSubInventory, inputSKU, inputDesc, fillingData, errorInput } from "./../../actions/SubInventoryActions";
+import { addSubInventory, inputSKU, inputDesc, fillingData, errorInput, clearError } from "./../../actions/SubInventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,
           chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit
@@ -16,6 +16,7 @@ class AddSubInventory extends Component {
     componentWillMount() {
         const { dispatch } = this.props;
         const { token } = this.props.auth;
+        dispatch(clearError());
         dispatch(getQualities({ token: token }));
         dispatch(getTypes({ token: token }));
         dispatch(getPatterns({ token: token }));
@@ -118,30 +119,38 @@ class AddSubInventory extends Component {
         const { dispatch } = this.props;
         const { token } = this.props.auth;
         this.generateData();
-        var { sku, desc } = this.props.inventory;
+        var { sku, desc, inventories } = this.props.inventory;
+        var check = false;
         const generatedSKU = this.generateData().sku;
         const generatedDesc = this.generateData().desc;
-        //console.log(generatedSKU);
-        //console.log(generatedDesc);
-        if (desc === null){
-            desc = generatedDesc;
-        }
-        if (sku === null){
-            dispatch(errorInput());
+        inventories.forEach(function(inventory){
+            if (inventory.mainSku === generatedSKU){
+                check = true;
+            }
+        });
+        if (check === true){
+            dispatch(errorInput("This product already exists in your inventory"));
         }
         else {
-            const inv = {
-                token: token,
-                sku: sku,
-                mainSku: generatedSKU,
-                productName: desc
+            if (desc === null){
+                desc = generatedDesc;
             }
-            //console.log(inv);
-            dispatch(addSubInventory(inv)).then(function(data){
-                dispatch(push("/subInventory"));
-            });
+            if (sku === null){
+                dispatch(errorInput("SKU cannot be empty"));
+            }
+            else {
+                const inv = {
+                    token: token,
+                    sku: sku,
+                    mainSku: generatedSKU,
+                    productName: desc
+                }
+                //console.log(inv);
+                dispatch(addSubInventory(inv)).then(function(data){
+                    dispatch(push("/subInventory"));
+                });
+            }
         }
-
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;

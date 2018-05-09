@@ -30,6 +30,26 @@ export function createSubInventory(data, callback) {
                 waterfallCallback(err);
             }
         },
+        function(waterfallCallback){
+            getInventoryBySkuDAO(data.mainSku, function(err, inventory){
+                if (err){
+                    waterfallCallback(err);
+                }
+                else if (inventory){
+                   if (inventory.stock === 0){
+                      const err = new Error("This product is currently out of stock")
+                      waterfallCallback(err);
+                   }
+                   else {
+                      waterfallCallback();
+                   }
+                }
+                else {
+                    const err = new Error("This product does not exist in the main inventory");
+                    waterfallCallback(err);
+                }
+            });
+        },
         function (waterfallCallback) {
             getSubInventoryBySkuDAO(data.sku, waterfallCallback);
         },
@@ -241,7 +261,7 @@ export function removeSubInventory(data, callback) {
 export function getSubInventoriesByCompany(company, callback){
      getSubInventoriesByCompanyDAO(company, function(err, inventories){
           if (err){
-              waterfallCallback(err);
+              callback(err);
           }
           else {
               var newInv = [];

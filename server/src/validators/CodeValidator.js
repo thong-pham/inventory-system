@@ -8,6 +8,9 @@ export function validateCode(data, callback) {
     if (!data.sku) {
         errors["sku"] = "SKU is Required";
     }
+    if (!data.mainSku) {
+        errors["mainSku"] = "Main SKU is Required";
+    }
     if (Object.keys(errors).length === 0) {
         callback();
     }

@@ -222,6 +222,10 @@ class BaseLayout extends Component {
                     <Icon name='checkmark box' />
                       Approved Orders
                   </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
+                    <Icon name='barcode' />
+                      Code Management
+                  </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                     <Icon name='user' />
                       User Account

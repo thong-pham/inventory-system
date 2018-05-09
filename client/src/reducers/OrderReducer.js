@@ -3,7 +3,7 @@ import { APPROVE_ORDER_STARTED, APPROVE_ORDER_FULFILLED, APPROVE_ORDER_REJECTED,
          GET_APPROVED_ORDERS_STARTED, GET_APPROVED_ORDERS_FULFILLED, GET_APPROVED_ORDERS_REJECTED,
          CHANGE_ORDER_STARTED, CHANGE_ORDER_FULFILLED, CHANGE_ORDER_REJECTED,
          DELETE_ORDER_STARTED, DELETE_ORDER_FULFILLED, DELETE_ORDER_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER
+         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER
          } from "./../actions/OrderActions";
 
 const initialState = {
@@ -23,7 +23,9 @@ const initialState = {
     response: null,
     change: null,
     quantity: null,
-    add: false
+    add: false,
+    cartErrors: null,
+    orderError: null
 }
 
 export default function (state = initialState, action) {
@@ -66,26 +68,28 @@ export default function (state = initialState, action) {
             return { ...state, isApprovingOrder: false, pendingOrders: newOrders, approvingOrderError: null  };
         }
         case APPROVE_ORDER_REJECTED: {
-            const error = action.payload.data;
-            return { ...state, isApprovingOrder: false, approvingOrderError: error };
+            //console.log(action.payload.data);
+            const error = action.payload.data.message;
+            const { denies, id } = action.payload.data;
+            return { ...state, isApprovingOrder: false, approvingOrderError: error, cartErrors: denies, orderError: id };
         }
         case CHANGE_ORDER_STARTED: {
             return {...state, isChangingOrder: true };
         }
         case CHANGE_ORDER_FULFILLED: {
             const data = action.payload;
-            return {...state, isChangingOrder: false, change: false, quantity: null };
+            return {...state, isChangingOrder: false, change: false, quantity: null, changingOrderError: null, cartError: null };
         }
         case CHANGE_ORDER_REJECTED: {
             const data = action.payload.data;
-            return {...state, isChangingOrder: false, changingOrderError: data};
+            return {...state, isChangingOrder: false, changingOrderError: data };
         }
         case DELETE_ORDER_STARTED: {
             return {...state, isDeletingOrder: true };
         }
         case DELETE_ORDER_FULFILLED: {
             const data = action.payload;
-            return {...state, isDeletingOrder: false };
+            return {...state, isDeletingOrder: false, deletingOrderError: null };
         }
         case DELETE_ORDER_REJECTED: {
             const data = action.payload.data;
@@ -102,6 +106,13 @@ export default function (state = initialState, action) {
             var data = action.payload;
             const number = parseInt(data);
             return { ...state, quantity : number};
+        }
+        case SET_VIEWING_ORDER: {
+            const id = action.payload;
+            const newOrder = state.pendingOrders.filter(function (element) {
+                return element.id == id;
+            })[0];
+            return { ...state, order: newOrder };
         }
         default: {
             return state;

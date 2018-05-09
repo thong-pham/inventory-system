@@ -10,6 +10,7 @@ const OrderSchema = mongoose.Schema({
         sku: { type: String, required: true },
         mainSku: { type: String, required: true },
         quantity: { type: Number, required: true },
+        desc: { type: String, required: true },
         status: { type: String, required: true, enum: ["added", "pending"] }
     }],
 

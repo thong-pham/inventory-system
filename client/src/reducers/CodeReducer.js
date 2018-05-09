@@ -52,7 +52,7 @@ export default function (state = initialState, action) {
         }
         case DELETE_CODE_FULFILLED: {
             const data = action.payload;
-            return {...state, isDeletingCode: false};
+            return {...state, isDeletingCode: false, deletingCodeError: null};
         }
         case DELETE_CODE_REJECTED: {
             const data = action.payload.data;

@@ -29,6 +29,7 @@ import ViewSubInventories from "./containers/viewSubInventories";
 import ApproveImport from "./containers/approveImport";
 import ViewInventories from "./containers/viewInventories";
 import ViewOrders from "./containers/viewOrders";
+import ViewOrderDetails from "./containers/viewOrderDetails";
 import ViewApprovedOrders from "./containers/viewApprovedOrders";
 import ViewCode from "./containers/viewCode";
 import ViewAccount from "./containers/viewAccount";
@@ -50,7 +51,7 @@ const store = createStore(
     reducers,
     undefined,
     compose(
-        applyMiddleware(middleware, logger, thunk)
+        applyMiddleware(middleware, thunk)
     )
 )
 
@@ -61,7 +62,7 @@ class App extends Component {
     componentWillMount() {
         persistStore(store, null, () => {
             this.setState({ isLoading: false });
-            store.dispatch(push('/login'))
+            store.dispatch(push('/login'));
         })
     }
     render() {
@@ -91,6 +92,7 @@ class App extends Component {
                             <Route exact path="/inventory" component={ViewInventories} />
                             <Route exact path="/subInventory" component={ViewSubInventories} />
                             <Route exact path="/orders" component={ViewOrders} />
+                            <Route path="/order/:id" component={ViewOrderDetails} />
                             <Route exact path="/approvedOrders" component={ViewApprovedOrders} />
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />

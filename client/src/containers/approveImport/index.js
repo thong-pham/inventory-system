@@ -5,17 +5,33 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
-import { getPendingImports } from "./../../actions/ImportActions";
+import { getPendingImports, deleteImport } from "./../../actions/ImportActions";
+
+import { approveInventory } from "./../../actions/InventoryActions";
 
 class ApproveImport extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         dispatch(getPendingImports({ token: token }));
     }
-    onPressApprove(importData) {
-
+    onPressApprove = (importData) => {
+        const { dispatch, token } = this.props;
+        dispatch(approveInventory({token: token, importData: importData})).then(function(data){
+            dispatch(getPendingImports({ token: token }));
+        });
     }
+
+    onPressDelete = (importData) => {
+          const { dispatch, token } = this.props;
+          dispatch(deleteImport({token: token, importData: importData})).then(function(data){
+              dispatch(getPendingImports({ token: token }));
+          });
+    }
+
     render() {
+        const { user } = this.props.auth;
+        const isWorker = user.roles.indexOf("worker") >= 0;
+        const isStoreManager = user.roles.indexOf("storeManager") >= 0;
         const { pendingImports, isFetchingImports, fetchingImportsError, deletingsImportsError } = this.props.import;
         let error = null;
         if (fetchingImportsError || deletingsImportsError) {
@@ -33,8 +49,10 @@ class ApproveImport extends Component {
                     <Table.Cell>{importData.sku}</Table.Cell>
                     <Table.Cell>{importData.quantity}</Table.Cell>
                     <Table.Cell>{importData.status}</Table.Cell>
+                    <Table.Cell>{importData.username}</Table.Cell>
                     <Table.Cell >
-                      <Icon name='checkmark' size='large' onClick={this.onPressApprove.bind(this, importData)} /> 
+                      { (isStoreManager) ? <Icon name='checkmark' size='large' onClick={() => this.onPressApprove(importData)}/> : null }
+                      <Icon name='trash outline' size='large' onClick={() => this.onPressDelete(importData)}/>
                     </Table.Cell>
                 </Table.Row>
             )
@@ -48,6 +66,7 @@ class ApproveImport extends Component {
                             <Table.HeaderCell>SKU</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Status</Table.HeaderCell>
+                            <Table.HeaderCell>Username</Table.HeaderCell>
                             <Table.HeaderCell>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -76,7 +95,9 @@ class ApproveImport extends Component {
 function mapStatesToProps(state) {
     return {
         token: state.auth.token,
-        import: state.imports
+        import: state.imports,
+        auth: state.auth,
+        inventory: state.inventory
     }
 }
 

@@ -7,6 +7,10 @@ const CartSchema = mongoose.Schema({
 
     mainSku: { type: String, required: true },
 
+    mainStock: { type: String, required: false },
+
+    desc:  { type: String, required: true },
+
     quantity: { type: Number, required: true },
 
     username: { type: String, required: true },

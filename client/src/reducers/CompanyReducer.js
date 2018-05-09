@@ -30,7 +30,7 @@ export default function (state = initialState, action) {
         case ADD_COMPANY_FULFILLED: {
             const data = action.payload;
             const newCompany = state.companies.concat([data]);
-            return { ...state, isAddingCompany: false, companies: newCompany };
+            return { ...state, isAddingCompany: false, companies: newCompany, addingCompanyError: null };
         }
         case ADD_COMPANY_REJECTED: {
             const error = action.payload.data;
@@ -52,7 +52,7 @@ export default function (state = initialState, action) {
         }
         case DELETE_COMPANY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isDeletingCompany: false };
+            return { ...state, isDeletingCompany: false, deletingsCompaniesError: null };
         }
         case DELETE_COMPANY_REJECTED: {
             const error = action.payload.data;
@@ -74,7 +74,7 @@ export default function (state = initialState, action) {
         }
         case UPDATE_COMPANY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isUpdatingCompany: false, company: null };
+            return { ...state, isUpdatingCompany: false, company: null, updatingCompaniesError: null };
         }
         case UPDATE_COMPANY_REJECTED: {
             const error = action.payload.data;

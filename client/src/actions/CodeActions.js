@@ -41,6 +41,25 @@ export function getAllCode(data) {
     }
 }
 
+export function getCodeByCompany(data) {
+    return function (dispatch) {
+        dispatch({ type: GET_CODES_STARTED });
+        return axios.get(WS_URL + "company", { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: GET_CODES_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: GET_CODES_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
 export function addPopUp(sku){
     return function (dispatch){
         dispatch({ type: ADD_POPUP, payload: sku });

@@ -10,6 +10,8 @@ import {
 
 } from "./../dao/mongo/impl/CodeDAO";
 
+import { getSubInventoriesByCompany as getSubInventoriesByCompanyDAO } from "./../dao/mongo/impl/SubInventoryDAO";
+
 import { getInventories as getInventoriesDAO } from "./../dao/mongo/impl/InventoryDAO";
 
 import { getNextCodeId } from "./CounterService";
@@ -20,8 +22,8 @@ export function createCode(data, callback){
    async.waterfall([
      function (waterfallCallback) {
          const { roles, company } = data.userSession;
-         const { isStoreManager } = getUserRoles(roles);
-         if (isStoreManager && company === 'Mother Company') {
+         const { isStoreManager, isSales } = getUserRoles(roles);
+         if (isStoreManager || isSales) {
              waterfallCallback();
          }
          else {
@@ -46,8 +48,9 @@ export function createCode(data, callback){
         });
      },
      function (data, counterDoc, waterfallCallback){
-         //const { username } = data.userSession;
+         const { company } = data.userSession;
          data.id = counterDoc.counter;
+         data.company = company;
          createCodeDAO(data, waterfallCallback);
      }
    ],callback);
@@ -87,8 +90,8 @@ export function removeCode(data, callback){
     async.waterfall([
       function (waterfallCallback) {
           const { roles, company } = data.userSession;
-          const { isStoreManager } = getUserRoles(roles);
-          if (isStoreManager && company === 'Mother Company') {
+          const { isStoreManager, isSales } = getUserRoles(roles);
+          if (isStoreManager || isSales) {
               waterfallCallback();
           }
           else {
@@ -146,6 +149,57 @@ export function getAllCode(callback){
               else{
                   list.forEach(function(item){
                       codes.forEach(function(code){
+                          if (code.mainSku === item.sku){
+                              const temp = {
+                                 value: code.key,
+                                 id: code.id,
+                                 company: code.company
+                              }
+                              item.keys.push(temp);
+                          }
+                      });
+                  });
+                  //console.log(list);
+                  waterfallCallback(null, list);
+              }
+          });
+      }
+    ],callback);
+}
+
+export function getCodeByCompany(company, callback){
+    async.waterfall([
+      function(waterfallCallback){
+         getSubInventoriesByCompanyDAO(company, function(err, inventories){
+            if (err){
+                waterfallCallback(err);
+            }
+            else{
+                var list = [];
+                var temp = {};
+                inventories.forEach(function(inventory){
+                    temp = {
+                      sku: inventory.sku,
+                      mainSku: inventory.mainSku,
+                      keys: []
+                    }
+                    list.push(temp);
+                });
+                waterfallCallback(null, list);
+            }
+         });
+      },
+      function(list, waterfallCallback){
+          getAllCodeDAO(function(err, codes){
+              if (err){
+                  waterfallCallback(err);
+              }
+              else if (codes === null){
+                  waterfallCallback(null, list);
+              }
+              else{
+                  list.forEach(function(item){
+                      codes.forEach(function(code){
                           if (code.sku === item.sku){
                               const temp = {
                                  value: code.key,
@@ -165,5 +219,6 @@ export function getAllCode(callback){
 
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
-    return { isStoreManager };
+    const isSales = roles.indexOf("sales") >= 0;
+    return { isStoreManager, isSales };
 }

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Item, Grid } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button,
+          Input, Item, Grid, Accordion, Divider } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -11,6 +12,7 @@ import './../../styles/custom.css';
 import { getApprovedOrders, getApprovedOrdersByCompany } from "./../../actions/OrderActions";
 
 class ViewApprovedOrders extends Component {
+    state = { activeIndex: 0 };
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
@@ -23,7 +25,16 @@ class ViewApprovedOrders extends Component {
 
     }
 
+    handleClick = (e, titleProps) => {
+        const { index } = titleProps
+        const { activeIndex } = this.state
+        const newIndex = activeIndex === index ? -1 : index
+
+        this.setState({ activeIndex: newIndex })
+    }
+
     render() {
+        const { activeIndex } = this.state;
         const { user } = this.props.auth;
         const { approvedOrders, isFetchingApprovedOrders, fetchingApprovedOrdersError } = this.props.order;
         let error = null;
@@ -40,14 +51,15 @@ class ViewApprovedOrders extends Component {
                 return (
                     <Item key={cart.id}>
                       <Item.Content>
-                        <Item.Header as='a'>ID {cart.id}</Item.Header>
-                        <Item.Meta>Description</Item.Meta>
+                        {/*<Item.Header as='a'>ID {cart.id}</Item.Header>*/}
                         <Item.Description>
                           { (user.company !== 'Mother Company') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
                           { (user.company === 'Mother Company') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
+                          <p>Description : {cart.desc}</p>
                           <p>Quantity : {cart.quantity}</p>
                         </Item.Description>
                       </Item.Content>
+                      <Divider horizontal>{cart.id}</Divider>
                     </Item>
                 )
             }, this);
@@ -56,7 +68,15 @@ class ViewApprovedOrders extends Component {
                     <Table.Cell>{order.id}</Table.Cell>
                     <Table.Cell>
                         <Item.Group>
-                            {detailsView}
+                          <Accordion fluid styled>
+                            <Accordion.Title active={activeIndex === order.id} index={order.id} onClick={this.handleClick}>
+                              <Icon name='dropdown' />
+                               See Details
+                            </Accordion.Title>
+                            <Accordion.Content active={activeIndex === order.id}>
+                              {detailsView}
+                            </Accordion.Content>
+                          </Accordion>
                         </Item.Group>
                     </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>

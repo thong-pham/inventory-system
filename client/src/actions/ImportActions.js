@@ -40,3 +40,23 @@ export function getPendingImports(data) {
             })
     }
 }
+
+export function deleteImport(data) {
+    const importData = data.importData;
+    return function (dispatch) {
+        dispatch({ type: DELETE_IMPORT_STARTED });
+        return axios.delete(WS_URL + importData.id + "/import", { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: DELETE_IMPORT_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: DELETE_IMPORT_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}

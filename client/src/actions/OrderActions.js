@@ -23,6 +23,7 @@ export const DELETE_ORDER_REJECTED = "DELETE_ORDER_REJECTED";
 export const CHANGE_POPUP = "CHANGE_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_NUMBER = "TRACK_NUMBER";
+export const SET_VIEWING_ORDER = "SET_VIEWING_ORDER";
 
 const WS_URL = "https://api.israhospitality.com/orders/";
 
@@ -122,24 +123,6 @@ export function approveOrder(orderData) {
     }
 }
 
-export function changePopUp(id){
-    return function (dispatch){
-        dispatch({ type: CHANGE_POPUP, payload: id });
-    }
-}
-
-export function closePopUp(){
-  return function (dispatch){
-      dispatch({ type: CLOSE_POPUP });
-  }
-}
-
-export function trackNumber(data){
-   return function (dispatch){
-       dispatch({ type : TRACK_NUMBER, payload: data})
-   }
-}
-
 export function changeOrder(data) {
     //const id = data.orderId;
     return function (dispatch) {
@@ -178,4 +161,28 @@ export function deleteOrder(data) {
                 throw response;
             })
     }
+}
+
+export function setViewingOrder(id) {
+    return function (dispatch) {
+        dispatch({ type: SET_VIEWING_ORDER, payload: id });
+    }
+}
+
+export function changePopUp(id){
+    return function (dispatch){
+        dispatch({ type: CHANGE_POPUP, payload: id });
+    }
+}
+
+export function closePopUp(){
+  return function (dispatch){
+      dispatch({ type: CLOSE_POPUP });
+  }
+}
+
+export function trackNumber(data){
+   return function (dispatch){
+       dispatch({ type : TRACK_NUMBER, payload: data})
+   }
 }

@@ -2,7 +2,7 @@ import { GET_SUBINVENTORIES_STARTED, GET_SUBINVENTORIES_FULFILLED, GET_SUBINVENT
           UPDATE_SUBINVENTORY_STARTED, UPDATE_SUBINVENTORY_FULFILLED, UPDATE_SUBINVENTORY_REJECTED,
           ADD_SUBINVENTORY_STARTED, ADD_SUBINVENTORY_FULFILLED, ADD_SUBINVENTORY_REJECTED,
           DELETE_SUBINVENTORY_STARTED, DELETE_SUBINVENTORY_FULFILLED, DELETE_SUBINVENTORY_REJECTED,
-          SET_UPDATING_SUBINVENTORY_FULFILLED, INPUT_SKU, INPUT_DESC, FILL_DATA, ERROR_INPUT,
+          SET_UPDATING_SUBINVENTORY_FULFILLED, INPUT_SKU, INPUT_DESC, FILL_DATA, ERROR_INPUT, CLEAR_ERROR,
           TRACK_NUMBER, OPEN_MODAL, CLOSE_MODAL, OPEN_ADD, CLOSE_ADD,
           ADD_CART_STARTED, ADD_CART_FULFILLED, ADD_CART_REJECTED,
           GET_CARTS_STARTED, GET_CARTS_FULFILLED, GET_CARTS_REJECTED,
@@ -58,11 +58,11 @@ export default function (state = initialState, action) {
         case ADD_SUBINVENTORY_FULFILLED: {
             const data = action.payload;
             const newInventory = state.inventories.concat([data]);
-            return { ...state, isAddingInventory: false, inventories: newInventory };
+            return { ...state, isAddingInventory: false, inventories: newInventory, addingInventoryError: null };
         }
         case ADD_SUBINVENTORY_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isAddingInventory: false, addingInventoryError: error };
+            return { ...state, isAddingInventory: false, addingInventoryError: error, errorInput: null };
         }
         case GET_SUBINVENTORIES_STARTED: {
             return { ...state, isFetchingInventories: true };
@@ -117,8 +117,11 @@ export default function (state = initialState, action) {
             return { ...state, generatedSKU: data.sku, generatedDesc: data.desc, errorInput: null }
         }
         case ERROR_INPUT: {
-            const error = "Invalid Input";
+            const error = action.payload;
             return {...state, errorInput: error };
+        }
+        case CLEAR_ERROR: {
+            return {...state, errorInput: null, addingInventoryError: null };
         }
         case OPEN_MODAL: {
             const data = action.payload;

@@ -100,10 +100,10 @@ export function getPendingInventories(data) {
 }
 
 export function approveInventory(data) {
-    const inventory = data.inventory;
+    const importData = data.importData;
     return function (dispatch) {
         dispatch({ type: APPROVE_INVENTORY_STARTED });
-        return axios.put(WS_URL + inventory.id + "/approve", null, { headers: { Authorization: data.token } })
+        return axios.put(WS_URL + importData.id + "/approve", null, { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })

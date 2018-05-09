@@ -60,7 +60,7 @@ export default function (state = initialState, action) {
         case ADD_FEATURE_FULFILLED: {
             const data = action.payload;
             return { ...state, isAddingFeature: false, addQuality: false, addType: false, addPattern: false,
-                      addColor: false, addSize: false, addUnit: false };
+                      addColor: false, addSize: false, addUnit: false, addingFeatureError: null };
         }
         case ADD_FEATURE_REJECTED: {
             const error = action.payload.data;
@@ -137,7 +137,7 @@ export default function (state = initialState, action) {
             return { ...state, isDeletingFeature: true };
         }
         case DELETE_FEATURE_FULFILLED:{
-            return { ...state, isDeletingFeature: false };
+            return { ...state, isDeletingFeature: false, deletingFeatureError: null };
         }
         case DELETE_FEATURE_REJECTED: {
             const err = action.payload;

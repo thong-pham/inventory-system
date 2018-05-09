@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Item, Grid } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container,
+        Button, Input, Item, Grid, Accordion, Divider } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -12,6 +13,7 @@ import { getPendingOrders, getPendingOrderByCompany, approveOrder, changePopUp, 
         changeOrder, trackNumber, deleteOrder } from "./../../actions/OrderActions";
 
 class ViewOrders extends Component {
+    state = { activeIndex: 0 };
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
@@ -23,7 +25,7 @@ class ViewOrders extends Component {
         }
 
     }
-    onPressEdit(cart) {
+    onPressEdit(cart){
         const { token, dispatch } = this.props;
         dispatch(changePopUp(cart.id));
     }
@@ -82,15 +84,41 @@ class ViewOrders extends Component {
           });
     }
 
-    handleInput(e){
+    handleInput = (e) => {
         const { token, dispatch } = this.props;
         dispatch(trackNumber(e.target.value));
     }
 
+    handleClick = (e, titleProps) => {
+        const { index } = titleProps
+        const { activeIndex } = this.state
+        const newIndex = activeIndex === index ? -1 : index
+
+        this.setState({ activeIndex: newIndex })
+    }
+    checkOrderError = (id) => {
+        const { cartErrors, orderError } = this.props.order;
+        var check = false;
+        var stock = null;
+        cartErrors.forEach(function(data){
+            if (data.cartId === id){
+                check = true;
+                stock = data.mainStock
+            }
+        });
+        const data = {
+            check: check,
+            stock: stock
+        }
+        return data;
+    }
     render() {
+        const { activeIndex } = this.state;
         const { user } = this.props.auth;
-        const { pendingOrders, fetchingPendingOrdersError, approvingOrderError, change, quantity } = this.props.order;
+        const { pendingOrders, fetchingPendingOrdersError, approvingOrderError,
+                change, quantity, cartErrors, orderError } = this.props.order;
         let error = null;
+        let approveError = null;
         if (fetchingPendingOrdersError) {
             error = (
                 <Message negative>
@@ -100,9 +128,8 @@ class ViewOrders extends Component {
             )
         }
         else if (approvingOrderError) {
-            error = (
+            approveError = (
                 <Message negative>
-                    <Message.Header>Error while Approving Order</Message.Header>
                     <p>{approvingOrderError}</p>
                 </Message>
             )
@@ -120,19 +147,19 @@ class ViewOrders extends Component {
                 return (
                     <Item key={cart.id}>
                       <Item.Content>
-                        <Item.Header as='a'>ID {cart.id}</Item.Header>
-                        <Item.Meta>Description</Item.Meta>
+                        {/*<Item.Header as='a'>ID {cart.id}</Item.Header>*/}
                         <Item.Description>
-                          { (user.company !== 'Mother Company') ? <p>SKU : {cart.sku}</p> : null }
-                          { (user.company === 'Mother Company') ? <p>SKU : {cart.mainSku}</p> : null }
+                          { (user.company !== 'Mother Company') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
+                          { (user.company === 'Mother Company') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
+                          <p>Description : {cart.desc}</p>
                           <p>Quantity : {cart.quantity}</p>
                         </Item.Description>
                         <hr />
-                        { (change === cart.id) ? <Item.Extra>
+                        { (change === cart.id) ? <Item.Extra className="extra">
                           <Grid columns={2} divided>
                             <Grid.Row className="columnForChange">
                               <Grid.Column className="columnForInput" textAlign='center'>
-                                  <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput.bind(this)} />
+                                  <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput} />
                               </Grid.Column>
                                   <Grid.Column className="columnForButton" textAlign='center'>
                                       <Grid columns={2}>
@@ -150,7 +177,11 @@ class ViewOrders extends Component {
                             </Grid>
                         </Item.Extra> : null}
                       </Item.Content>
-                      { (user.company === 'Mother Company') ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, cart)} /> : null }
+                      { (user.company === 'Mother Company' && change !== cart.id) ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, cart)} /> : null }
+                      { (approvingOrderError && this.checkOrderError(cart.id).check) ? <Message negative>
+                                                    <p>{approvingOrderError} {this.checkOrderError(cart.id).stock}</p>
+                                                </Message> : null }
+                      <Divider horizontal>{cart.id}</Divider>
                     </Item>
                 )
             }, this);
@@ -158,10 +189,18 @@ class ViewOrders extends Component {
                 <Table.Row key={order.id}>
                     <Table.Cell>{order.id}</Table.Cell>
                     <Table.Cell>
-                        <Item.Group>
-                            {detailsView}
+                       <Item.Group>
+                          <Accordion fluid styled>
+                            <Accordion.Title active={activeIndex === order.id} index={order.id} onClick={this.handleClick}>
+                              <Icon name='dropdown' />
+                               See Details
+                            </Accordion.Title>
+                            <Accordion.Content active={activeIndex === order.id}>
+                              {detailsView}
+                            </Accordion.Content>
+                          </Accordion>
                         </Item.Group>
-                    </Table.Cell>
+                      </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>
                     <Table.Cell >{order.createdBy}</Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
@@ -179,7 +218,7 @@ class ViewOrders extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>Order Number</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Details</Table.HeaderCell>
+                            <Table.HeaderCell width={2}>Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Company</Table.HeaderCell>

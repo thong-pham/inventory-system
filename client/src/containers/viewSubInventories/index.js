@@ -7,7 +7,7 @@ import BaseLayout from "./../baseLayout";
 
 import { getSubInventories, getSubInventoriesByCompany, deleteSubInventory,
         openAdd, closeAdd, trackNumber, errorInput, showModal, closeModal,
-        addCart, updateCart, deleteCart, submitOrder
+        addCart, updateCart, deleteCart, submitOrder, getCarts, clearError
       } from "./../../actions/SubInventoryActions";
 
 class ViewSubInventory extends Component {
@@ -16,6 +16,8 @@ class ViewSubInventory extends Component {
         const { user } = this.props.auth;
         if (user.company !== 'Mother Company'){
             dispatch(getSubInventoriesByCompany({ token: token }));
+            dispatch(getCarts({token: token}));
+            dispatch(clearError());
         }
         else {
             dispatch(getSubInventories({ token: token }));
@@ -60,6 +62,7 @@ class ViewSubInventory extends Component {
             var data = {
                 sku : inventory.sku,
                 mainSku: inventory.mainSku,
+                desc: inventory.productName.en,
                 quantity: quantity,
                 username: user.username
             }
@@ -106,6 +109,7 @@ class ViewSubInventory extends Component {
                 sku: cart.sku,
                 quantity: cart.quantity,
                 mainSku: cart.mainSku,
+                desc: cart.desc,
                 status: "added"
             });
         });
@@ -203,8 +207,9 @@ class ViewSubInventory extends Component {
             return(
               <Table.Row key={cart.id}>
                   <Table.Cell>{cart.sku}</Table.Cell>
-                  <Table.Cell>{cart.status}</Table.Cell>
+                  <Table.Cell>{cart.desc}</Table.Cell>
                   <Table.Cell >{cart.quantity}</Table.Cell>
+                  <Table.Cell>{cart.status}</Table.Cell>
                   <Table.Cell >
                       <Button onClick={this.onRemoveCart.bind(this, cart)}>Remove</Button>
                   </Table.Cell>
@@ -237,8 +242,9 @@ class ViewSubInventory extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Status</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Quantity</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -256,6 +262,7 @@ class ViewSubInventory extends Component {
                   <Modal.Content>
                       <Header>Description</Header>
                       <p>SKU : {modalCart.sku}</p>
+                      <p>Product Description : {modalCart.desc}</p>
                       <p>Quantity : {modalCart.quantity}</p>
                   </Modal.Content>
                   <Modal.Actions>

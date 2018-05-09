@@ -50,6 +50,10 @@
     padding-left: 20;
 }
 
+.extra {
+   padding-top: 15px
+}
+
 @media only screen and (max-width: 1280px) {
     .side-right {
         width: 79.5%;
@@ -57,4 +61,8 @@
     .side-left {
         width : 260px !important;
     }
+}
+
+@media only screen and (max-width: 667px) and (min-width: 375px){
+    
 }

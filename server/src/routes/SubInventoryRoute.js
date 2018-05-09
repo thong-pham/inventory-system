@@ -21,6 +21,12 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
                     if (err.message === "Not Enough Permission to create Inventory") {
                         res.status(400).send(err.message);
                     }
+                    else if (err.message === "This product is currently out of stock"){
+                       res.status(401).send(err.message);
+                    }
+                    else if (err.message === "This product does not exist in the main inventory"){
+                       res.status(401).send(err.message);
+                    }
                     else if (err.message === "SKU Already Exists"){
                        res.status(401).send(err.message);
                     }

@@ -3,7 +3,7 @@ import { createInventory, approveInventory, removeInventory,
         getInventories, getPendingInventories,
         updateInventory, createRequest, getPendingRequests,
         approveRequest, increaseByPhone, decreaseByPhone,
-        getPendingImports
+        getPendingImports, removeImport
        } from "./../services/InventoryService";
 import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
 import { validateCreateInventory, validateUpdateByPhone } from "./../validators/InventoryValidator"
@@ -165,7 +165,7 @@ router.put('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
                 }
             }
             else {
-                res.status(200).send("A Request has been approved");
+                res.status(200).send("An Import has been processed");
             }
         });
     }
@@ -211,6 +211,40 @@ router.get('/pendingImports', verifyAuthMiddleware, function (req, res, next) {
             res.status(200).send(imports);
         }
     });
+});
+
+router.delete('/:id/import', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        const userSession = req.session;
+        const data = { id, userSession };
+        removeImport(data, function (err, inventory) {
+            if (err) {
+                if (err.message === "Only Mother Company can remove Import"){
+                   res.status(401).send(err.message);
+                }
+                else if (err.message === "Not Enough Permission to remove Import") {
+                    res.status(402).send(err.message);
+                }
+                else if (err.message === "Only pending import can be removed") {
+                    res.status(403).send(err.message);
+                }
+                else if (err.message === "Inventory Not Found") {
+                    res.status(404).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send("Delete Successfully");
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 router.post('/increaseByPhone', verifyAuthMiddleware, function (req, res, next) {

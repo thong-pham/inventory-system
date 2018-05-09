@@ -45,7 +45,7 @@ class ImportInventory extends Component {
         const { token } = this.props.auth;
         values.token = token;
         return dispatch(importInventory(values)).then(function (data) {
-            dispatch(push("/inventory"));
+            dispatch(push("/imports"));
         });
     }
     render() {

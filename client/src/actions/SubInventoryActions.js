@@ -40,6 +40,7 @@ export const INPUT_SKU = "INPUT_SKU";
 export const INPUT_DESC = "INPUT_DESC";
 export const FILL_DATA = "FILL_DATA";
 export const ERROR_INPUT = "ERROR_INPUT";
+export const CLEAR_ERROR = "CLEAR_ERROR";
 
 export const TRACK_NUMBER = "TRACK_NUMBER";
 export const OPEN_MODAL = "OPEN_MODAL";
@@ -270,9 +271,15 @@ export function fillingData(data){
    }
 }
 
-export function errorInput(){
+export function errorInput(data){
     return function (dispatch) {
-        dispatch({type: ERROR_INPUT});
+        dispatch({type: ERROR_INPUT, payload: data});
+    }
+}
+
+export function clearError(){
+    return function (dispatch) {
+        dispatch({type: CLEAR_ERROR});
     }
 }
 
