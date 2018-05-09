@@ -5,6 +5,8 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
+import './../../styles/custom.css';
+
 import { getCompanies, deleteCompanies } from "./../../actions/CompanyActions";
 
 class ViewCompanies extends Component {

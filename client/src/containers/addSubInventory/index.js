@@ -6,6 +6,8 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
+import './../../styles/custom.css';
+
 import { addSubInventory, inputSKU, inputDesc, fillingData, errorInput, clearError } from "./../../actions/SubInventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,
@@ -85,14 +87,14 @@ class AddSubInventory extends Component {
             });
             sizes.forEach(function(item){
                 if (item.description === size){
-                    sku = sku.concat("-").concat(item.key).concat("-");
-                    desc = desc.concat("-").concat(item.description).concat("-");
+                    sku = sku.concat("-").concat(item.key);
+                    desc = desc.concat("-").concat(item.description);
                 }
             });
             units.forEach(function(item){
                 if (item.description === unit){
-                    sku = sku.concat(item.key);
-                    desc = desc.concat(item.description);
+                    sku = sku.concat("-").concat(item.key);
+                    desc = desc.concat("-").concat(item.description);
                 }
             });
             //console.log(sku);

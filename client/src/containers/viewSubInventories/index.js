@@ -5,6 +5,8 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
+import './../../styles/custom.css';
+
 import { getSubInventories, getSubInventoriesByCompany, deleteSubInventory,
         openAdd, closeAdd, trackNumber, errorInput, showModal, closeModal,
         addCart, updateCart, deleteCart, submitOrder, getCarts, clearError

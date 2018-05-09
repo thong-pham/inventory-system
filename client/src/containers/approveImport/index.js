@@ -5,6 +5,8 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
+import './../../styles/custom.css';
+
 import { getPendingImports, deleteImport } from "./../../actions/ImportActions";
 
 import { approveInventory } from "./../../actions/InventoryActions";

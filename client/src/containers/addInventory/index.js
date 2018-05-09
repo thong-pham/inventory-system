@@ -6,6 +6,8 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
+import './../../styles/custom.css';
+
 import { addInventory, setUpdatingInventory, updateInventory, fillingData, errorInput } from "./../../actions/InventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,

@@ -6,6 +6,8 @@ import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
+import './../../styles/custom.css';
+
 import { setUpdatingInventory, updateInventory, clearInventory } from "./../../actions/InventoryActions";
 
 function validate(values) {
