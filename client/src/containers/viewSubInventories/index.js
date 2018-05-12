@@ -16,7 +16,7 @@ class ViewSubInventory extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        if (user.company !== 'Mother Company'){
+        if (user.company !== 'ISRA'){
             dispatch(getSubInventoriesByCompany({ token: token }));
             dispatch(getCarts({token: token}));
             dispatch(clearError());
@@ -58,7 +58,7 @@ class ViewSubInventory extends Component {
           const { quantity } = this.props.inventory;
           const { user } = this.props.auth;
           if (isNaN(quantity) || quantity === null){
-              dispatch(errorInput());
+              dispatch(errorInput("Invalid Input"));
           }
           else {
             var data = {

@@ -1,7 +1,7 @@
 import { GET_CODES_STARTED, GET_CODES_FULFILLED, GET_CODES_REJECTED,
         ADD_CODE_STARTED, ADD_CODE_FULFILLED, ADD_CODE_REJECTED,
         DELETE_CODE_STARTED, DELETE_CODE_FULFILLED, DELETE_CODE_REJECTED,
-        ADD_POPUP, CLOSE_POPUP, TRACK_INPUT
+        ADD_POPUP, CLOSE_POPUP, TRACK_INPUT, ERROR_INPUT
         } from "./../actions/CodeActions";
 
 const initialState = {
@@ -15,7 +15,8 @@ const initialState = {
     code: null,
     skuList: [],
     openAdd: null,
-    codeInput: null
+    codeInput: null,
+    errorInput: null
 }
 
 export default function (state = initialState, action) {
@@ -60,14 +61,18 @@ export default function (state = initialState, action) {
         }
         case ADD_POPUP: {
             const data = action.payload;
-            return {...state, openAdd: data}
+            return {...state, openAdd: data, errorInput: null, addingCodeError: null}
         }
         case CLOSE_POPUP: {
-            return {...state, openAdd: null, addingCodeError: null}
+            return {...state, openAdd: null, errorInput: null, addingCodeError: null}
         }
         case TRACK_INPUT: {
             var data = action.payload;
             return { ...state, codeInput : data};
+        }
+        case ERROR_INPUT: {
+            const error = action.payload;
+            return {...state, errorInput: error };
         }
         default: {
             return state;

@@ -86,7 +86,7 @@ export function updateSubInventory(data, callback) {
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isSales } = getUserRoles(roles);
-            if (company === 'Mother Company') {
+            if (company === 'ISRA') {
                 const err = new Error("Only Child Company can edit SubInventory");
                 waterfallCallback(err)
             }
@@ -196,7 +196,7 @@ export function removeSubInventory(data, callback) {
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isSales } = getUserRoles(roles);
-            if (company === 'Mother Company') {
+            if (company === 'ISRA') {
                 const err = new Error("Only Child Company can remove Inventory");
                 waterfallCallback(err)
             }

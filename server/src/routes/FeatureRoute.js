@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createFeature, removeFeature,
+import { createFeature, removeFeature, updateFeature,
          getQualities, getTypes, getPatterns, getColors, getSizes, getUnits
        } from "./../services/FeatureService";
 import { validateFeature } from "./../validators/FeatureValidator"
@@ -110,6 +110,42 @@ router.get('/unit', verifyAuthMiddleware, function (req, res, next) {
             res.status(200).send(units);
         }
     });
+});
+
+router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        validateFeature(req.body, function (err) {
+            if (err) {
+                res.status(400).send(err);
+            }
+            else {
+                const userSession = req.session;
+                const { description, key, kind } = req.body;
+                const data = { description, key, kind, userSession, id };
+                updateFeature(data, function (err, inventory) {
+                    if (err) {
+                        if (err.message === "Not Enough Permission to update feature"){
+                           res.status(400).send(err.message);
+                        }
+                        else if (err.message === "Feature Not Found") {
+                            res.status(404).send(err.message);
+                        }
+                        else {
+                            console.log(err);
+                            res.status(500).send(err);
+                        }
+                    }
+                    else {
+                        res.status(201).send(inventory);
+                    }
+                });
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 router.delete('/:kind/:id', verifyAuthMiddleware, function (req, res, next) {

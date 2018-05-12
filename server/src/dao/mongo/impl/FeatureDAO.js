@@ -32,6 +32,12 @@ export function getColors(callback) {
     });
 }
 
+export function updateColorById(id, data, callback) {
+    Color.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, color) {
+        callback(err, color);
+    });
+}
+
 export function removeColorById(id, callback) {
     Color.findOneAndRemove({ "id": parseInt(id) }, function (err, color) {
         callback(err, color);
@@ -60,6 +66,12 @@ export function getPatternByKey(key, callback) {
 export function getPatterns(callback) {
     Pattern.find({}, function (err, patterns) {
         callback(err, patterns)
+    });
+}
+
+export function updatePatternById(id, data, callback) {
+    Pattern.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, pattern) {
+        callback(err, pattern);
     });
 }
 
@@ -94,6 +106,12 @@ export function getQualities(callback) {
     });
 }
 
+export function updateQualityById(id, data, callback) {
+    Quality.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, quality) {
+        callback(err, quality);
+    });
+}
+
 export function removeQualityById(id, callback) {
     Quality.findOneAndRemove({ "id": parseInt(id) }, function (err, quality) {
         callback(err, quality);
@@ -122,6 +140,12 @@ export function getSizeByKey(key, callback) {
 export function getSizes(callback) {
     Size.find({}, function (err, sizes) {
         callback(err, sizes)
+    });
+}
+
+export function updateSizeById(id, data, callback) {
+    Size.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, size) {
+        callback(err, size);
     });
 }
 
@@ -156,6 +180,12 @@ export function getTypes(callback) {
     });
 }
 
+export function updateTypeById(id, data, callback) {
+    Type.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, type) {
+        callback(err, type);
+    });
+}
+
 export function removeTypeById(id, callback) {
     Type.findOneAndRemove({ "id": parseInt(id) }, function (err, type) {
         callback(err, type);
@@ -184,6 +214,12 @@ export function getUnitByKey(key, callback) {
 export function getUnits(callback) {
     Unit.find({}, function (err, units) {
         callback(err, units)
+    });
+}
+
+export function updateUnitById(id, data, callback) {
+    Unit.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, unit) {
+        callback(err, unit);
     });
 }
 

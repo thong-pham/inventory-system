@@ -104,7 +104,7 @@ class EditUser extends Component {
                         <label>Select Company</label>
                         <Field name="company" component={renderSelectField}>
                             <option />
-                            <option value="Mother Company">Mother Company</option>
+                            <option value="ISRA">ISRA</option>
                              {Object.keys(companies).map(key =>
                                 <option key={key} value={companies[key].name.en}>{companies[key].name.en}</option>)}
                         </Field>

@@ -86,7 +86,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                 const data = { id, sku, productName: { en: productName }, price, stock, userSession };
                 updateInventory(data, function (err, inventory) {
                     if (err) {
-                        if (err.message === "Only Mother Company can edit Inventory"){
+                        if (err.message === "Only ISRA can edit Inventory"){
                            res.status(400).send(err.message);
                         }
                         else if (err.message === "Not Enough Permission to create Inventory") {
@@ -119,7 +119,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
         const data = { id, userSession };
         removeInventory(data, function (err, inventory) {
             if (err) {
-                if (err.message === "Only Mother Company can remove Inventory"){
+                if (err.message === "Only ISRA can remove Inventory"){
                    res.status(401).send(err.message);
                 }
                 else if (err.message === "Not Enough Permission to remove Inventory") {
@@ -220,7 +220,7 @@ router.delete('/:id/import', verifyAuthMiddleware, function (req, res, next) {
         const data = { id, userSession };
         removeImport(data, function (err, inventory) {
             if (err) {
-                if (err.message === "Only Mother Company can remove Import"){
+                if (err.message === "Only ISRA can remove Import"){
                    res.status(401).send(err.message);
                 }
                 else if (err.message === "Not Enough Permission to remove Import") {
@@ -260,6 +260,9 @@ router.post('/increaseByPhone', verifyAuthMiddleware, function (req, res, next) 
                 if (err) {
                     if (err.message === "Not Enough Permission to import Inventory") {
                         res.status(400).send(err.message);
+                    }
+                    else if (err.message === "This code does not exists"){
+                        res.status(401).send(err.message);
                     }
                     else {
                         console.log(err);

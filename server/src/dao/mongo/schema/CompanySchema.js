@@ -5,7 +5,7 @@ const CompanySchema = mongoose.Schema({
 
     name: { en: { type: String, required: true } },
 
-    code: { type: String, required: true },
+    code: { type: String, required: false },
 
     createdAt: { type: Date, default: new Date },
     lastModifiedAt: { type: Date, default: new Date },

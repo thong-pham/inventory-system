@@ -90,7 +90,7 @@ router.put('/updateCart/:id', verifyAuthMiddleware, function (req, res, next) {
                 const data = { id, quantity, userSession };
                 updateCart(data, function (err, cart) {
                     if (err) {
-                        if (err.message === "Only Mother Company can edit Inventory"){
+                        if (err.message === "Only ISRA can edit Inventory"){
                            res.status(400).send(err.message);
                         }
                         else if (err.message === "Not Enough Permission to create Inventory") {

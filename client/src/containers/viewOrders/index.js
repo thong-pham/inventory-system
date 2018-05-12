@@ -17,7 +17,7 @@ class ViewOrders extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        if (user.company === 'Mother Company'){
+        if (user.company === 'ISRA'){
             dispatch(getPendingOrders({ token: token }));
         }
         else {
@@ -34,7 +34,7 @@ class ViewOrders extends Component {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
         dispatch(deleteOrder({token: token, order: order})).then(function(data){
-              if (user.company === 'Mother Company'){
+              if (user.company === 'ISRA'){
                   dispatch(getPendingOrders({ token: token }));
               }
               else {
@@ -62,7 +62,7 @@ class ViewOrders extends Component {
             quantity: quantity
         }
         dispatch(changeOrder({token: token, change: change})).then(function(data){
-              if (user.company === 'Mother Company'){
+              if (user.company === 'ISRA'){
                   dispatch(getPendingOrders({ token: token }));
               }
               else {
@@ -149,8 +149,8 @@ class ViewOrders extends Component {
                       <Item.Content>
                         {/*<Item.Header as='a'>ID {cart.id}</Item.Header>*/}
                         <Item.Description>
-                          { (user.company !== 'Mother Company') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
-                          { (user.company === 'Mother Company') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
+                          { (user.company !== 'ISRA') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
+                          { (user.company === 'ISRA') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
                           <p>Description : {cart.desc}</p>
                           <p>Quantity : {cart.quantity}</p>
                         </Item.Description>
@@ -177,7 +177,7 @@ class ViewOrders extends Component {
                             </Grid>
                         </Item.Extra> : null}
                       </Item.Content>
-                      { (user.company === 'Mother Company' && change !== cart.id) ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, cart)} /> : null }
+                      { (user.company === 'ISRA' && change !== cart.id) ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, cart)} /> : null }
                       { (approvingOrderError && this.checkOrderError(cart.id).check) ? <Message negative>
                                                     <p>{approvingOrderError} {this.checkOrderError(cart.id).stock}</p>
                                                 </Message> : null }
@@ -205,8 +205,8 @@ class ViewOrders extends Component {
                     <Table.Cell >{order.createdBy}</Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
                     <Table.Cell >
-                        { (user.company !== 'Mother Company') ? <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, order)} /> : null }
-                        { (user.company === 'Mother Company') ? <Icon name='checkmark' size='large' onClick={this.onPressApprove.bind(this, order)} /> : null}
+                        { (user.company !== 'ISRA') ? <Button color='red' onClick={this.onPressDelete.bind(this, order)}><Icon name='trash outline' />Delete</Button> : null }
+                        { (user.company === 'ISRA') ? <Button color='green' onClick={this.onPressApprove.bind(this, order)}><Icon name='checkmark' />Approve</Button> : null}
                     </Table.Cell>
                 </Table.Row>
             )

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -53,8 +53,8 @@ class ApproveImport extends Component {
                     <Table.Cell>{importData.status}</Table.Cell>
                     <Table.Cell>{importData.username}</Table.Cell>
                     <Table.Cell >
-                      { (isStoreManager) ? <Icon name='checkmark' size='large' onClick={() => this.onPressApprove(importData)}/> : null }
-                      <Icon name='trash outline' size='large' onClick={() => this.onPressDelete(importData)}/>
+                      { (isStoreManager) ? <Button color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' />Approve</Button> : null }
+                      <Button color='red' onClick={() => this.onPressDelete(importData)}><Icon name='trash outline' />Delete</Button>
                     </Table.Cell>
                 </Table.Row>
             )
@@ -69,7 +69,7 @@ class ApproveImport extends Component {
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Status</Table.HeaderCell>
                             <Table.HeaderCell>Username</Table.HeaderCell>
-                            <Table.HeaderCell>Options</Table.HeaderCell>
+                            <Table.HeaderCell width={4}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>

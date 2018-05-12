@@ -20,6 +20,7 @@ import ViewUsers from "./containers/viewUsers";
 import AddInventory from "./containers/addInventory";
 import AddSubInventory from "./containers/addSubInventory";
 import ImportInventory from "./containers/importInventory";
+import ImportInventoryByCamera from "./containers/importInventoryByCamera";
 import AddCompany from "./containers/addCompany";
 import ViewCompanies from "./containers/viewCompanies";
 import UpdateInventory from "./containers/updateInventory";
@@ -50,7 +51,7 @@ const store = createStore(
     reducers,
     undefined,
     compose(
-        applyMiddleware(middleware, thunk)
+        applyMiddleware(middleware, logger, thunk)
     )
 )
 
@@ -83,6 +84,7 @@ class App extends Component {
                             <Route exact path="/addInventory" component={AddInventory} />
                             <Route exact path="/addSubInventory" component={AddSubInventory} />
                             <Route exact path="/importInventory" component={ImportInventory} />
+                            <Route exact path="/importByCamera" component={ImportInventoryByCamera} />
                             <Route exact path="/addcompany" component={AddCompany} />
                             <Route exact path="/companies" component={ViewCompanies} />
                             <Route exact path="/imports" component={ApproveImport} />

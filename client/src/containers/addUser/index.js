@@ -105,12 +105,12 @@ class AddUser extends Component {
                         <label>Select Company</label>
                         <Field name="company" component={renderSelectCompany}>
                             <option />
-                            <option value="Mother Company">Mother Company</option>
+                            <option value="ISRA">ISRA</option>
                              {Object.keys(companies).map(key =>
                                 <option key={key} value={companies[key].name.en}>{companies[key].name.en}</option>)}
                         </Field>
                     </Form.Field>
-                    { ((roleOptions) && (roleOptions === 'Mother Company')) ?
+                    { ((roleOptions) && (roleOptions === 'ISRA')) ?
                       <Form.Field inline>
                         <label>Select Role</label>
                           <Field name="roles" component={renderSelectRoles}>
@@ -119,7 +119,7 @@ class AddUser extends Component {
                             <option value="worker">Worker</option>
                           </Field>
                     </Form.Field> : null}
-                    { ((roleOptions) && (roleOptions !== 'Mother Company')) ?
+                    { ((roleOptions) && (roleOptions !== 'ISRA')) ?
                       <Form.Field inline>
                         <label>Select Role</label>
                           <Field name="roles" component={renderSelectRoles}>

@@ -54,6 +54,14 @@
    padding-top: 15px
 }
 
+.alignRight {
+   text-align: right !important;
+}
+
+.alignLeft {
+   text-align: left !important;
+}
+
 @media only screen and (max-width: 1280px) {
     .side-right {
         width: 79.5%;
@@ -64,5 +72,5 @@
 }
 
 @media only screen and (max-width: 667px) and (min-width: 375px){
-    
+
 }

@@ -45,7 +45,7 @@ class ViewCompanies extends Component {
             return (
                 <Table.Row key={company.id}>
                     <Table.Cell>{company.name.en}</Table.Cell>
-                    <Table.Cell>{company.code}</Table.Cell>
+                    {/*<Table.Cell>{company.code}</Table.Cell>*/}
                     <Table.Cell>List Users Here</Table.Cell>
                     <Table.Cell>
                         <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, company)} />
@@ -61,7 +61,7 @@ class ViewCompanies extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={2}>Name</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Code</Table.HeaderCell>
+                            {/*<Table.HeaderCell width={2}>Code</Table.HeaderCell>*/}
                             <Table.HeaderCell width={2}>Users</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>

@@ -16,9 +16,6 @@ function validate(values) {
     if (!name || name.trim() === "") {
         errors.name = "Name is Required";
     }
-    if (!code || code.trim() === "") {
-        errors.code = "Code is Required";
-    }
     return errors;
 }
 
@@ -46,6 +43,10 @@ class AddCompany extends Component {
             dispatch(push("/companies"));
         });
     }
+    onBack = () => {
+        const { dispatch } = this.props;
+        dispatch(push("/companies"));
+    }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
         const { addingCompanyError, isAddingCompany, pendingCompanies } = this.props.company;
@@ -67,10 +68,8 @@ class AddCompany extends Component {
                     <Form.Field inline>
                         <Field name="name" placeholder="Enter the name" component={this.renderField}></Field>
                     </Form.Field>
-                    <Form.Field inline>
-                        <Field name="code" placeholder="Enter the code" component={this.renderField}></Field>
-                    </Form.Field>
                     <Button loading={submitting} disabled={submitting}>Add Company</Button>
+                    <Button onClick={this.onBack}>Cancel</Button>
                 </Form>
             </Segment>
           </BaseLayout>

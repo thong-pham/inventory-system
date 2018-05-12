@@ -7,7 +7,7 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getAllCode, addPopUp, closePopUp, trackInput,
+import { getAllCode, addPopUp, closePopUp, trackInput, errorInput,
           submitCode, deleteCode, getCodeByCompany } from "./../../actions/CodeActions";
 
 import { getCompanies } from "./../../actions/CompanyActions";
@@ -17,7 +17,7 @@ class ViewCode extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        if (user.company === 'Mother Company'){
+        if (user.company === 'ISRA'){
               dispatch(getAllCode({token: token}));
         }
         else {
@@ -34,7 +34,7 @@ class ViewCode extends Component {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
         dispatch(deleteCode({ token: token, keyCode: keyCode })).then(function(data){
-              if (user.company === 'Mother Company'){
+              if (user.company === 'ISRA'){
                     dispatch(getAllCode({token: token}));
               }
               else {
@@ -52,21 +52,27 @@ class ViewCode extends Component {
         const { dispatch, token } = this.props;
         const { codeInput } = this.props.code;
         const { user } = this.props.auth;
-        const data = {
-           token: token,
-           sku: code.sku,
-           mainSku: code.mainSku,
-           key: codeInput
+        if (!codeInput || (codeInput + "").trim() === ""){
+            const data = "Invalid Input";
+            dispatch(errorInput(data))
         }
+        else {
+            const data = {
+               token: token,
+               sku: code.sku,
+               mainSku: code.mainSku,
+               key: codeInput
+            }
 
-        dispatch(submitCode(data)).then(function(data){
-            if (user.company === 'Mother Company'){
-                  dispatch(getAllCode({token: token}));
-            }
-            else {
-                  dispatch(getCodeByCompany({token: token}));
-            }
-        });
+            dispatch(submitCode(data)).then(function(data){
+                if (user.company === 'ISRA'){
+                      dispatch(getAllCode({token: token}));
+                }
+                else {
+                      dispatch(getCodeByCompany({token: token}));
+                }
+            });
+        }
     }
 
     onCloseAdd(){
@@ -85,7 +91,7 @@ class ViewCode extends Component {
     render() {
         const { activeIndex } = this.state;
         const { user } = this.props.auth;
-        const { codes, fetchingCodesError, addingCodeError, openAdd, codeInput } = this.props.code;
+        const { codes, fetchingCodesError, addingCodeError, openAdd, codeInput, errorInput } = this.props.code;
         const { companies } = this.props.company;
         let error = null;
         if (fetchingCodesError) {
@@ -104,18 +110,27 @@ class ViewCode extends Component {
                 </Message>
             )
         }
+        else if (errorInput) {
+            error = (
+                <Message negative>
+                    <Message.Header>Error while Inputing Data</Message.Header>
+                    <p>{errorInput}</p>
+                </Message>
+            )
+        }
         const skuViewForBigCompany = codes.map(function (code, index) {
           const accordionView = companies.map(function(company){
             const codeView = code.keys.map(function(keyCode, index){
                return (
-                 <div key={index}>
+                <div key={index}>
+                 { (keyCode.company === company.name.en) ?
                    <Grid columns={1}>
                      <Grid.Row>
                          <Grid.Column>
-                             {(keyCode.company === company.name.en) ? <p>{keyCode.value}</p> : null }
+                             <p>{keyCode.value}</p>
                            </Grid.Column>
                      </Grid.Row>
-                   </Grid>
+                   </Grid> : null }
                  </div>
                )
             },this);
@@ -150,10 +165,10 @@ class ViewCode extends Component {
                   <Grid columns={2}>
                     <Grid.Row>
                         <Grid.Column>
-                           <p>{keyCode.value} { (user.company === 'Mother Company') ? <span> || {keyCode.company}</span> : null }</p>
+                           <p>{keyCode.value} { (user.company === 'ISRA') ? <span> || {keyCode.company}</span> : null }</p>
                           </Grid.Column>
                         <Grid.Column textAlign='right'>
-                          { (user.company !== 'Mother Company') ? <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/> : null }
+                          { (user.company !== 'ISRA') ? <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/> : null }
                         </Grid.Column>
                     </Grid.Row>
                   </Grid>
@@ -187,9 +202,9 @@ class ViewCode extends Component {
                               </Grid.Row>
                             </Grid> : null}
                     </Table.Cell>
-                      { (user.company !== 'Mother Company') ?
+                      { (user.company !== 'ISRA') ?
                         <Table.Cell>
-                            <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
+                            { (openAdd !== code.sku) ? <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button> : null }
                         </Table.Cell> : null }
                 </Table.Row>
             )
@@ -202,13 +217,13 @@ class ViewCode extends Component {
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Scanning Codes</Table.HeaderCell>
-                            {(user.company !== 'Mother Company') ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }
+                            {(user.company !== 'ISRA') ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
-                    {(user.company !== 'Mother Company') ? <Table.Body>
+                    {(user.company !== 'ISRA') ? <Table.Body>
                         {skuView}
                     </Table.Body> : null }
-                    {(user.company === 'Mother Company') ? <Table.Body>
+                    {(user.company === 'ISRA') ? <Table.Body>
                         {skuViewForBigCompany}
                     </Table.Body> : null }
                 </Table>

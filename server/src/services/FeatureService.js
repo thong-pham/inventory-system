@@ -5,31 +5,37 @@ import {
     getColorByKey as getColorByKeyDAO,
     getColorById as getColorByIdDAO,
     getColors as getColorsDAO,
+    updateColorById as updateColorByIdDAO,
     removeColorById as removeColorByIdDAO,
     createPattern as createPatternDAO,
     getPatternByKey as getPatternByKeyDAO,
     getPatternById as getPatternByIdDAO,
     getPatterns as getPatternsDAO,
+    updatePatternById as updatePatternByIdDAO,
     removePatternById as removePatternByIdDAO,
     createQuality as createQualityDAO,
     getQualityByKey as getQualityByKeyDAO,
     getQualityById as getQualityByIdDAO,
     getQualities as getQualitiesDAO,
+    updateQualityById as updateQualityByIdDAO,
     removeQualityById as removeQualityByIdDAO,
     createSize as createSizeDAO,
     getSizeByKey as getSizeByKeyDAO,
     getSizeById as getSizeByIdDAO,
     getSizes as getSizesDAO,
+    updateSizeById as updateSizeByIdDAO,
     removeSizeById as removeSizeByIdDAO,
     createType as createTypeDAO,
     getTypeByKey as getTypeByKeyDAO,
     getTypeById as getTypeByIdDAO,
     getTypes as getTypesDAO,
+    updateTypeById as updateTypeByIdDAO,
     removeTypeById as removeTypeByIdDAO,
     createUnit as createUnitDAO,
     getUnitByKey as getUnitByKeyDAO,
     getUnitById as getUnitByIdDAO,
     getUnits as getUnitsDAO,
+    updateUnitById as updateUnitByIdDAO,
     removeUnitById as removeUnitByIdDAO
 
 } from "./../dao/mongo/impl/FeatureDAO";
@@ -45,7 +51,7 @@ export function createFeature(data, callback){
      function (waterfallCallback) {
          const { roles, company } = data.userSession;
          const { isStoreManager } = getUserRoles(roles);
-         if (isStoreManager && company === 'Mother Company') {
+         if (isStoreManager && company === 'ISRA') {
              waterfallCallback();
          }
          else {
@@ -220,33 +226,68 @@ export function createFeature(data, callback){
 }
 
 export function updateFeature(data, callback) {
-    async.waterfall([
+      async.waterfall([
         function (waterfallCallback) {
-            const id = data.id;
-            getFeatureByIdDAO(id, function (err, code) {
-                if (err) {
-                    waterfallCallback(err);
+            const { roles, company } = data.userSession;
+            const { isStoreManager } = getUserRoles(roles);
+            if (isStoreManager && company === 'ISRA') {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to update feature");
+                waterfallCallback(err);
+            }
+        },
+        function(waterfallCallback){
+            const { id, kind, description, key } = data;
+            if (kind === "Quality"){
+                const data = {
+                    key: key,
+                    description: description
                 }
-                else if (code) {
-                    if (code.status == "pending") {
-                        var updateQuantity = code.quantity + data.quantity
-                        const update = {
-                            quantity : updateQuantity
-                        }
-                        updateFeatureByIdDAO(id, update, waterfallCallback);
-                    }
-                    else {
-                        const err = new Error("Only Pending Features can be edited");
-                        waterfallCallback(err);
-                    }
+                updateQualityByIdDAO(id, data, waterfallCallback);
+            }
+            else if (kind === "Type"){
+                const data = {
+                    key: key,
+                    description: description
                 }
-                else {
-                    const err = new Error("Feature Not Found");
-                    waterfallCallback(err);
+                updateTypeByIdDAO(id, data, waterfallCallback);
+            }
+            else if (kind === "Pattern"){
+                const data = {
+                    key: key,
+                    description: description
                 }
-            });
+                updatePatternByIdDAO(id, data, waterfallCallback);
+            }
+            else if (kind === "Color"){
+                const data = {
+                    key: key,
+                    description: description
+                }
+                updateColorByIdDAO(id, data, waterfallCallback);
+            }
+            else if (kind === "Size"){
+                const data = {
+                    key: key,
+                    description: description
+                }
+                updateSizeByIdDAO(id, data, waterfallCallback);
+            }
+            else if (kind === "Unit"){
+                const data = {
+                    key: key,
+                    description: description
+                }
+                updateUnitByIdDAO(id, data, waterfallCallback);
+            }
+            else {
+                const err = new Error("Feature Not Found");
+                waterfallCallback(err);
+            }
         }
-    ], callback);
+      ],callback);
 }
 
 export function removeFeature(data, callback){
@@ -254,7 +295,7 @@ export function removeFeature(data, callback){
       function (waterfallCallback) {
           const { roles, company } = data.userSession;
           const { isStoreManager } = getUserRoles(roles);
-          if (isStoreManager && company === 'Mother Company') {
+          if (isStoreManager && company === 'ISRA') {
               waterfallCallback();
           }
           else {
@@ -283,7 +324,7 @@ export function removeFeature(data, callback){
               removeUnitByIdDAO(id, waterfallCallback);
           }
           else {
-              const err = new Error("Undefined kind");
+              const err = new Error("Feature Not Found");
               waterfallCallback(err);
           }
       }

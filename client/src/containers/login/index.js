@@ -28,8 +28,11 @@ class Login extends Component {
             if (user.roles.indexOf("admin") >= 0){
                 dispatch(push("/users"));
             }
-            else {
+            else if (user.roles.indexOf("storeManager") >= 0) {
                 dispatch(push("/inventory"));
+            }
+            else {
+                dispatch(push("/importInventory"));
             }
         }
     }
@@ -47,8 +50,11 @@ class Login extends Component {
             if (data.user.roles.indexOf("admin") >= 0){
                 dispatch(push("/users"));
             }
-            else {
+            else if (data.user.roles.indexOf("storeManager") >= 0) {
                 dispatch(push("/inventory"));
+            }
+            else {
+                dispatch(push("/importInventory"));
             }
         });
     }

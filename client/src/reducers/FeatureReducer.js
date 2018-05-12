@@ -5,10 +5,12 @@ import { ADD_FEATURE_STARTED, ADD_FEATURE_FULFILLED, ADD_FEATURE_REJECTED,
           GET_COLOR_STARTED, GET_COLOR_FULFILLED, GET_COLOR_REJECTED,
           GET_SIZE_STARTED, GET_SIZE_FULFILLED, GET_SIZE_REJECTED,
           GET_UNIT_STARTED, GET_UNIT_FULFILLED, GET_UNIT_REJECTED,
+          CHANGE_FEATURE_STARTED, CHANGE_FEATURE_FULFILLED, CHANGE_FEATURE_REJECTED,
           DELETE_FEATURE_STARTED, DELETE_FEATURE_FULFILLED, DELETE_FEATURE_REJECTED,
           ADD_QUALITY, ADD_TYPE, ADD_PATTERN, ADD_COLOR, ADD_SIZE, ADD_UNIT,
+          CLOSE_QUALITY, CLOSE_TYPE, CLOSE_PATTERN, CLOSE_COLOR, CLOSE_SIZE, CLOSE_UNIT,
           CHOOSE_QUALITY, CHOOSE_TYPE, CHOOSE_PATTERN, CHOOSE_COLOR, CHOOSE_SIZE, CHOOSE_UNIT,
-          INPUT_KEY, INPUT_DESC
+          INPUT_KEY, INPUT_DESC, FILL_DATA, CLEAR_DATA, ERROR_INPUT
           } from "./../actions/FeatureActions";
 
 const initialState = {
@@ -39,6 +41,8 @@ const initialState = {
     fetchingUnitError: null,
     isAddingFeature: false,
     addingFeatureError: null,
+    isChangingFeature: false,
+    changingFeatureError: null,
     isDeletingFeature: false,
     deletingFeatureError: null,
     addQuality: false,
@@ -49,7 +53,11 @@ const initialState = {
     addUnit: false,
     key: null,
     description: null,
-    generatedSku: null
+    currentId: null,
+    generatedSku: null,
+    addButton: false,
+    updateButton: false,
+    errorInput: null
 }
 
 export default function (state = initialState, action) {
@@ -133,6 +141,19 @@ export default function (state = initialState, action) {
             const error = action.payload.data;
             return { ...state, isFetchingUnit: false, fetchingUnitError: error };
         }
+        case CHANGE_FEATURE_STARTED: {
+            return { ...state, isChangingFeature: true };
+        }
+        case CHANGE_FEATURE_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isChangingFeature: false, addQuality: false, addType: false, addPattern: false,
+                      addColor: false, addSize: false, addUnit: false, changingFeatureError: null };
+        }
+        case CHANGE_FEATURE_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isChangingFeature: false, changingFeatureError: error, addQuality: false, addType: false, addPattern: false,
+                      addColor: false, addSize: false, addUnit: false };
+        }
         case DELETE_FEATURE_STARTED: {
             return { ...state, isDeletingFeature: true };
         }
@@ -144,22 +165,46 @@ export default function (state = initialState, action) {
             return { ...state, isDeletingFeature: false, deletingFeatureError: err };
         }
         case ADD_QUALITY : {
-           return { ...state, addQuality: !state.addQuality, addingFeatureError: null };
+           const data = action.payload;
+           return { ...state, addQuality: true, addingFeatureError: null, addButton: data.addButton, updateButton: data.updateButton };
         }
         case ADD_TYPE : {
-           return { ...state, addType: !state.addType, addingFeatureError: null};
+            const data = action.payload;
+           return { ...state, addType: true, addingFeatureError: null, addButton: data.addButton, updateButton: data.updateButton };
         }
         case ADD_PATTERN : {
-           return { ...state, addPattern: !state.addPattern, addingFeatureError: null};
+            const data = action.payload;
+           return { ...state, addPattern: true, addingFeatureError: null, addButton: data.addButton, updateButton: data.updateButton };
         }
         case ADD_COLOR : {
-           return { ...state, addColor: !state.addColor, addingFeatureError: null};
+            const data = action.payload;
+           return { ...state, addColor: true, addingFeatureError: null, addButton: data.addButton, updateButton: data.updateButton };
         }
         case ADD_SIZE : {
-           return { ...state, addSize: !state.addSize, addingFeatureError: null};
+            const data = action.payload;
+           return { ...state, addSize: true, addingFeatureError: null, addButton: data.addButton, updateButton: data.updateButton };
         }
         case ADD_UNIT : {
-           return { ...state, addUnit: !state.addUnit, addingFeatureError: null};
+            const data = action.payload;
+           return { ...state, addUnit: true, addingFeatureError: null, addButton: data.addButton, updateButton: data.updateButton };
+        }
+        case CLOSE_QUALITY : {
+           return { ...state, addQuality: false, addingFeatureError: null, errorInput: null };
+        }
+        case CLOSE_TYPE : {
+           return { ...state, addType: false, addingFeatureError: null, errorInput: null };
+        }
+        case CLOSE_PATTERN : {
+           return { ...state, addPattern: false, addingFeatureError: null, errorInput: null};
+        }
+        case CLOSE_COLOR : {
+           return { ...state, addColor: false, addingFeatureError: null, errorInput: null };
+        }
+        case CLOSE_SIZE : {
+           return { ...state, addSize: false, addingFeatureError: null, errorInput: null };
+        }
+        case CLOSE_UNIT : {
+           return { ...state, addUnit: false, addingFeatureError: null, errorInput: null };
         }
         case CHOOSE_QUALITY:{
             const data = action.payload;
@@ -192,6 +237,17 @@ export default function (state = initialState, action) {
         case INPUT_DESC: {
             const data = action.payload;
             return { ...state, description: data};
+        }
+        case FILL_DATA:{
+           const data = action.payload;
+           return { ...state, key: data.key, description: data.description, currentId: data.id};
+        }
+        case CLEAR_DATA:{
+           return { ...state, key: null, description: null};
+        }
+        case ERROR_INPUT: {
+            const error = action.payload;
+            return {...state, errorInput: error };
         }
         default: {
             return state;

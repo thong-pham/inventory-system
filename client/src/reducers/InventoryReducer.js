@@ -32,7 +32,12 @@ const initialState = {
     openPlus: null,
     openMinus: null,
     generatedSKU: null,
-    generatedDesc: null
+    generatedDesc: null,
+    defaultImport: {
+        code: null,
+        capacity: 24,
+        box: null
+    }
 }
 
 export default function (state = initialState, action) {

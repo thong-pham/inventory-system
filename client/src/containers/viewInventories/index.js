@@ -14,7 +14,7 @@ class ViewAndRequest extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        if (user.company !== 'Mother Company'){
+        if (user.company !== 'ISRA'){
             dispatch(push("/subInventory"));
         }
         dispatch(getInventories({ token: token }));
@@ -23,7 +23,7 @@ class ViewAndRequest extends Component {
     onPressEdit(inventory) {
         const { user } = this.props.auth;
         const { dispatch } = this.props;
-        if (user.company !== 'Mother Company'){
+        if (user.company !== 'ISRA'){
             dispatch(rejectEdit());
         }
         else{
@@ -149,7 +149,7 @@ class ViewAndRequest extends Component {
                 <Table.Row key={inventory.id}>
                     <Table.Cell>{inventory.sku}</Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
-                    <Table.Cell>{inventory.status}</Table.Cell>
+                    {/*<Table.Cell>{inventory.status}</Table.Cell>*/}
                     <Table.Cell >{inventory.price}</Table.Cell>
                     <Table.Cell >
                         {inventory.stock}
@@ -213,7 +213,7 @@ class ViewAndRequest extends Component {
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Product Description</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Status</Table.HeaderCell>
+                            {/*<Table.HeaderCell width={1}>Status</Table.HeaderCell>*/}
                             <Table.HeaderCell width={1}>Price</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Stock</Table.HeaderCell>
                             { (!isWorker) ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }

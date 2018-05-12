@@ -42,8 +42,13 @@ export const ADD_PATTERN = "ADD_PATTERN";
 export const ADD_COLOR = "ADD_COLOR";
 export const ADD_SIZE = "ADD_SIZE";
 export const ADD_UNIT = "ADD_UNIT";
-export const INPUT_KEY = "INPUT_KEY";
-export const INPUT_DESC = "INPUT_DESC";
+
+export const CLOSE_QUALITY = "CLOSE_QUALITY";
+export const CLOSE_TYPE = "CLOSE_TYPE";
+export const CLOSE_PATTERN = "CLOSE_PATTERN";
+export const CLOSE_COLOR = "CLOSE_COLOR";
+export const CLOSE_SIZE = "CLOSE_SIZE";
+export const CLOSE_UNIT = "CLOSE_UNIT";
 
 export const CHOOSE_QUALITY = "CHOOSE_QUALITY";
 export const CHOOSE_TYPE = "CHOOSE_TYPE";
@@ -51,6 +56,14 @@ export const CHOOSE_PATTERN = "CHOOSE_PATTERN";
 export const CHOOSE_COLOR = "CHOOSE_COLOR";
 export const CHOOSE_SIZE = "CHOOSE_SIZE";
 export const CHOOSE_UNIT = "CHOOSE_UNIT";
+
+export const INPUT_KEY = "INPUT_KEY";
+export const INPUT_DESC = "INPUT_DESC";
+
+export const FILL_DATA = "FILL_DATA";
+export const CLEAR_DATA = "CLEAR_DATA";
+
+export const ERROR_INPUT = "ERROR_INPUT";
 
 const WS_URL = "https://api.israhospitality.com/features/";
 
@@ -187,6 +200,25 @@ export function addFeature(data) {
     }
 }
 
+export function changeFeature(feature) {
+    return function (dispatch) {
+        dispatch({ type: CHANGE_FEATURE_STARTED });
+        return axios.put(WS_URL +  feature.id, feature)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: CHANGE_FEATURE_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: CHANGE_FEATURE_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
 export function deleteFeature(data) {
     return function (dispatch) {
         dispatch({ type: DELETE_FEATURE_STARTED });
@@ -206,35 +238,79 @@ export function deleteFeature(data) {
     }
 }
 
-export function addQuality(){
+export function fillingData(data){
     return function (dispatch) {
-        dispatch({type: ADD_QUALITY });
+        dispatch({type: FILL_DATA, payload: data });
     }
 }
 
-export function addType(){
+export function clearData(data){
     return function (dispatch) {
-        dispatch({type: ADD_TYPE });
+        dispatch({type: CLEAR_DATA});
     }
 }
-export function addPattern(){
+
+export function addQuality(data){
     return function (dispatch) {
-        dispatch({type: ADD_PATTERN });
+        dispatch({type: ADD_QUALITY, payload: data });
     }
 }
-export function addColor(){
+
+export function addType(data){
     return function (dispatch) {
-        dispatch({type: ADD_COLOR });
+        dispatch({type: ADD_TYPE, payload: data });
     }
 }
-export function addSize(){
+export function addPattern(data){
     return function (dispatch) {
-        dispatch({type: ADD_SIZE });
+        dispatch({type: ADD_PATTERN, payload: data });
     }
 }
-export function addUnit(){
+export function addColor(data){
     return function (dispatch) {
-        dispatch({type: ADD_UNIT });
+        dispatch({type: ADD_COLOR, payload: data });
+    }
+}
+export function addSize(data){
+    return function (dispatch) {
+        dispatch({type: ADD_SIZE, payload: data });
+    }
+}
+export function addUnit(data){
+    return function (dispatch) {
+        dispatch({type: ADD_UNIT, payload: data });
+    }
+}
+
+export function closeQuality(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_QUALITY });
+    }
+}
+
+export function closeType(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_TYPE });
+    }
+}
+export function closePattern(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_PATTERN });
+    }
+}
+export function closeColor(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_COLOR });
+    }
+}
+export function closeSize(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_SIZE });
+    }
+}
+export function closeUnit(){
+    return function (dispatch) {
+        dispatch({type: CLOSE_UNIT });
     }
 }
 
@@ -283,5 +359,11 @@ export function chooseSize(data){
 export function chooseUnit(data){
     return function (dispatch) {
         dispatch({type: CHOOSE_UNIT, payload: data });
+    }
+}
+
+export function errorInput(data){
+    return function (dispatch) {
+        dispatch({type: ERROR_INPUT, payload: data});
     }
 }

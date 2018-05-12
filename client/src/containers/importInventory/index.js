@@ -14,18 +14,27 @@ function validate(values) {
     var errors = {
         batch: {}
     };
-    const { code, quantity } = values;
+    const { code, capacity, box } = values;
     if (!code || (code + "").trim() === "") {
         errors.code = "Code is Required";
     }
-    if (!quantity || (quantity + "").trim() === "") {
-        errors.quantity = "Quantity is Required";
+    if (!capacity || (capacity + "").trim() === "") {
+        errors.capacity = "Box Capacity is Required";
     }
-    else if (isNaN(Number(quantity))){
-        errors.quantity = "Quantity must be a number";
+    else if (isNaN(Number(capacity))){
+        errors.capacity = "Box Capacity must be a number";
     }
-    else if (quantity < 0){
-        errors.quantity = "Quantity must be larger than or equal to 0";
+    else if (capacity <= 0){
+        errors.capacity = "Box Capacity must be larger than 0";
+    }
+    if (!box || (box + "").trim() === "") {
+        errors.box = "Box Count is Required";
+    }
+    else if (isNaN(Number(box))){
+        errors.box = "Box Count must be a number";
+    }
+    else if (box <= 0){
+        errors.box = "Box Count must be larger than 0";
     }
     return errors;
 }
@@ -45,8 +54,13 @@ class ImportInventory extends Component {
     }
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
-        values.token = token;
-        return dispatch(importInventory(values)).then(function (data) {
+        const data = {
+           code: values.code,
+           quantity: values.box * values.capacity
+        }
+        data.token = token;
+        //console.log(data);
+        return dispatch(importInventory(data)).then(function (data) {
             dispatch(push("/imports"));
         });
     }
@@ -70,10 +84,16 @@ class ImportInventory extends Component {
                     {error}
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isImportingInventory}>
                         <Form.Field inline>
-                            <Field name="code" placeholder="Enter the code" component={this.renderField}></Field>
+                            <Label>Scanning Code</Label>
+                            <Field name="code" placeholder="Scanning Code" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
-                            <Field name="quantity" placeholder="Enter the quantity" component={this.renderField}></Field>
+                            <Label>Box Capacity</Label>
+                            <Field name="capacity" placeholder="Box Capacity" component={this.renderField}></Field>
+                        </Form.Field>
+                        <Form.Field inline>
+                            <Label>Box Count</Label>
+                            <Field name="box" placeholder="Box Count" component={this.renderField}></Field>
                         </Form.Field>
                         <Button loading={submitting} disabled={submitting} disabled={pristine || submitting}>Submit</Button>
                     </Form>
@@ -86,14 +106,16 @@ class ImportInventory extends Component {
 
 function mapStatesToProps(state) {
 
+    const initialValues = state.inventory.defaultImport;
+
     return {
+        initialValues: initialValues,
         auth: state.auth,
         inventory: state.inventory
     }
 }
 
-
-export default reduxForm({
+export default connect(mapStatesToProps)(reduxForm({
     form: "ImportInventory",
     validate
-})(connect(mapStatesToProps)(ImportInventory));
+})(ImportInventory));

@@ -77,7 +77,7 @@ export function approveOrder(data, callback) {
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isStoreManager } = getUserRoles(roles);
-            if (isStoreManager && company === 'Mother Company') {
+            if (isStoreManager && company === 'ISRA') {
                 waterfallCallback();
             }
             else {
@@ -237,7 +237,7 @@ export function changeOrder(data, callback){
      function (waterfallCallback) {
          const { roles, company } = data.userSession;
          const { isStoreManager } = getUserRoles(roles);
-         if (isStoreManager && company === 'Mother Company') {
+         if (isStoreManager && company === 'ISRA') {
              waterfallCallback();
          }
          else {
@@ -288,7 +288,7 @@ export function removeOrder(data, callback) {
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isSales } = getUserRoles(roles);
-            if (company === 'Mother Company') {
+            if (company === 'ISRA') {
                 const err = new Error("Only Child Company can remove Order");
                 waterfallCallback(err)
             }

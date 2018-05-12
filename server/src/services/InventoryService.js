@@ -78,8 +78,8 @@ export function updateInventory(data, callback) {
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (company !== 'Mother Company') {
-                const err = new Error("Only Mother Company can edit Inventory");
+            if (company !== 'ISRA') {
+                const err = new Error("Only ISRA can edit Inventory");
                 waterfallCallback(err)
             }
             else if (isWorker || isStoreManager) {
@@ -287,8 +287,8 @@ export function removeInventory(data, callback) {
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
             const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (company !== 'Mother Company') {
-                const err = new Error("Only Mother Company can remove Inventory");
+            if (company !== 'ISRA') {
+                const err = new Error("Only ISRA can remove Inventory");
                 waterfallCallback(err)
             }
             else if (isStoreManager) {
@@ -381,14 +381,14 @@ export function increaseByPhone(data, callback){
           const { roles, company, username } = data.userSession;
           const { isStoreManager, isWorker } = getUserRoles(roles);
           const key = data.code;
-          if (company === 'Mother Company'){
+          if (company === 'ISRA'){
               if(isStoreManager)
               {
                   getCodeByKeyDAO(key, function(err, code){
                       if (err){
                           waterfallCallback(err);
                       }
-                      else{
+                      else if (code){
                           getInventoryBySkuDAO(code.sku, function(err, inventory){
                               if (err){
                                   waterfallCallback(err);
@@ -409,6 +409,10 @@ export function increaseByPhone(data, callback){
                               }
                           });
                       }
+                      else {
+                          const err = new Error("This code does not exists");
+                          waterfallCallback(err);
+                      }
                   });
               }
               else if (isWorker) {
@@ -422,7 +426,7 @@ export function increaseByPhone(data, callback){
                                  if (err){
                                     waterfallCallback(err);
                                  }
-                                 else{
+                                 else if (code){
                                      const importData = {
                                         id: counterDoc.counter,
                                         code: data.code,
@@ -432,6 +436,10 @@ export function increaseByPhone(data, callback){
                                         status: "pending"
                                      }
                                      createImportDAO(importData, waterfallCallback);
+                                 }
+                                 else {
+                                     const err = new Error("This code does not exists");
+                                     waterfallCallback(err);
                                  }
                             });
                         }

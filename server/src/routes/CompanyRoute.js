@@ -37,8 +37,8 @@ router.post('/createCompany',verifyAuthMiddleware, function (req, res, next) {
             res.status(400).send(err);
         }
         else {
-            const { name, code } = req.body;
-            const data = { name : { en : name}, code};
+            const { name } = req.body;
+            const data = { name : { en : name}};
             createCompany(data, function (err, company) {
                 if (err) {
                     if (err.message === "Code Already Exists") {

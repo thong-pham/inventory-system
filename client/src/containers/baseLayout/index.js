@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { Container, Segment, Sidebar, Menu, Icon, Message, Header } from 'semantic-ui-react';
+import { Container, Segment, Sidebar, Menu, Icon, Message, Header, Button, Popup } from 'semantic-ui-react';
 import { push } from 'react-router-redux';
 
 import { logoutUser } from "./../../actions/AuthActions";
@@ -8,6 +8,9 @@ import { logoutUser } from "./../../actions/AuthActions";
 import './../../styles/custom.css';
 
 class BaseLayout extends Component {
+    state = {
+        visible: false
+    }
     componentWillMount() {
         const { token } = this.props.auth;
         const { dispatch } = this.props;
@@ -25,6 +28,9 @@ class BaseLayout extends Component {
         }
         else if (menuItem === "importInventory") {
             dispatch(push('/importInventory'));
+        }
+        else if (menuItem === "importByCamera") {
+            dispatch(push('/importByCamera'));
         }
         else if (menuItem === "viewUsers") {
             dispatch(push('/users'));
@@ -62,6 +68,7 @@ class BaseLayout extends Component {
         }
     }
     render() {
+        const { visible } = this.state;
         const { user } = this.props.auth;
         //console.log(user);
         const isStoreManager = user.roles.indexOf("storeManager") >= 0;
@@ -73,13 +80,13 @@ class BaseLayout extends Component {
         let addInventoryMenuItem = null;
         let dedicatedMenuItem = null;
         let viewSubInventoriesMenuItem = null;
-        if (company === 'Mother Company'){
+        if (company === 'ISRA'){
           if (isStoreManager) {
               dedicatedMenuItem = (
-                <Sidebar as={Menu} animation='slide along' className="side-left"  visible={true} icon='labeled' vertical inverted>
+                <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
                       <Icon name='cube' />
-                        View Whole Inventories
+                        ISRA Inventories
                     </Menu.Item>
                     {/*<Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
                       <Icon name='cube' />
@@ -103,11 +110,11 @@ class BaseLayout extends Component {
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                       <Icon name='barcode' />
-                        Code Management
+                        Code
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
                       <Icon name='barcode' />
-                        Features Management
+                        Features
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                       <Icon name='user' />
@@ -118,28 +125,32 @@ class BaseLayout extends Component {
                         Logout
                     </Menu.Item>
                     <Menu.Item>
-                      <Message>
-                        <Message.Header>Account Information</Message.Header>
-                        <Message.List>
-                          <Message.Item>Username: {user.username}</Message.Item>
-                          <Message.Item>Role: {user.roles[0]}</Message.Item>
-                          <Message.Item>Company: {user.company}</Message.Item>
-                        </Message.List>
-                      </Message>
+                        <Popup
+                          trigger={<Icon name='info' />}
+                          flowing
+                          position='bottom right'
+                        >
+                          <Message.Header>Account Information</Message.Header>
+                            <Message.List>
+                              <Message.Item>Username: {user.username}</Message.Item>
+                              <Message.Item>Role: {user.roles[0]}</Message.Item>
+                              <Message.Item>Company: {user.company}</Message.Item>
+                            </Message.List>
+                        </Popup>
                     </Menu.Item>
                 </Sidebar>
               );
           }
           if (isWorker) {
               dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='slide along' className="side-left" visible={true} icon='labeled' vertical inverted>
-                <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
-                  <Icon name='cube' />
-                    View Whole Inventories
-                </Menu.Item>
+              <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
                 <Menu.Item onClick={this.handleClick.bind(this, "importInventory")} >
                   <Icon name='add' />
                     Import Inventory
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "importByCamera")} >
+                  <Icon name='add' />
+                    Import By Camera
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
                   <Icon name='list ul' />
@@ -154,21 +165,25 @@ class BaseLayout extends Component {
                     Logout
                 </Menu.Item>
                 <Menu.Item>
-                  <Message>
-                    <Message.Header>Account Information</Message.Header>
-                    <Message.List>
-                      <Message.Item>Username: {user.username}</Message.Item>
-                      <Message.Item>Role: {user.roles[0]}</Message.Item>
-                      <Message.Item>Company: {user.company}</Message.Item>
-                    </Message.List>
-                  </Message>
+                    <Popup
+                      trigger={<Icon name='info' />}
+                      flowing
+                      position='bottom right'
+                    >
+                      <Message.Header>Account Information</Message.Header>
+                        <Message.List>
+                          <Message.Item>Username: {user.username}</Message.Item>
+                          <Message.Item>Role: {user.roles[0]}</Message.Item>
+                          <Message.Item>Company: {user.company}</Message.Item>
+                        </Message.List>
+                    </Popup>
                 </Menu.Item>
               </Sidebar>
               );
           }
           if (isAdmin) {
               dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='slide along' className="side-left" visible={true} icon='labeled' vertical inverted>
+              <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewUsers")}>
                   <Icon name='users' />
                     View Users
@@ -179,7 +194,7 @@ class BaseLayout extends Component {
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
                   <Icon name='cube' />
-                    View Whole Inventories
+                    ISRA Inventories
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                   <Icon name='user' />
@@ -190,14 +205,18 @@ class BaseLayout extends Component {
                     Logout
                 </Menu.Item>
                 <Menu.Item>
-                  <Message>
-                    <Message.Header>Account Information</Message.Header>
-                    <Message.List>
-                      <Message.Item>Username: {user.username}</Message.Item>
-                      <Message.Item>Role: {user.roles[0]}</Message.Item>
-                      <Message.Item>Company: {user.company}</Message.Item>
-                    </Message.List>
-                  </Message>
+                    <Popup
+                      trigger={<Icon name='info' />}
+                      flowing
+                      position='bottom right'
+                    >
+                      <Message.Header>Account Information</Message.Header>
+                        <Message.List>
+                          <Message.Item>Username: {user.username}</Message.Item>
+                          <Message.Item>Role: {user.roles[0]}</Message.Item>
+                          <Message.Item>Company: {user.company}</Message.Item>
+                        </Message.List>
+                    </Popup>
                 </Menu.Item>
               </Sidebar>
               );
@@ -205,7 +224,7 @@ class BaseLayout extends Component {
         }
         else {
             dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='slide along' className="side-left" visible={true} icon='labeled' vertical inverted>
+              <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
                     <Icon name='cube' />
                        {user.company} Inventory
@@ -235,14 +254,18 @@ class BaseLayout extends Component {
                       Logout
                   </Menu.Item>
                   <Menu.Item>
-                    <Message>
-                      <Message.Header>Account Information</Message.Header>
-                      <Message.List>
-                        <Message.Item>Username: {user.username}</Message.Item>
-                        <Message.Item>Role: {user.roles[0]}</Message.Item>
-                        <Message.Item>Company: {user.company}</Message.Item>
-                      </Message.List>
-                    </Message>
+                      <Popup
+                        trigger={<Icon name='info' />}
+                        flowing
+                        position='bottom right'
+                      >
+                        <Message.Header>Account Information</Message.Header>
+                          <Message.List>
+                            <Message.Item>Username: {user.username}</Message.Item>
+                            <Message.Item>Role: {user.roles[0]}</Message.Item>
+                            <Message.Item>Company: {user.company}</Message.Item>
+                          </Message.List>
+                      </Popup>
                   </Menu.Item>
               </Sidebar>
             )
@@ -252,7 +275,7 @@ class BaseLayout extends Component {
             <Container textAlign='center' className="mainContainer">
                 <Sidebar.Pushable as={Segment} className="mainContainer">
                     {dedicatedMenuItem}
-                    <Sidebar.Pusher className="side-right">
+                    <Sidebar.Pusher>
                         {this.props.children}
                     </Sidebar.Pusher>
                 </Sidebar.Pushable>

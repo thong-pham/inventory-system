@@ -125,6 +125,7 @@ class AddSubInventory extends Component {
         var check = false;
         const generatedSKU = this.generateData().sku;
         const generatedDesc = this.generateData().desc;
+        //console.log(generatedSKU);
         inventories.forEach(function(inventory){
             if (inventory.mainSku === generatedSKU){
                 check = true;
@@ -134,10 +135,10 @@ class AddSubInventory extends Component {
             dispatch(errorInput("This product already exists in your inventory"));
         }
         else {
-            if (desc === null){
+            if (!desc || (desc + "").trim() === ""){
                 desc = generatedDesc;
             }
-            if (sku === null){
+            if (!sku || (sku + "").trim() === ""){
                 dispatch(errorInput("SKU cannot be empty"));
             }
             else {

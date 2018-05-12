@@ -16,7 +16,7 @@ class ViewApprovedOrders extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        if (user.company === 'Mother Company'){
+        if (user.company === 'ISRA'){
             dispatch(getApprovedOrders({ token: token }));
         }
         else {
@@ -53,8 +53,8 @@ class ViewApprovedOrders extends Component {
                       <Item.Content>
                         {/*<Item.Header as='a'>ID {cart.id}</Item.Header>*/}
                         <Item.Description>
-                          { (user.company !== 'Mother Company') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
-                          { (user.company === 'Mother Company') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
+                          { (user.company !== 'ISRA') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
+                          { (user.company === 'ISRA') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
                           <p>Description : {cart.desc}</p>
                           <p>Quantity : {cart.quantity}</p>
                         </Item.Description>
@@ -82,7 +82,7 @@ class ViewApprovedOrders extends Component {
                     <Table.Cell >{order.status}</Table.Cell>
                     <Table.Cell >{order.createdBy}</Table.Cell>
                     <Table.Cell >{order.approvedBy}</Table.Cell>
-                    { (user.company === 'Mother Company') ? <Table.Cell >{order.company}</Table.Cell> : null }
+                    { (user.company === 'ISRA') ? <Table.Cell >{order.company}</Table.Cell> : null }
                 </Table.Row>
             )
         }, this);
@@ -97,7 +97,7 @@ class ViewApprovedOrders extends Component {
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Approved By</Table.HeaderCell>
-                            { (user.company === 'Mother Company') ? <Table.HeaderCell width={1}>Company</Table.HeaderCell> : null }
+                            { (user.company === 'ISRA') ? <Table.HeaderCell width={1}>Company</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -109,7 +109,7 @@ class ViewApprovedOrders extends Component {
         return (
           <BaseLayout>
               <Segment textAlign='center' >
-                  { (user.company === 'Mother Company') ? <Header as="h2">Approved Inventory List</Header> : <Header as="h2">{user.company} - Approved Order List</Header> }
+                  { (user.company === 'ISRA') ? <Header as="h2">Approved Inventory List</Header> : <Header as="h2">{user.company} - Approved Order List</Header> }
                   {error}
                   <Container>
                       {tableView}
