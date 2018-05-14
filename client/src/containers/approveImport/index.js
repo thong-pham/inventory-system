@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Responsive } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -68,7 +68,7 @@ class ApproveImport extends Component {
                             <Table.HeaderCell>SKU</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Status</Table.HeaderCell>
-                            <Table.HeaderCell>Username</Table.HeaderCell>
+                            <Table.HeaderCell>Imported By</Table.HeaderCell>
                             <Table.HeaderCell width={4}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -78,6 +78,26 @@ class ApproveImport extends Component {
                 </Table>
             )
         }
+        const importsPhoneView = pendingImports.map(function (importData) {
+            return (
+                <div key={importData.id}>
+                    <p>SKU: {importData.sku}</p>
+                    <p>Quantity: {importData.quantity}</p>
+                    <p>Status: {importData.status}</p>
+                    <p>Imported By: {importData.username}</p>
+                    { (isStoreManager) ? <Button color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' />Approve</Button> : null }
+                    <Button color='red' onClick={() => this.onPressDelete(importData)}><Icon name='trash outline' />Delete</Button>
+                    <hr />
+                </div>
+            )
+        }, this);
+
+        let phoneView = <h4>No Imports Found. Please Add Some </h4>
+        if (pendingImports.length > 0){
+            phoneView = (
+                <div>{importsPhoneView}</div>
+            )
+        }
         return (
             <BaseLayout>
                 <Segment textAlign='center' >
@@ -85,7 +105,12 @@ class ApproveImport extends Component {
                     {error}
                     {/* <Segment loading={isFetchingImports}> */}
                     <Container>
-                      {tableView}
+                      <Responsive maxWidth={414}>
+                          {phoneView}
+                      </Responsive>
+                      <Responsive minWidth={415}>
+                          {tableView}
+                      </Responsive>
                     </Container>
                     {/* </Segment> */}
                 </Segment>
