@@ -28,6 +28,9 @@ class ImportInventoryByCamera extends Component {
 
     _onDetected = (result) => {
         this.setState({results: this.state.results.concat([result])});
+        if (this.state.results.length > 0){
+            this.setState({scanning: !this.state.scanning});
+        }
     }
 
     render() {

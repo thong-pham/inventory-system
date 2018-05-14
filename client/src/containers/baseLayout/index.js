@@ -196,6 +196,30 @@ class BaseLayout extends Component {
                   <Icon name='cube' />
                     ISRA Inventories
                 </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
+                  <Icon name='add' />
+                    Add Inventory
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
+                  <Icon name='list ul' />
+                    Pending Import
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
+                  <Icon name='list ul' />
+                    Pending Orders
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")} >
+                  <Icon name='checkmark box' />
+                    Approved Orders
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
+                  <Icon name='barcode' />
+                    Code
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
+                  <Icon name='barcode' />
+                    Features
+                </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                   <Icon name='user' />
                     User Account
@@ -243,7 +267,7 @@ class BaseLayout extends Component {
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                     <Icon name='barcode' />
-                      Code Management
+                      Code
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                     <Icon name='user' />

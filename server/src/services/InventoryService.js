@@ -28,8 +28,8 @@ export function createInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (isStoreManager) {
+            const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+            if (isStoreManager || isAdmin) {
                 data.status = "approved";
             }
             if (isWorker) {
@@ -77,12 +77,12 @@ export function updateInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
+            const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
             if (company !== 'ISRA') {
                 const err = new Error("Only ISRA can edit Inventory");
                 waterfallCallback(err)
             }
-            else if (isWorker || isStoreManager) {
+            else if (isWorker || isStoreManager || isAdmin) {
                 waterfallCallback();
             }
             else {
@@ -113,8 +113,8 @@ export function updateInventory(data, callback) {
         },
         function (inventory, waterfallCallback) {
             const { roles } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (isStoreManager) {
+            const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+            if (isStoreManager || isAdmin) {
                 const update = {
                     status: "approved",
                     sku: data.sku,
@@ -166,8 +166,8 @@ export function approveInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (isStoreManager) {
+            const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+            if (isStoreManager || isAdmin) {
                 waterfallCallback();
             }
             else {
@@ -286,12 +286,12 @@ export function removeInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
+            const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
             if (company !== 'ISRA') {
                 const err = new Error("Only ISRA can remove Inventory");
                 waterfallCallback(err)
             }
-            else if (isStoreManager) {
+            else if (isStoreManager || isAdmin) {
                 waterfallCallback();
             }
             else {
@@ -322,8 +322,8 @@ export function removeInventory(data, callback) {
         },
         function (inventory, waterfallCallback) {
             const { roles } = data.userSession;
-            const { isStoreManager, isWorker } = getUserRoles(roles);
-            if (isStoreManager) {
+            const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+            if (isStoreManager || isAdmin) {
                 const update = {
                     status: "approved",
                     isRemoved: true,
@@ -379,10 +379,10 @@ export function increaseByPhone(data, callback){
     async.waterfall([
       function(waterfallCallback){
           const { roles, company, username } = data.userSession;
-          const { isStoreManager, isWorker } = getUserRoles(roles);
+          const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
           const key = data.code;
           if (company === 'ISRA'){
-              if(isStoreManager)
+              if(isStoreManager || isAdmin)
               {
                   getCodeByKeyDAO(key, function(err, code){
                       if (err){
@@ -496,8 +496,8 @@ export function removeImport(data, callback){
     async.waterfall([
       function(waterfallCallback){
          const { roles, company } = data.userSession;
-         const { isStoreManager, isWorker } = getUserRoles(roles);
-         if (isWorker || isStoreManager){
+         const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+         if (isWorker || isStoreManager || isAdmin){
             waterfallCallback()
          }
          else{
@@ -540,7 +540,8 @@ export function getPendingInventories(callback) {
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
     const isWorker = roles.indexOf("worker") >= 0;
-    return { isStoreManager, isWorker };
+    const isAdmin = roles.indexOf("admin") >= 0;
+    return { isStoreManager, isWorker, isAdmin };
 }
 
 function getLatestHistory(inventory) {

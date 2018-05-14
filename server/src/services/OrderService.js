@@ -76,8 +76,8 @@ export function approveOrder(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager } = getUserRoles(roles);
-            if (isStoreManager && company === 'ISRA') {
+            const { isStoreManager, isAdmin } = getUserRoles(roles);
+            if ((isStoreManager || isAdmin) && company === 'ISRA') {
                 waterfallCallback();
             }
             else {
@@ -236,8 +236,8 @@ export function changeOrder(data, callback){
    async.waterfall([
      function (waterfallCallback) {
          const { roles, company } = data.userSession;
-         const { isStoreManager } = getUserRoles(roles);
-         if (isStoreManager && company === 'ISRA') {
+         const { isStoreManager, isAdmin } = getUserRoles(roles);
+         if ((isStoreManager || isAdmin) && company === 'ISRA') {
              waterfallCallback();
          }
          else {
@@ -346,7 +346,8 @@ function compare(a,b){
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
     const isSales = roles.indexOf("sales") >= 0;
-    return { isStoreManager, isSales }
+    const isAdmin = roles.indexOf("admin") >= 0;
+    return { isStoreManager, isSales, isAdmin }
 }
 
 export function getPendingOrders(callback) {

@@ -50,8 +50,8 @@ export function createFeature(data, callback){
    async.waterfall([
      function (waterfallCallback) {
          const { roles, company } = data.userSession;
-         const { isStoreManager } = getUserRoles(roles);
-         if (isStoreManager && company === 'ISRA') {
+         const { isStoreManager, isAdmin } = getUserRoles(roles);
+         if ((isStoreManager || isAdmin) && company === 'ISRA') {
              waterfallCallback();
          }
          else {
@@ -229,8 +229,8 @@ export function updateFeature(data, callback) {
       async.waterfall([
         function (waterfallCallback) {
             const { roles, company } = data.userSession;
-            const { isStoreManager } = getUserRoles(roles);
-            if (isStoreManager && company === 'ISRA') {
+            const { isStoreManager, isAdmin } = getUserRoles(roles);
+            if ((isStoreManager || isAdmin) && company === 'ISRA') {
                 waterfallCallback();
             }
             else {
@@ -294,8 +294,8 @@ export function removeFeature(data, callback){
     async.waterfall([
       function (waterfallCallback) {
           const { roles, company } = data.userSession;
-          const { isStoreManager } = getUserRoles(roles);
-          if (isStoreManager && company === 'ISRA') {
+          const { isStoreManager, isAdmin } = getUserRoles(roles);
+          if ((isStoreManager || isAdmin) && company === 'ISRA') {
               waterfallCallback();
           }
           else {
@@ -357,5 +357,6 @@ export function getUnits(callback){
 
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
-    return { isStoreManager };
+    const isAdmin = roles.indexOf("admin") >= 0;
+    return { isStoreManager, isAdmin };
 }

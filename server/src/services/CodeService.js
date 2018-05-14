@@ -22,8 +22,8 @@ export function createCode(data, callback){
    async.waterfall([
      function (waterfallCallback) {
          const { roles, company } = data.userSession;
-         const { isStoreManager, isSales } = getUserRoles(roles);
-         if (isStoreManager || isSales) {
+         const { isStoreManager, isSales, isAdmin } = getUserRoles(roles);
+         if (isStoreManager || isSales || isAdmin) {
              waterfallCallback();
          }
          else {
@@ -90,8 +90,8 @@ export function removeCode(data, callback){
     async.waterfall([
       function (waterfallCallback) {
           const { roles, company } = data.userSession;
-          const { isStoreManager, isSales } = getUserRoles(roles);
-          if (isStoreManager || isSales) {
+          const { isStoreManager, isSales, isAdmin } = getUserRoles(roles);
+          if (isStoreManager || isSales || isAdmin) {
               waterfallCallback();
           }
           else {
@@ -220,5 +220,6 @@ export function getCodeByCompany(company, callback){
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
     const isSales = roles.indexOf("sales") >= 0;
-    return { isStoreManager, isSales };
+    const isAdmin = roles.indexOf("admin") >= 0;
+    return { isStoreManager, isSales, isAdmin };
 }
