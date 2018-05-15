@@ -175,13 +175,28 @@ export function updateInfo(data, callback) {
 
 export function editUser(data, callback) {
     async.waterfall([
+        function(waterfallCallback){
+            const { roles } = data.userSession;
+            const { isAdmin } = getUserRoles(roles);
+            if (isAdmin){
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to edit User");
+                waterfallCallback(err);
+            }
+        },
         function (waterfallCallback) {
             getUserByIdDAO(data.id, function(err, user){
                   if (err){
                       waterfallCallback(err);
                   }
-                  else{
+                  else if (user) {
                       waterfallCallback(null, user);
+                  }
+                  else {
+                      const err = new Error("User Not Found");
+                      waterfallCallback(err);
                   }
             });
         },

@@ -49,6 +49,7 @@ class ApproveImport extends Component {
             return (
                 <Table.Row key={importData.id}>
                     <Table.Cell>{importData.sku}</Table.Cell>
+                    <Table.Cell>{importData.code}</Table.Cell>
                     <Table.Cell>{importData.quantity}</Table.Cell>
                     <Table.Cell>{importData.status}</Table.Cell>
                     <Table.Cell>{importData.username}</Table.Cell>
@@ -66,6 +67,7 @@ class ApproveImport extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>SKU</Table.HeaderCell>
+                            <Table.HeaderCell>Code</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Status</Table.HeaderCell>
                             <Table.HeaderCell>Imported By</Table.HeaderCell>
@@ -82,6 +84,7 @@ class ApproveImport extends Component {
             return (
                 <div key={importData.id}>
                     <p>SKU: {importData.sku}</p>
+                    <p>Code: {importData.code}</p>
                     <p>Quantity: {importData.quantity}</p>
                     <p>Status: {importData.status}</p>
                     <p>Imported By: {importData.username}</p>
@@ -112,7 +115,6 @@ class ApproveImport extends Component {
                           {tableView}
                       </Responsive>
                     </Container>
-                    {/* </Segment> */}
                 </Segment>
             </BaseLayout>
         )

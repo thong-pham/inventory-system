@@ -147,7 +147,7 @@ export function deleteUser(data) {
 export function editUser(user) {
     return function (dispatch) {
         dispatch({ type: UPDATE_USER_STARTED });
-        return axios.put(WS_URL + "editUser", user)
+        return axios.put(WS_URL + user.id, user)
             .then(function (response) {
                 return response.data;
             })

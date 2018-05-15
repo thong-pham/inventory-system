@@ -8,12 +8,14 @@ import {
     getCompanies as getCompaniesDAO,
     getCompanyByCode as getCompanyByCodeDAO,
     getCompanyByName as getCompanyByNameDAO,
+    updateCompanyById as updateCompanyByIdDAO,
+    removeCompanyById as removeCompanyByIdDAO
 } from "./../dao/mongo/impl/CompanyDAO";
 
 
 export function createCompany(data, callback) {
     async.waterfall([
-        function (waterfallCallback) {
+        /*function (waterfallCallback) {
             getCompanyByCodeDAO(data.code, waterfallCallback);
         },
         function (company, waterfallCallback) {
@@ -24,7 +26,7 @@ export function createCompany(data, callback) {
             else {
                 waterfallCallback();
             }
-        },
+        },*/
         function (waterfallCallback) {
             getCompanyByNameDAO(data.name.en, waterfallCallback);
         },
@@ -49,6 +51,72 @@ export function createCompany(data, callback) {
     ], callback);
 }
 
+export function editCompany(data, callback) {
+    async.waterfall([
+        function(waterfallCallback){
+            const { roles } = data.userSession;
+            const { isAdmin } = getUserRoles(roles);
+            if (isAdmin){
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to edit Company");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            getCompanyByIdDAO(data.id, function(err, company){
+                  if (err){
+                      waterfallCallback(err);
+                  }
+                  else if (company) {
+                      waterfallCallback(null, company);
+                  }
+                  else {
+                      const err = new Error("Company Not Found");
+                      waterfallCallback(err);
+                  }
+            });
+        },
+        function (company, waterfallCallback) {
+            const update = {
+                name: data.name,
+            }
+            updateCompanyByIdDAO(data.id, update, waterfallCallback);
+        }
+    ], callback);
+}
+
+export function removeCompany(data, callback){
+    async.waterfall([
+        function(waterfallCallback){
+            const { roles } = data.userSession;
+            const { isAdmin } = getUserRoles(roles);
+            if (isAdmin){
+                waterfallCallback();
+            }
+            else{
+                const err = new Error("Not Enough Permission to remove Company");
+                waterfallCallback(err);
+            }
+        },
+        function(waterfallCallback){
+            const id = data.id;
+            getCompanyByIdDAO(id, function(err, company){
+                if (err){
+                    waterfallCallback(err);
+                }
+                else if (company){
+                    removeCompanyByIdDAO(id, waterfallCallback);
+                }
+                else {
+                    const err = new Error("Company Not Found");
+                    waterfallCallback(err);
+                }
+            });
+        }
+    ],callback)
+}
 
 export function getCompanyById(id, callback) {
     getCompanyByIdDAO(id, callback);
@@ -56,4 +124,9 @@ export function getCompanyById(id, callback) {
 
 export function getCompanies(callback) {
     getCompaniesDAO(callback);
+}
+
+function getUserRoles(roles) {
+    const isAdmin = roles.indexOf("admin") >= 0;
+    return { isAdmin };
 }

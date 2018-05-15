@@ -62,10 +62,19 @@ class EditUser extends Component {
       });
     }
     render() {
-        const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
+        const { handleSubmit, pristine, initialValues, errors, submitting, roleOptions } = this.props;
         const { updatingUserError, isUpdatingUser, user } = this.props.user;
         const { companies } = this.props.company;
+
         const renderSelectField = ({ input, type, meta: { touched, error }, children }) => (
+              <div className="selectDiv">
+                  <select {...input}>
+                    {children}
+                  </select>
+                  {touched && error && <span>{error}</span>}
+               </div>
+        )
+        const renderSelectRoles = ({ input, type, meta: { touched, error }, children }) => (
               <div className="selectDiv">
                   <select {...input}>
                     {children}
@@ -93,14 +102,6 @@ class EditUser extends Component {
                         <Field name="username" placeholder="Enter the username" component={this.renderField}></Field>
                     </Form.Field>
                     <Form.Field inline>
-                        <label>Select Role</label>
-                          <Field name="roles" component={renderSelectField}>
-                            <option />
-                            <option value="storeManager">Store Manager</option>
-                            <option value="worker">Worker</option>
-                          </Field>
-                    </Form.Field>
-                    <Form.Field inline>
                         <label>Select Company</label>
                         <Field name="company" component={renderSelectField}>
                             <option />
@@ -109,6 +110,24 @@ class EditUser extends Component {
                                 <option key={key} value={companies[key].name.en}>{companies[key].name.en}</option>)}
                         </Field>
                     </Form.Field>
+                    { ((roleOptions) && (roleOptions === 'ISRA')) ?
+                      <Form.Field inline>
+                        <label>Select Role</label>
+                          <Field name="roles" component={renderSelectRoles}>
+                            <option />
+                            <option value="storeManager">Store Manager</option>
+                            <option value="worker">Worker</option>
+                          </Field>
+                    </Form.Field> : null}
+                    { ((roleOptions) && (roleOptions !== 'ISRA')) ?
+                      <Form.Field inline>
+                        <label>Select Role</label>
+                          <Field name="roles" component={renderSelectRoles}>
+                            <option />
+                            <option value="sales">Sales</option>
+                          </Field>
+                    </Form.Field> : null}
+
                     <Button loading={submitting} disabled={submitting}>Save Changes</Button>
                     <Button onClick={this.onBack.bind(this)}>Cancel</Button>
                 </Form>
@@ -122,7 +141,9 @@ class EditUser extends Component {
 function mapStatesToProps(state) {
     const user = state.user.user;
     var initialValues = null;
+    var roleOptions = null;
     if (user){
+        roleOptions = user.company;
         initialValues = {
             id: user.id,
             username: user.username,
@@ -135,7 +156,8 @@ function mapStatesToProps(state) {
         auth: state.auth,
         user: state.user,
         company: state.company,
-        location: state.router.location
+        location: state.router.location,
+        roleOptions: roleOptions
     }
 }
 

@@ -3,7 +3,7 @@ import { ADD_COMPANY_STARTED, ADD_COMPANY_FULFILLED, ADD_COMPANY_REJECTED,
          DELETE_COMPANY_STARTED, DELETE_COMPANY_FULFILLED, DELETE_COMPANY_REJECTED,
          GET_PENDING_COMPANIES_STARTED, GET_PENDING_COMPANIES_FULFILLED, GET_PENDING_COMPANIES_REJECTED,
          UPDATE_COMPANY_STARTED, UPDATE_COMPANY_FULFILLED, UPDATE_COMPANY_REJECTED,
-         SET_UPDATING_COMPANY_FULFILLED
+         SET_UPDATING_COMPANY_FULFILLED, CHANGE_COMPANY, CANCEL_CHANGE, TRACK_NAME
          } from "./../actions/CompanyActions";
 
 const initialState = {
@@ -20,6 +20,8 @@ const initialState = {
     company: null,
     isUpdatingCompany: false,
     updatingCompaniesError: null,
+    nameChange: null,
+    newName: null
 }
 
 export default function (state = initialState, action) {
@@ -74,11 +76,11 @@ export default function (state = initialState, action) {
         }
         case UPDATE_COMPANY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isUpdatingCompany: false, company: null, updatingCompaniesError: null };
+            return { ...state, isUpdatingCompany: false, company: null, updatingCompaniesError: null, nameChange: null };
         }
         case UPDATE_COMPANY_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isUpdatingCompany: false, updatingCompaniesError: error };
+            return { ...state, isUpdatingCompany: false, updatingCompaniesError: error, nameChange: null };
         }
         case SET_UPDATING_COMPANY_FULFILLED: {
             const id = action.payload;
@@ -86,6 +88,17 @@ export default function (state = initialState, action) {
                 return element.id == id;
             })[0];
             return Object.assign({}, state, { company: inv });
+        }
+        case CHANGE_COMPANY: {
+           const data = action.payload;
+           return { ...state, nameChange: data };
+        }
+        case CANCEL_CHANGE:{
+            return { ...state, nameChange: null };
+        }
+        case TRACK_NAME:{
+            const data = action.payload;
+            return { ...state, newName: data };
         }
         default: {
             return state;

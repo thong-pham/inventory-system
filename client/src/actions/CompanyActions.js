@@ -26,6 +26,10 @@ export const UPDATE_COMPANY_REJECTED = "UPDATE_COMPANY_REJECTED";
 
 export const SET_UPDATING_COMPANY_FULFILLED = "SET_UPDATING_COMPANY_FULFILLED";
 
+export const CHANGE_COMPANY = "CHANGE_COMPANY";
+export const CANCEL_CHANGE = "CANCEL_CHANGE";
+export const TRACK_NAME = "TRACK_NAME";
+
 const WS_URL = "https://api.israhospitality.com/companies/";
 
 export function addCompany(data) {
@@ -86,13 +90,7 @@ export function deleteCompany(data) {
     }
 }
 
-export function setUpdatingCompany(id) {
-    return function (dispatch) {
-        dispatch({ type: SET_UPDATING_COMPANY_FULFILLED, payload: id });
-    }
-}
-
-export function updateCompany(company) {
+export function editCompany(company) {
     return function (dispatch) {
         dispatch({ type: UPDATE_COMPANY_STARTED });
         return axios.put(WS_URL + company.id, company)
@@ -108,5 +106,29 @@ export function updateCompany(company) {
                 dispatch({ type: UPDATE_COMPANY_REJECTED, payload: response });
                 throw response;
             })
+    }
+}
+
+export function setUpdatingCompany(id) {
+    return function (dispatch) {
+        dispatch({ type: SET_UPDATING_COMPANY_FULFILLED, payload: id });
+    }
+}
+
+export function triggerChange(data) {
+    return function (dispatch) {
+        dispatch({ type: CHANGE_COMPANY, payload: data });
+    }
+}
+export function cancelChange(data) {
+    return function (dispatch) {
+        dispatch({ type: CANCEL_CHANGE });
+    }
+}
+
+
+export function trackName(data) {
+    return function (dispatch) {
+        dispatch({ type: TRACK_NAME, payload: data });
     }
 }

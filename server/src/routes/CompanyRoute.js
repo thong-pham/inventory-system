@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCompany, getCompanyById, getCompanies } from "./../services/CompanyService";
+import { createCompany, getCompanyById, getCompanies, editCompany, removeCompany } from "./../services/CompanyService";
 import { validateCreateCompany } from "./../validators/CompanyValidator";
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -58,6 +58,63 @@ router.post('/createCompany',verifyAuthMiddleware, function (req, res, next) {
             });
         }
     });
+});
+
+router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id){
+        const userSession = req.session;
+        const { name } = req.body;
+        const data = { name: {en: name}, id, userSession };
+        editCompany(data, function (err, company) {
+            if (err) {
+                if (err.message === "Not Enough Permission to edit Company") {
+                    res.status(402).send(err.message);
+                }
+                else if (err.message === "Company Not Found") {
+                    res.status(404).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send("Update Successfully");
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
+});
+
+router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        const userSession = req.session;
+        const data = { id, userSession };
+        removeCompany(data, function (err, company) {
+            if (err) {
+                if (err.message === "Not Enough Permission to remove Company") {
+                    res.status(402).send(err.message);
+                }
+                else if (err.message === "Company Not Found") {
+                    res.status(404).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send("Remove Successfully");
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 

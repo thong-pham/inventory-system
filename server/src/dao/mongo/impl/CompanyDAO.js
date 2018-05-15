@@ -34,7 +34,14 @@ export function getCompanyByName(name, callback) {
 
 export function updateCompanyById(id, data, callback) {
     data.lastModifiedAt = new Date();
-    Company.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, user) {
-        callback(err, user);
+    Company.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, company) {
+        callback(err, company);
+    });
+}
+
+export function removeCompanyById(id, callback) {
+    //data.lastModifiedAt = new Date();
+    Company.findOneAndRemove({ "id": parseInt(id) }, function (err, company) {
+        callback(err, company);
     });
 }

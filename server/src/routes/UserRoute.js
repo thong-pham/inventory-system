@@ -138,30 +138,33 @@ router.put('/updateInfo', verifyAuthMiddleware, function (req, res, next) {
     });
 });
 
-router.put('/editUser', verifyAuthMiddleware, function (req, res, next) {
-    validateEditUser(req.body, function (err) {
-        if (err) {
-            res.status(400).send(err);
-        }
-        else {
-            const { username, company, roles, id } = req.body;
-            const data = { username, company, roles, id };
-            editUser(data, function (err, user) {
-                if (err) {
-                    if (err.message === "Invalid Info") {
-                        res.status(400).send(err.message);
-                    }
-                    else {
-                        console.log(err);
-                        res.status(500).send(err);
-                    }
+router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id){
+        const userSession = req.session;
+        const { username, company, roles } = req.body;
+        const data = { username, company, roles, id, userSession };
+        editUser(data, function (err, user) {
+            if (err) {
+                if (err.message === "Not Enough Permission to edit User") {
+                    res.status(402).send(err.message);
+                }
+                else if (err.message === "User Not Found") {
+                    res.status(404).send(err.message);
                 }
                 else {
-                    res.status(200).send(user);
+                    console.log(err);
+                    res.status(500).send(err);
                 }
-            });
-        }
-    });
+            }
+            else {
+                res.status(200).send(user);
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {

@@ -1,24 +1,27 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Button, Container, Modal } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Button, Container, Modal, Grid, Input } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getCompanies, deleteCompanies } from "./../../actions/CompanyActions";
+import { getCompanies, deleteCompany, triggerChange, cancelChange, trackName, editCompany } from "./../../actions/CompanyActions";
+
+//import { getUsers } from "./../../actions/UserActions";
 
 class ViewCompanies extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         dispatch(getCompanies({ token: token }));
+        //dispatch(getUsers({ token: token }));
     }
-    onPressEdit(company) {
+    onPressEdit = (company) => {
         const { dispatch } = this.props;
-        dispatch(push("/company/" + company.id));
+        dispatch(triggerChange(company.id));
     }
-    onPressDelete(company) {
+    onPressDelete = (company) => {
         const { token, dispatch } = this.props;
         dispatch(deleteCompany({ token: token, company: company })).then(function (data) {
             dispatch(getCompanies({ token: token }));
@@ -29,8 +32,33 @@ class ViewCompanies extends Component {
         dispatch(push("/addcompany"));
     }
 
+    handleName = (e) => {
+        const { dispatch } = this.props;
+        dispatch(trackName(e.target.value));
+    }
+
+    onCancel = () => {
+        const { dispatch } = this.props;
+        dispatch(cancelChange());
+    }
+
+    onSaveName = (id) => {
+        const { dispatch, token } = this.props;
+        const { newName } = this.props.company;
+        const data = {
+            id: id,
+            name: newName,
+            token: token
+        }
+        dispatch(editCompany(data)).then(function(data){
+            dispatch(getCompanies({ token: token }));
+        });
+    }
+
     render() {
-        const { companies, isFetchingCompanies, fetchingCompaniesError, deletingsCompaniesError } = this.props.company;
+        const { companies, isFetchingCompanies, fetchingCompaniesError, deletingsCompaniesError,
+                nameChange, newName } = this.props.company;
+
         let error = null;
         if (fetchingCompaniesError || deletingsCompaniesError) {
             error = (
@@ -44,12 +72,26 @@ class ViewCompanies extends Component {
         const companiesView = companies.map(function (company) {
             return (
                 <Table.Row key={company.id}>
-                    <Table.Cell>{company.name.en}</Table.Cell>
-                    {/*<Table.Cell>{company.code}</Table.Cell>*/}
-                    <Table.Cell>List Users Here</Table.Cell>
                     <Table.Cell>
-                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, company)} />
-                        <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, company)} />
+                    {company.name.en}
+                    <hr />
+                    { (nameChange === company.id) ? <Grid divided>
+                            <Grid.Row textAlign='center'>
+                                <Grid.Column width={8}>
+                                  <Input style={{width: '160px'}} defaultValue={newName} onChange={this.handleName}/>
+                                </Grid.Column>
+                                <Grid.Column width={4}>
+                                    <Button onClick={() => this.onSaveName(company.id)}><Icon name='checkmark' /></Button>
+                                </Grid.Column>
+                                <Grid.Column width={4}>
+                                    <Button onClick={this.onCancel}><Icon name='close'/></Button>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid> : null }
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Button color='teal' onClick={() => this.onPressEdit(company)}><Icon name='pencil' />Edit</Button>
+                        <Button color='red' onClick={() => this.onPressDelete(company)}><Icon name='trash outline' />Delete</Button>
                     </Table.Cell>
                 </Table.Row>
             )
@@ -61,8 +103,6 @@ class ViewCompanies extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={2}>Name</Table.HeaderCell>
-                            {/*<Table.HeaderCell width={2}>Code</Table.HeaderCell>*/}
-                            <Table.HeaderCell width={2}>Users</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -92,7 +132,7 @@ class ViewCompanies extends Component {
 function mapStatesToProps(state) {
     return {
         token: state.auth.token,
-        company: state.company
+        company: state.company,
     }
 }
 
