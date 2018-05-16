@@ -125,7 +125,7 @@ class ApproveImport extends Component {
 function mapStatesToProps(state) {
     return {
         token: state.auth.token,
-        import: state.imports,
+        import: state.importData,
         auth: state.auth,
         inventory: state.inventory
     }

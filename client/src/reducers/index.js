@@ -23,6 +23,6 @@ export default combineReducers({
     subInventory: subInventoryReducer,
     order: orderReducer,
     code: codeReducer,
-    imports: importReducer,
+    importData: importReducer,
     feature: featureReducer
 });

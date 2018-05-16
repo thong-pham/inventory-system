@@ -20,6 +20,12 @@ export const DELETE_IMPORT_STARTED = "DELETE_IMPORT_STARTED";
 export const DELETE_IMPORT_FULFILLED = "DELETE_IMPORT_FULFILLED";
 export const DELETE_IMPORT_REJECTED = "DELETE_IMPORT_REJECTED";
 
+export const IMPORT_INVENTORY_STARTED = "IMPORT_INVENTORY_STARTED";
+export const IMPORT_INVENTORY_FULFILLED = "IMPORT_INVENTORY_FULFILLED";
+export const IMPORT_INVENTORY_REJECTED = "IMPORT_INVENTORY_REJECTED";
+
+export const FILL_CODE = "FILL_CODE";
+
 const WS_URL = "https://api.israhospitality.com/inventories/";
 
 export function getPendingImports(data) {
@@ -36,6 +42,25 @@ export function getPendingImports(data) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: GET_PENDING_IMPORTS_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function importInventory(data) {
+    return function (dispatch) {
+        dispatch({ type: IMPORT_INVENTORY_STARTED });
+        return axios.post(WS_URL + "increaseByPhone", data)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: IMPORT_INVENTORY_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: IMPORT_INVENTORY_REJECTED, payload: response });
                 throw response;
             })
     }
@@ -59,4 +84,10 @@ export function deleteImport(data) {
                 throw response;
             })
     }
+}
+
+export function fillingCode(data){
+   return function (dispatch){
+       dispatch({ type : FILL_CODE, payload: data})
+   }
 }

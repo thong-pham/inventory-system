@@ -1,5 +1,4 @@
 import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
-         IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED,
          GET_INVENTORIES_STARTED, GET_INVENTORIES_FULFILLED, GET_INVENTORIES_REJECTED,
          DELETE_INVENTORY_STARTED, DELETE_INVENTORY_FULFILLED, DELETE_INVENTORY_REJECTED,
          GET_PENDING_INVENTORIES_STARTED, GET_PENDING_INVENTORIES_FULFILLED, GET_PENDING_INVENTORIES_REJECTED,
@@ -26,19 +25,13 @@ const initialState = {
     updatingInventoriesError: null,
     isApprovingInventory: false,
     approvingInventoryError: null,
-    isImportingInventory: false,
-    importingInventoryError: null,
     quantity: null,
     errorInput: null,
     openPlus: null,
     openMinus: null,
     generatedSKU: null,
     generatedDesc: null,
-    defaultImport: {
-        code: null,
-        capacity: 24,
-        box: null
-    }
+
 }
 
 export default function (state = initialState, action) {
@@ -124,17 +117,7 @@ export default function (state = initialState, action) {
             const error = action.payload;
             return { ...state, updatingInventoriesError: error, deletingsInventoriesError: null };
         }
-        case IMPORT_INVENTORY_STARTED: {
-            return { ...state, isImportingInventory: true };
-        }
-        case IMPORT_INVENTORY_FULFILLED: {
-            const data = action.payload;
-            return { ...state, isImportingInventory: false, importingInventoryError: null };
-        }
-        case IMPORT_INVENTORY_REJECTED: {
-            const error = action.payload.data;
-            return { ...state, isImportingInventory: false, importingInventoryError: error };
-        }
+
         case TRACK_NUMBER: {
             var data = action.payload;
             const number = parseInt(data);
@@ -168,6 +151,7 @@ export default function (state = initialState, action) {
             const newInv = state.inventories.filter((element) => element.productName.en.toLowerCase().includes(data));
             return { ...state, inventories: newInv };
         }
+
         default: {
             return state;
         }

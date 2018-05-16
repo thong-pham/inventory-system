@@ -3,12 +3,15 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          GET_APPROVED_IMPORTS_STARTED, GET_APPROVED_IMPORTS_FULFILLED, GET_APPROVED_IMPORTS_REJECTED,
          CHANGE_IMPORT_STARTED, CHANGE_IMPORT_FULFILLED, CHANGE_IMPORT_REJECTED,
          DELETE_IMPORT_STARTED, DELETE_IMPORT_FULFILLED, DELETE_IMPORT_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER
+         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, FILL_CODE,
+         IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED,
          } from "./../actions/ImportActions";
 
 const initialState = {
     pendingImports: [],
     approvedImports: [],
+    isImportingInventory: false,
+    importingInventoryError: null,
     isFetchingPendingImports: false,
     fetchingPendingImportsError: null,
     isFetchingApprovedImports: false,
@@ -23,11 +26,27 @@ const initialState = {
     response: null,
     change: null,
     quantity: null,
-    add: false
+    add: false,
+    defaultImport: {
+        code: null,
+        capacity: 24,
+        box: null
+    }
 }
 
 export default function (state = initialState, action) {
     switch (action.type) {
+        case IMPORT_INVENTORY_STARTED: {
+            return { ...state, isImportingInventory: true };
+        }
+        case IMPORT_INVENTORY_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isImportingInventory: false, importingInventoryError: null };
+        }
+        case IMPORT_INVENTORY_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isImportingInventory: false, importingInventoryError: error };
+        }
         case GET_PENDING_IMPORTS_STARTED: {
             return { ...state, isFetchingPendingImports: true };
         }
@@ -102,6 +121,10 @@ export default function (state = initialState, action) {
             var data = action.payload;
             const number = parseInt(data);
             return { ...state, quantity : number};
+        }
+        case FILL_CODE:{
+            const data = action.payload;
+            return { ...state, defaultImport: {code: data, capacity: 24, box: null} };
         }
         default: {
             return state;

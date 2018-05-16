@@ -8,7 +8,7 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { importInventory } from "./../../actions/InventoryActions";
+import { importInventory } from "./../../actions/ImportActions";
 
 function validate(values) {
     var errors = {
@@ -66,7 +66,7 @@ class ImportInventory extends Component {
     }
     render() {
         const { handleSubmit, pristine, errors, submitting } = this.props;
-        const { token, user, isImportingInventory, importingInventoryError, inventory } = this.props.inventory;
+        const { isImportingInventory, importingInventoryError } = this.props.import;
         let error = null;
         if (importingInventoryError) {
             error = (
@@ -106,12 +106,12 @@ class ImportInventory extends Component {
 
 function mapStatesToProps(state) {
 
-    const initialValues = state.inventory.defaultImport;
+    const initialValues = state.importData.defaultImport;
 
     return {
         initialValues: initialValues,
         auth: state.auth,
-        inventory: state.inventory
+        import: state.importData
     }
 }
 

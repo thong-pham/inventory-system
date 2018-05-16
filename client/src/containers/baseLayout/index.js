@@ -296,7 +296,7 @@ class BaseLayout extends Component {
         }
 
         return (
-            <div textAlign='center' className="mainContainer">
+            <div style={{textAlign: 'center'}} className="mainContainer">
                 <Sidebar.Pushable as={Segment} className="mainContainer">
                     {dedicatedMenuItem}
                     <Sidebar.Pusher>

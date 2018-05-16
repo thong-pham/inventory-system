@@ -28,10 +28,6 @@ export const SET_UPDATING_INVENTORY_FULFILLED = "SET_UPDATING_INVENTORY_FULFILLE
 export const CLEAR_INVENTORY_FULFILLED = "CLEAR_INVENTORY_FULFILLED";
 export const REJECT_UPDATING_INVENTORY = "REJECT_UPDATING_INVENTORY";
 
-export const IMPORT_INVENTORY_STARTED = "IMPORT_INVENTORY_STARTED";
-export const IMPORT_INVENTORY_FULFILLED = "IMPORT_INVENTORY_FULFILLED";
-export const IMPORT_INVENTORY_REJECTED = "IMPORT_INVENTORY_REJECTED";
-
 export const TRACK_NUMBER = "TRACK_NUMBER";
 export const OPEN_MINUS = "OPEN_MINUS";
 export const CLOSE_MINUS = "CLOSE_MINUS";
@@ -159,24 +155,6 @@ export function updateInventory(inventory) {
     }
 }
 
-export function importInventory(data) {
-    return function (dispatch) {
-        dispatch({ type: IMPORT_INVENTORY_STARTED });
-        return axios.post(WS_URL + "increaseByPhone", data)
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: IMPORT_INVENTORY_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: IMPORT_INVENTORY_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
 
 export function setUpdatingInventory(id) {
     return function (dispatch) {

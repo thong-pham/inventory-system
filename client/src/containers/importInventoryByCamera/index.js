@@ -11,7 +11,7 @@ import Result from "./Result";
 
 import './../../styles/custom.css';
 
-import { importInventory } from "./../../actions/InventoryActions";
+import { fillingCode } from "./../../actions/ImportActions";
 
 class ImportInventoryByCamera extends Component {
     state = {
@@ -37,22 +37,16 @@ class ImportInventoryByCamera extends Component {
     }
 
     handleCode = () => {
+        const { dispatch } = this.props;
         const data = this.state.results[0].codeResult.code;
-        alert(data);
+        dispatch(fillingCode(data));
+        dispatch(push("/importInventory"));
     }
 
     render() {
-        const { handleSubmit, pristine, errors, submitting } = this.props;
-        const { token, user, isImportingInventory, importingInventoryError, inventory } = this.props.inventory;
+        //const { isImportingInventory, importingInventoryError } = this.props.import;
         let error = null;
-        if (importingInventoryError) {
-            error = (
-                <Message negative>
-                    <Message.Header>Error while Importing Inventory</Message.Header>
-                    <p>{importingInventoryError}</p>
-                </Message>
-            )
-        }
+
         return (
           <BaseLayout>
               <Segment textAlign='center'>
@@ -76,7 +70,7 @@ function mapStatesToProps(state) {
 
     return {
         auth: state.auth,
-        inventory: state.inventory
+        import: state.importData
     }
 }
 
