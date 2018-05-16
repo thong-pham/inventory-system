@@ -6,11 +6,12 @@ import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
          UPDATE_INVENTORY_STARTED, UPDATE_INVENTORY_FULFILLED, UPDATE_INVENTORY_REJECTED,
          SET_UPDATING_INVENTORY_FULFILLED, CLEAR_INVENTORY_FULFILLED, REJECT_UPDATING_INVENTORY,
          APPROVE_INVENTORY_STARTED, APPROVE_INVENTORY_FULFILLED, APPROVE_INVENTORY_REJECTED,
-         TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA, OPEN_MINUS, CLOSE_MINUS
+         TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA, OPEN_MINUS, CLOSE_MINUS, FILTER_INVENTORY
          } from "./../actions/InventoryActions";
 
 const initialState = {
     inventories: [],
+    backUpInv: [],
     isAddingInventory: false,
     addingInventoryError: null,
     isFetchingInventories: false,
@@ -48,7 +49,7 @@ export default function (state = initialState, action) {
         case ADD_INVENTORY_FULFILLED: {
             const data = action.payload;
             const newInventory = state.inventories.concat([data]);
-            return { ...state, isAddingInventory: false, inventories: newInventory, addingInventoryError: null };
+            return { ...state, isAddingInventory: false, inventories: newInventory, backUpInv: data, addingInventoryError: null };
         }
         case ADD_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -59,7 +60,7 @@ export default function (state = initialState, action) {
         }
         case GET_INVENTORIES_FULFILLED: {
             const data = action.payload;
-            return { ...state, isFetchingInventories: false, inventories: data };
+            return { ...state, isFetchingInventories: false, inventories: data, backUpInv: data };
         }
         case GET_INVENTORIES_REJECTED: {
             const error = action.payload.data;
@@ -160,6 +161,12 @@ export default function (state = initialState, action) {
         case FILL_DATA:{
             const data = action.payload;
             return { ...state, generatedSKU: data.sku, generatedDesc: data.desc, errorInput: null }
+        }
+        case FILTER_INVENTORY: {
+            const data = action.payload;
+            state.inventories = state.backUpInv;
+            const newInv = state.inventories.filter((element) => element.productName.en.toLowerCase().includes(data));
+            return { ...state, inventories: newInv };
         }
         default: {
             return state;

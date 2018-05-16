@@ -296,14 +296,14 @@ class BaseLayout extends Component {
         }
 
         return (
-            <Container textAlign='center' className="mainContainer">
+            <div textAlign='center' className="mainContainer">
                 <Sidebar.Pushable as={Segment} className="mainContainer">
                     {dedicatedMenuItem}
                     <Sidebar.Pusher>
                         {this.props.children}
                     </Sidebar.Pusher>
                 </Sidebar.Pushable>
-            </Container>
+            </div>
         )
     }
 }

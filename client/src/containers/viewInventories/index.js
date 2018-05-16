@@ -8,7 +8,7 @@ import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
 import { getInventories, deleteInventory, rejectEdit, updateInventory,
-         trackNumber, openPlus, closePlus, openMinus, closeMinus, errorInput } from "./../../actions/InventoryActions";
+         trackNumber, openPlus, closePlus, openMinus, closeMinus, errorInput, filterInventory } from "./../../actions/InventoryActions";
 
 class ViewAndRequest extends Component {
     componentWillMount() {
@@ -103,6 +103,11 @@ class ViewAndRequest extends Component {
     handleInput(e){
         const { token, dispatch } = this.props;
         dispatch(trackNumber(e.target.value));
+    }
+
+    handleSearch = (e) => {
+        const { dispatch } = this.props;
+        dispatch(filterInventory(e.target.value));
     }
 
     render() {
@@ -230,7 +235,10 @@ class ViewAndRequest extends Component {
           <BaseLayout>
               <Segment textAlign='center'>
                   <Container>
-                      <Header as="h2">Inventory List</Header>
+                        <Header as="h2">Inventory List</Header>
+                        <div style={{textAlign: 'right'}}>
+                          <Input onChange={this.handleSearch} placeholder='Search...' />
+                        </div>
                       {error}
                       {tableView}
                   </Container>

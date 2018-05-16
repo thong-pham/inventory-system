@@ -39,6 +39,7 @@ export const OPEN_PLUS = "OPEN_PLUS";
 export const CLOSE_PLUS = "CLOSE_PLUS";
 export const ERROR_INPUT = "ERROR_INPUT";
 export const FILL_DATA = "FILL_DATA";
+export const FILTER_INVENTORY = "FILTER_INVENTORY";
 
 const WS_URL = "https://api.israhospitality.com/inventories/";
 
@@ -235,5 +236,11 @@ export function rejectEdit(){
 export function fillingData(data){
    return function (dispatch){
        dispatch({ type : FILL_DATA, payload: data})
+   }
+}
+
+export function filterInventory(data){
+   return function (dispatch){
+       dispatch({ type : FILTER_INVENTORY, payload: data})
    }
 }

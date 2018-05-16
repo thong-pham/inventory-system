@@ -28,7 +28,7 @@ class ImportInventoryByCamera extends Component {
 
     _onDetected = (result) => {
         var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
-        if (!pattern.test(result)){
+        if (!pattern.test(result.codeResult.code)){
             this.setState({results: this.state.results.concat([result])});
             if (this.state.results.length > 0){
                 this.setState({scanning: !this.state.scanning});
@@ -51,7 +51,7 @@ class ImportInventoryByCamera extends Component {
         return (
           <BaseLayout>
               <Segment textAlign='center'>
-                <Container>
+                <div>
                   <Header as="h2">Import Inventory</Header>
                   {error}
                     <Button onClick={this._scan}>{this.state.scanning ? 'Stop' : 'Start'}</Button>
@@ -59,7 +59,7 @@ class ImportInventoryByCamera extends Component {
                       {this.state.results.map((result, i) => (<Result key={result.codeResult.code + i} result={result} />))}
                     </ul>
                     {this.state.scanning ? <Scanner onDetected={this._onDetected}/> : null}
-                </Container>
+                </div>
               </Segment>
           </BaseLayout>
         )
