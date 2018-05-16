@@ -34,6 +34,7 @@ class ApproveImport extends Component {
         const { user } = this.props.auth;
         const isWorker = user.roles.indexOf("worker") >= 0;
         const isStoreManager = user.roles.indexOf("storeManager") >= 0;
+        const isAdmin = user.roles.indexOf("admin") >= 0;
         const { pendingImports, isFetchingImports, fetchingImportsError, deletingsImportsError } = this.props.import;
         let error = null;
         if (fetchingImportsError || deletingsImportsError) {
@@ -54,7 +55,7 @@ class ApproveImport extends Component {
                     <Table.Cell>{importData.status}</Table.Cell>
                     <Table.Cell>{importData.username}</Table.Cell>
                     <Table.Cell >
-                      { (isStoreManager) ? <Button color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' />Approve</Button> : null }
+                      { (isStoreManager || isAdmin) ? <Button color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' />Approve</Button> : null }
                       <Button color='red' onClick={() => this.onPressDelete(importData)}><Icon name='trash outline' />Delete</Button>
                     </Table.Cell>
                 </Table.Row>

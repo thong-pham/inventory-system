@@ -90,8 +90,8 @@ class ViewCompanies extends Component {
                         </Grid> : null }
                     </Table.Cell>
                     <Table.Cell>
-                        <Button color='teal' onClick={() => this.onPressEdit(company)}><Icon name='pencil' />Edit</Button>
-                        <Button color='red' onClick={() => this.onPressDelete(company)}><Icon name='trash outline' />Delete</Button>
+                        {(company.name.en !== 'ISRA') ? <Button color='teal' onClick={() => this.onPressEdit(company)}><Icon name='pencil' />Edit</Button> : null }
+                        {(company.name.en !== 'ISRA') ? <Button color='red' onClick={() => this.onPressDelete(company)}><Icon name='trash outline' />Delete</Button> : null }
                     </Table.Cell>
                 </Table.Row>
             )

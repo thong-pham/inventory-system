@@ -57,13 +57,19 @@ class ViewCode extends Component {
             dispatch(errorInput(data))
         }
         else {
+            var mainSku = null;
+            if (user.company === 'ISRA'){
+                mainSku = code.sku;
+            }
+            else{
+                mainSku = code.mainSku;
+            }
             const data = {
                token: token,
                sku: code.sku,
-               mainSku: code.mainSku,
+               mainSku: mainSku,
                key: codeInput
             }
-
             dispatch(submitCode(data)).then(function(data){
                 if (user.company === 'ISRA'){
                       dispatch(getAllCode({token: token}));
@@ -124,11 +130,14 @@ class ViewCode extends Component {
                return (
                 <div key={index}>
                  { (keyCode.company === company.name.en) ?
-                   <Grid columns={1}>
+                   <Grid columns={2}>
                      <Grid.Row>
                          <Grid.Column>
                              <p>{keyCode.value}</p>
                            </Grid.Column>
+                           {(company.name.en === 'ISRA') ? <Grid.Column textAlign='right'>
+                              <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/>
+                           </Grid.Column> : null }
                      </Grid.Row>
                    </Grid> : null }
                  </div>
@@ -154,6 +163,30 @@ class ViewCode extends Component {
                     <Table.Cell>{code.sku}</Table.Cell>
                     <Table.Cell>
                         {accordionView}
+                        <hr />
+                        { (openAdd === code.sku) ?
+                          <Grid columns={2} divided>
+                            <Grid.Row>
+                              <Grid.Column className="columnForInput" textAlign='center'>
+                                  <Input placeholder='Code' className="inputBox" size='mini' defaultValue={codeInput} onChange={this.handleInput.bind(this)} />
+                              </Grid.Column>
+                                  <Grid.Column className="columnForButton" textAlign='center'>
+                                      <Grid columns={2}>
+                                          <Grid.Row>
+                                              <Grid.Column textAlign='center'>
+                                                 <Icon name='checkmark' size='large' onClick={this.onPressConfirm.bind(this, code)} />
+                                              </Grid.Column>
+                                              <Grid.Column textAlign='center'>
+                                                  <Icon name='close' size='large' onClick={this.onCloseAdd.bind(this)} />
+                                              </Grid.Column>
+                                          </Grid.Row>
+                                      </Grid>
+                                  </Grid.Column>
+                              </Grid.Row>
+                            </Grid> : null}
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
                     </Table.Cell>
                 </Table.Row>
             )
@@ -165,10 +198,10 @@ class ViewCode extends Component {
                   <Grid columns={2}>
                     <Grid.Row>
                         <Grid.Column>
-                           <p>{keyCode.value} { (user.company === 'ISRA') ? <span> || {keyCode.company}</span> : null }</p>
+                           <p>{keyCode.value}</p>
                           </Grid.Column>
                         <Grid.Column textAlign='right'>
-                          { (user.company !== 'ISRA') ? <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/> : null }
+                           <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/>
                         </Grid.Column>
                     </Grid.Row>
                   </Grid>
@@ -202,10 +235,9 @@ class ViewCode extends Component {
                               </Grid.Row>
                             </Grid> : null}
                     </Table.Cell>
-                      { (user.company !== 'ISRA') ?
-                        <Table.Cell>
-                            { (openAdd !== code.sku) ? <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button> : null }
-                        </Table.Cell> : null }
+                    <Table.Cell>
+                        <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
+                    </Table.Cell>
                 </Table.Row>
             )
         }, this);
@@ -217,7 +249,7 @@ class ViewCode extends Component {
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Scanning Codes</Table.HeaderCell>
-                            {(user.company !== 'ISRA') ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }
+                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     {(user.company !== 'ISRA') ? <Table.Body>

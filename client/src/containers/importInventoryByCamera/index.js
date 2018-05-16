@@ -37,7 +37,7 @@ class ImportInventoryByCamera extends Component {
     }
 
     handleCode = () => {
-        const data = this.state.results[0];
+        const data = this.state.results[0].codeResult.code;
         alert(data);
     }
 
