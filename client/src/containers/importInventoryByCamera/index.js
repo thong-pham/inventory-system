@@ -23,7 +23,7 @@ class ImportInventoryByCamera extends Component {
     }
 
     _scan = () => {
-        this.setState({scanning: !this.state.scanning});
+        this.setState({scanning: !this.state.scanning, results: []});
     }
 
     _onDetected = (result) => {
@@ -34,6 +34,11 @@ class ImportInventoryByCamera extends Component {
                 this.setState({scanning: !this.state.scanning});
             }
         }
+    }
+
+    handleCode = () => {
+        const data = this.state.results[0];
+        alert(data);
     }
 
     render() {
@@ -55,6 +60,7 @@ class ImportInventoryByCamera extends Component {
                   <Header as="h2">Import Inventory</Header>
                   {error}
                     <Button onClick={this._scan}>{this.state.scanning ? 'Stop' : 'Start'}</Button>
+                    { (this.state.results.length > 0) ? <Button onClick={this.handleCode}>Confirm</Button> : null }
                     <ul className="results">
                       {this.state.results.map((result, i) => (<Result key={result.codeResult.code + i} result={result} />))}
                     </ul>

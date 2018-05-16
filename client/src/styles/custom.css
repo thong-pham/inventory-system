@@ -71,7 +71,7 @@
     }
 }
 
-@media only screen and (max-width: 375px) {
+@media only screen and (max-width: 414px) {
     .pusher > .segment {
         padding-left: 0;
         padding-right: 0;
