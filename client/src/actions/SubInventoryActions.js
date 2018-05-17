@@ -78,25 +78,6 @@ export function addSubInventory(data) {
 export function getSubInventoriesByCompany(data) {
     return function (dispatch) {
         dispatch({ type: GET_SUBINVENTORIES_STARTED });
-        return axios.get(WS_URL + "sub", { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: GET_SUBINVENTORIES_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: GET_SUBINVENTORIES_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function getSubInventories(data) {
-    return function (dispatch) {
-        dispatch({ type: GET_SUBINVENTORIES_STARTED });
         return axios.get(WS_URL, { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
@@ -141,7 +122,7 @@ export function deleteSubInventory(data) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: DELETE_SUBINVENTORY_FULFILLED, payload: data });
+                dispatch({ type: DELETE_SUBINVENTORY_FULFILLED, payload: inventory.id });
                 return data;
             })
             .catch(function (error) {

@@ -156,19 +156,6 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
 });
 
 router.get('/', verifyAuthMiddleware, function (req, res, next) {
-    getSubInventories(function (err, inventories) {
-        if (err) {
-            console.log(err);
-            res.status(500).send(err);
-
-        }
-        else {
-            res.status(200).send(inventories);
-        }
-    });
-});
-
-router.get('/sub', verifyAuthMiddleware, function (req, res, next) {
     const { company } = req.session;
     getSubInventoriesByCompany(company, function (err, inventories) {
         if (err) {

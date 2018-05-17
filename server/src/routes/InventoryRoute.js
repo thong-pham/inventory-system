@@ -186,19 +186,6 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
     });
 });
 
-router.get('/sub', verifyAuthMiddleware, function (req, res, next) {
-    const { company } = req.session;
-    getSubInventoriesByCompany(company, function (err, inventories) {
-        if (err) {
-            console.log(err);
-            res.status(500).send(err);
-        }
-        else {
-            res.status(200).send(inventories);
-        }
-    });
-});
-
 router.get('/pendingImports', verifyAuthMiddleware, function (req, res, next) {
     getPendingImports(function (err, imports) {
         if (err) {

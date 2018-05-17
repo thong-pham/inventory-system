@@ -75,7 +75,7 @@ class ImportInventoryByCamera extends Component {
                         { (this.state.results.length > 0) ? <Button onClick={this.handleCode}>Confirm</Button> : null }
                       </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
+                    <Grid.Row className="phoneRow">
                       <Grid.Column>
                         {this.state.scanning ? <Scanner onDetected={this._onDetected} codeType={this.state.codeType}/> : null}
                       </Grid.Column>

@@ -16,14 +16,9 @@ class ViewSubInventory extends Component {
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        if (user.company !== 'ISRA'){
-            dispatch(getSubInventoriesByCompany({ token: token }));
-            dispatch(getCarts({token: token}));
-            dispatch(clearError());
-        }
-        else {
-            dispatch(getSubInventories({ token: token }));
-        }
+        dispatch(getSubInventoriesByCompany({ token: token }));
+        dispatch(getCarts({token: token}));
+        dispatch(clearError());
     }
     onPressEdit(inventory) {
         const { user } = this.props.auth;
@@ -33,9 +28,7 @@ class ViewSubInventory extends Component {
     }
     onPressDelete(inventory) {
         const { token, dispatch } = this.props;
-        dispatch(deleteSubInventory({ token: token, inventory: inventory })).then(function (data) {
-             dispatch(getSubInventoriesByCompany({ token: token }));
-        });
+        dispatch(deleteSubInventory({ token: token, inventory: inventory }));
     }
 
     onOpenAdd (inventory) {
@@ -85,14 +78,10 @@ class ViewSubInventory extends Component {
             }
         });
         if (option){
-            dispatch(updateCart(modalCart)).then(function(data){
-                //window.location.reload();
-            });
+            dispatch(updateCart(modalCart));
         }
         else {
-            dispatch(addCart(modalCart)).then(function(data){
-                //window.location.reload();
-            });
+            dispatch(addCart(modalCart));
         }
     }
 

@@ -51,7 +51,7 @@ const store = createStore(
     reducers,
     undefined,
     compose(
-        applyMiddleware(middleware, logger, thunk)
+        applyMiddleware(middleware, thunk)
     )
 )
 

@@ -95,7 +95,15 @@ export default function (state = initialState, action) {
             return { ...state, isDeletingInventory: true };
         }
         case DELETE_SUBINVENTORY_FULFILLED: {
-            const data = action.payload;
+            const id = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.inventories.length; i++){
+                if (state.inventories[i].id === id ){
+                    index = i;
+                }
+            }
+            state.inventories.splice(index,1);
+            //newInv.splice(index,1);
             return { ...state, isDeletingInventory: false, deletingsInventoriesError: null };
         }
         case DELETE_SUBINVENTORY_REJECTED: {
