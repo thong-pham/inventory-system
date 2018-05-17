@@ -107,7 +107,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
             }
             else {
-                res.status(200).send();
+                res.status(200).send("Delete Successfully");
             }
         });
     }

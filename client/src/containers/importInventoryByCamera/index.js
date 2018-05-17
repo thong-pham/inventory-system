@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
-import { Header, Segment, Input, Label, Form, Button, Message, Container } from "semantic-ui-react";
+import { Header, Segment, Input, Label, Form, Button, Message, Container, Grid } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -16,10 +16,16 @@ import { fillingCode } from "./../../actions/ImportActions";
 class ImportInventoryByCamera extends Component {
     state = {
         scanning: false,
-        results: []
+        results: [],
+        codeType: "code_128_reader"
     }
     componentWillMount() {
         const { dispatch } = this.props;
+    }
+
+    onChoose = (e) => {
+        //console.log(e.target.value);
+        this.setState({codeType: e.target.value});
     }
 
     _scan = () => {
@@ -53,12 +59,35 @@ class ImportInventoryByCamera extends Component {
                 <div>
                   <Header as="h2">Import Inventory</Header>
                   {error}
-                    <Button onClick={this._scan}>{this.state.scanning ? 'Stop' : 'Start'}</Button>
-                    { (this.state.results.length > 0) ? <Button onClick={this.handleCode}>Confirm</Button> : null }
-                    <ul className="results">
-                      {this.state.results.map((result, i) => (<Result key={result.codeResult.code + i} result={result} />))}
-                    </ul>
-                    {this.state.scanning ? <Scanner onDetected={this._onDetected}/> : null}
+                   <Grid>
+                    <Grid.Row>
+                      <Grid.Column>
+                        {(!this.state.scanning) ? <select value={this.state.codeType} onChange={this.onChoose}>
+                          <option value="code_128_reader">Code 128</option>
+                          <option value="ean_reader">EAN</option>
+                          <option value="upc_reader">UPC</option>
+                        </select> : null}
+                       </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                      <Grid.Column>
+                        <Button onClick={this._scan}>{this.state.scanning ? 'Stop' : 'Start'}</Button>
+                        { (this.state.results.length > 0) ? <Button onClick={this.handleCode}>Confirm</Button> : null }
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row textAlign='center'>
+                      <Grid.Column>
+                        <ul className="results">
+                          {this.state.results.map((result, i) => (<Result key={result.codeResult.code + i} result={result} />))}
+                        </ul>
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row textAlign='center'>
+                      <Grid.Column>
+                        {this.state.scanning ? <Scanner onDetected={this._onDetected} codeType={this.state.codeType}/> : null}
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
                 </div>
               </Segment>
           </BaseLayout>

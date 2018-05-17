@@ -53,7 +53,7 @@ class ImportInventory extends Component {
         )
     }
     onSubmit(values, dispatch) {
-        const { token } = this.props.auth;
+        const { token, user } = this.props.auth;
         const data = {
            code: values.code,
            quantity: values.box * values.capacity
@@ -61,7 +61,12 @@ class ImportInventory extends Component {
         data.token = token;
         //console.log(data);
         return dispatch(importInventory(data)).then(function (data) {
-            dispatch(push("/imports"));
+            if (user.roles.indexOf("admin") >= 0){
+                dispatch(push("/inventory"));
+            }
+            else{
+                dispatch(push("/imports"));
+            }
         });
     }
     render() {

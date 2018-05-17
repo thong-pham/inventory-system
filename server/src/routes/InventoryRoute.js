@@ -2,8 +2,7 @@ import { Router } from "express";
 import { createInventory, approveInventory, removeInventory,
         getInventories, getPendingInventories,
         updateInventory, createRequest, getPendingRequests,
-        approveRequest, increaseByPhone, decreaseByPhone,
-        getPendingImports, removeImport
+        approveRequest, importInventory, getPendingImports, removeImport
        } from "./../services/InventoryService";
 import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
 import { validateCreateInventory, validateUpdateByPhone } from "./../validators/InventoryValidator"
@@ -247,7 +246,7 @@ router.delete('/:id/import', verifyAuthMiddleware, function (req, res, next) {
     }
 });
 
-router.post('/increaseByPhone', verifyAuthMiddleware, function (req, res, next) {
+router.post('/importInventory', verifyAuthMiddleware, function (req, res, next) {
     validateUpdateByPhone(req.body, function (err) {
         if (err) {
             res.status(400).send(err);
@@ -256,7 +255,7 @@ router.post('/increaseByPhone', verifyAuthMiddleware, function (req, res, next) 
             const userSession = req.session;
             const { code, quantity } = req.body;
             const data = { code, quantity, userSession };
-            increaseByPhone(data, function (err, inventory) {
+            importInventory(data, function (err, inventory) {
                 if (err) {
                     if (err.message === "Not Enough Permission to import Inventory") {
                         res.status(400).send(err.message);
@@ -271,37 +270,6 @@ router.post('/increaseByPhone', verifyAuthMiddleware, function (req, res, next) 
                 }
                 else {
                     const message = quantity + " items have been added";
-                    res.status(201).send(message);
-                }
-            });
-        }
-    });
-});
-
-router.post('/decreaseByPhone', function (req, res, next) {
-    validateUpdateByPhone(req.body, function (err) {
-        if (err) {
-            res.status(400).send(err);
-        }
-        else {
-            //const userSession = req.session;
-            const { code, quantity } = req.body;
-            const data = { code, quantity };
-            decreaseByPhone(data, function (err, inventory) {
-                if (err) {
-                    if (err.message === "Not Enough Permission to update Inventory") {
-                        res.status(400).send(err.message);
-                    }
-                    if (err.message === "Deduction exceeds the current stock") {
-                        res.status(400).send(err.message);
-                    }
-                    else {
-                        console.log(err);
-                        res.status(500).send(err);
-                    }
-                }
-                else {
-                    const message = quantity + " items have been deducted";
                     res.status(201).send(message);
                 }
             });

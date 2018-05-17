@@ -200,6 +200,10 @@ class BaseLayout extends Component {
                   <Icon name='add' />
                     Add Inventory
                 </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "importInventory")} >
+                  <Icon name='add' />
+                    Import Inventory
+                </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
                   <Icon name='list ul' />
                     Pending Import

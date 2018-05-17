@@ -50,7 +50,7 @@ export function getPendingImports(data) {
 export function importInventory(data) {
     return function (dispatch) {
         dispatch({ type: IMPORT_INVENTORY_STARTED });
-        return axios.post(WS_URL + "increaseByPhone", data)
+        return axios.post(WS_URL + "importInventory", data)
             .then(function (response) {
                 return response.data;
             })

@@ -18,8 +18,6 @@ const initialState = {
     addingInventoryError: null,
     isFetchingInventories: false,
     fetchingInventoriesError: null,
-    isDeletingInventory: false,
-    deletingsInventoriesError: null,
     isUpdatingInventory: false,
     updatingInventoriesError: null,
     isDeletingInventory: false,
@@ -98,7 +96,7 @@ export default function (state = initialState, action) {
         }
         case DELETE_SUBINVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isDeletingInventory: false };
+            return { ...state, isDeletingInventory: false, deletingsInventoriesError: null };
         }
         case DELETE_SUBINVENTORY_REJECTED: {
             const error = action.payload.data;

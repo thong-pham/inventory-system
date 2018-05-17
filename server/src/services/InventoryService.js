@@ -375,7 +375,7 @@ export function removeInventory(data, callback) {
     ], callback);
 }
 
-export function increaseByPhone(data, callback){
+export function importInventory(data, callback){
     async.waterfall([
       function(waterfallCallback){
           const { roles, company, username } = data.userSession;
@@ -403,7 +403,7 @@ export function increaseByPhone(data, callback){
                                   }
                                   var newStock = inventory.stock + add;
                                   const update = {
-                                      quantity : newStock
+                                      stock : newStock
                                   }
                                   updateInventoryBySkuDAO(code.sku, update, waterfallCallback);
                               }
