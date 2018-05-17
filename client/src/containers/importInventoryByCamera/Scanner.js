@@ -5,7 +5,8 @@ import Quagga from 'quagga';
 class Scanner extends Component {
 
   componentDidMount() {
-    //console.log(this.props.codeType);
+    console.log(this.props.codeType);
+
     Quagga.init({
         inputStream: {
             type : "LiveStream",
@@ -33,6 +34,7 @@ class Scanner extends Component {
 
   componentWillUnmount() {
     Quagga.offDetected(this._onDetected);
+    Quagga.stop();
   }
 
   _onDetected = (result) => {
