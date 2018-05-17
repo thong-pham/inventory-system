@@ -75,16 +75,16 @@ class ImportInventoryByCamera extends Component {
                         { (this.state.results.length > 0) ? <Button onClick={this.handleCode}>Confirm</Button> : null }
                       </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row textAlign='center'>
+                    <Grid.Row>
+                      <Grid.Column>
+                        {this.state.scanning ? <Scanner onDetected={this._onDetected} codeType={this.state.codeType}/> : null}
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
                       <Grid.Column>
                         <ul className="results">
                           {this.state.results.map((result, i) => (<Result key={result.codeResult.code + i} result={result} />))}
                         </ul>
-                      </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row textAlign='center'>
-                      <Grid.Column>
-                        {this.state.scanning ? <Scanner onDetected={this._onDetected} codeType={this.state.codeType}/> : null}
                       </Grid.Column>
                     </Grid.Row>
                   </Grid>
