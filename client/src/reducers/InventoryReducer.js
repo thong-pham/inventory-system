@@ -5,7 +5,8 @@ import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
          UPDATE_INVENTORY_STARTED, UPDATE_INVENTORY_FULFILLED, UPDATE_INVENTORY_REJECTED,
          SET_UPDATING_INVENTORY_FULFILLED, CLEAR_INVENTORY_FULFILLED, REJECT_UPDATING_INVENTORY,
          APPROVE_INVENTORY_STARTED, APPROVE_INVENTORY_FULFILLED, APPROVE_INVENTORY_REJECTED,
-         TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA, OPEN_MINUS, CLOSE_MINUS, FILTER_INVENTORY
+         TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA, OPEN_MINUS, CLOSE_MINUS,
+         FILTER_INVENTORY, SORT_INVENTORY, REV_INVENTORY, CHANGE_INVENTORY
          } from "./../actions/InventoryActions";
 
 const initialState = {
@@ -151,9 +152,83 @@ export default function (state = initialState, action) {
             const newInv = state.inventories.filter((element) => element.productName.en.toLowerCase().includes(data));
             return { ...state, inventories: newInv };
         }
-
+        case SORT_INVENTORY:{
+            const data = action.payload;
+            if (data === 'sku') state.inventories.sort(compareSku);
+            else if (data === 'productName.en') state.inventories.sort(compareDesc);
+            else if (data === 'price') state.inventories.sort(comparePrice);
+            else if (data === 'stock') state.inventories.sort(compareStock);
+            return { ...state };
+        }
+        case REV_INVENTORY:{
+            state.inventories.reverse();
+            return { ...state };
+        }
+        case CHANGE_INVENTORY: {
+            const data = action.payload;
+            state.inventories.forEach(function(inventory){
+                if (inventory.id === data.id) inventory.stock = data.stock;
+            });
+            return { ...state };
+        }
         default: {
             return state;
         }
     }
+}
+
+function compareSku(a,b){
+    const idA = a.sku;
+    const idB = b.sku;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
+}
+
+function compareDesc(a,b){
+    const idA = a.productName.en;
+    const idB = b.productName.en;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
+}
+
+function compareStock(a,b){
+    const idA = a.stock;
+    const idB = b.stock;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
+}
+
+function comparePrice(a,b){
+    const idA = a.price;
+    const idB = b.price;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
 }

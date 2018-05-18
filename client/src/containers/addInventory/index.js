@@ -339,7 +339,7 @@ class AddInventory extends Component {
                       </Grid>
                     </Container>
                     <Container className="featureBox">
-                        <Button onClick={this.generateData.bind(this)}>Generate</Button>
+                        <Button primary onClick={this.generateData.bind(this)}>Generate</Button>
                     </Container>
                     <Container className="featureBox">
                       <Grid.Row className="generatedRow">
@@ -356,7 +356,7 @@ class AddInventory extends Component {
                         <Form.Field inline>
                             <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>
                         </Form.Field>
-                        <Button loading={submitting} disabled={submitting} disabled={pristine || submitting}>Add Inventory</Button>
+                        <Button primary loading={submitting} disabled={submitting} disabled={pristine || submitting}>Add Inventory</Button>
                     </Form>
                     </Container>
                 </Segment>

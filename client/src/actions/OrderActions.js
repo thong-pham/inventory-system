@@ -24,6 +24,7 @@ export const CHANGE_POPUP = "CHANGE_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_NUMBER = "TRACK_NUMBER";
 export const SET_VIEWING_ORDER = "SET_VIEWING_ORDER";
+export const ERROR_INPUT = "ERROR_INPUT";
 
 const WS_URL = "https://api.israhospitality.com/orders/";
 
@@ -185,4 +186,9 @@ export function trackNumber(data){
    return function (dispatch){
        dispatch({ type : TRACK_NUMBER, payload: data})
    }
+}
+export function errorInput(data){
+    return function (dispatch) {
+        dispatch({type: ERROR_INPUT, payload: data});
+    }
 }

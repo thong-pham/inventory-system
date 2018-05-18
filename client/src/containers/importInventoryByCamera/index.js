@@ -71,8 +71,8 @@ class ImportInventoryByCamera extends Component {
                     </Grid.Row>
                     <Grid.Row>
                       <Grid.Column>
-                        <Button onClick={this._scan}>{this.state.scanning ? 'Stop' : 'Start'}</Button>
-                        { (this.state.results.length > 0) ? <Button onClick={this.handleCode}>Confirm</Button> : null }
+                        <Button primary onClick={this._scan}>{this.state.scanning ? 'Stop' : 'Start'}</Button>
+                        { (this.state.results.length > 0) ? <Button primary onClick={this.handleCode}>Confirm</Button> : null }
                       </Grid.Column>
                     </Grid.Row>
                     <Grid.Row className="phoneRow">

@@ -68,8 +68,8 @@ class AddCompany extends Component {
                     <Form.Field inline>
                         <Field name="name" placeholder="Enter the name" component={this.renderField}></Field>
                     </Form.Field>
-                    <Button loading={submitting} disabled={submitting}>Add Company</Button>
-                    <Button onClick={this.onBack}>Cancel</Button>
+                    <Button primary loading={submitting} disabled={submitting}>Add</Button>
+                    <Button secondary onClick={this.onBack}>Cancel</Button>
                 </Form>
             </Segment>
           </BaseLayout>

@@ -36,13 +36,12 @@ export function createSubInventory(data, callback) {
                     waterfallCallback(err);
                 }
                 else if (inventory){
-                   if (inventory.stock === 0){
-                      const err = new Error("This product is currently out of stock")
-                      waterfallCallback(err);
-                   }
-                   else {
-                      waterfallCallback();
-                   }
+                   // if (inventory.stock === 0){
+                   //    const err = new Error("This product is currently out of stock")
+                   //    waterfallCallback(err);
+                   // }
+                   waterfallCallback();
+
                 }
                 else {
                     const err = new Error("This product does not exist in the main inventory");

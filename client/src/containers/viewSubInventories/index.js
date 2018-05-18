@@ -188,8 +188,8 @@ class ViewSubInventory extends Component {
                     </Table.Cell>
                     <Table.Cell>{inventory.stock}</Table.Cell>
                     <Table.Cell >
-                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
-                        { (openAdd !== inventory.id) ? <Button onClick={this.onOpenAdd.bind(this, inventory)}>Order</Button> : null }
+                        <Button color='red' onClick={this.onPressDelete.bind(this, inventory)}>Delete</Button>
+                        { (openAdd !== inventory.id) ? <Button color='blue' onClick={this.onOpenAdd.bind(this, inventory)}>Order</Button> : null }
                     </Table.Cell>
                 </Table.Row>
             )
@@ -214,10 +214,10 @@ class ViewSubInventory extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Product Description</Table.HeaderCell>
+                            <Table.HeaderCell width={3}>Product Description</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Main Stock</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Your Stock</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
+                            <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>

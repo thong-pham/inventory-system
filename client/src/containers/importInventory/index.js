@@ -100,7 +100,7 @@ class ImportInventory extends Component {
                             <Label>Box Count</Label>
                             <Field name="box" placeholder="Box Count" component={this.renderField}></Field>
                         </Form.Field>
-                        <Button loading={submitting} disabled={submitting} disabled={pristine || submitting}>Submit</Button>
+                        <Button primary loading={submitting} disabled={submitting} disabled={pristine || submitting}>Submit</Button>
                     </Form>
                     </Container>
                 </Segment>

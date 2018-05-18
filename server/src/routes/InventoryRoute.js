@@ -86,7 +86,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                 updateInventory(data, function (err, inventory) {
                     if (err) {
                         if (err.message === "Only ISRA can edit Inventory"){
-                           res.status(400).send(err.message);
+                           res.status(401).send(err.message);
                         }
                         else if (err.message === "Not Enough Permission to create Inventory") {
                             res.status(402).send(err.message);

@@ -145,8 +145,8 @@ export default function (state = initialState, action) {
         }
         case TRACK_NUMBER: {
             var data = action.payload;
-            const number = parseInt(data);
-            return { ...state, quantity : number};
+            //const number = parseInt(data);
+            return { ...state, quantity : data};
         }
         case ADD_CART_STARTED: {
             return { ...state, isAddingCart: true };

@@ -7,10 +7,16 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getInventories, deleteInventory, rejectEdit, updateInventory,
+import { getInventories, deleteInventory, rejectEdit, updateInventory, sortInventory, reverseInventory, changeInventory,
          trackNumber, openPlus, closePlus, openMinus, closeMinus, errorInput, filterInventory } from "./../../actions/InventoryActions";
 
-class ViewAndRequest extends Component {
+class ViewInventories extends Component {
+    
+    state = {
+      column: null,
+      direction: null,
+    }
+
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
@@ -18,8 +24,8 @@ class ViewAndRequest extends Component {
             dispatch(push("/subInventory"));
         }
         dispatch(getInventories({ token: token }));
-
     }
+
     onPressEdit(inventory) {
         const { user } = this.props.auth;
         const { dispatch } = this.props;
@@ -31,22 +37,27 @@ class ViewAndRequest extends Component {
         }
 
     }
+
     onOpenPlus(inventory){
         const { dispatch } = this.props;
         dispatch(openPlus(inventory.id));
     }
+
     onClosePlus () {
         const { dispatch } = this.props;
         dispatch(closePlus());
     }
+
     onOpenMinus(inventory){
         const { dispatch } = this.props;
         dispatch(openMinus(inventory.id));
     }
+
     onCloseMinus () {
         const { dispatch } = this.props;
         dispatch(closeMinus());
     }
+
     onAddInv(inventory){
         const { dispatch, token } = this.props;
         const { quantity } = this.props.inventory;
@@ -55,7 +66,7 @@ class ViewAndRequest extends Component {
             dispatch(errorInput());
         }
         else {
-            const newStock = inventory.stock + quantity;
+            const newStock = (inventory.stock + quantity).toString();
             const data = {
                 id: inventory.id,
                 sku: inventory.sku,
@@ -65,10 +76,12 @@ class ViewAndRequest extends Component {
                 token: token
             }
             dispatch(updateInventory(data)).then(function(data){
-                dispatch(getInventories({ token: token }));
+                dispatch(changeInventory({id: inventory.id, stock: inventory.stock + quantity}));
             });
+            this.setState({column: null});
         }
     }
+
     onMinusInv(inventory){
         const { dispatch, token } = this.props;
         const { quantity } = this.props.inventory;
@@ -80,7 +93,7 @@ class ViewAndRequest extends Component {
             dispatch(errorInput());
         }
         else {
-            const newStock = inventory.stock - quantity;
+            const newStock = (inventory.stock - quantity).toString();
             const data = {
                 id: inventory.id,
                 sku: inventory.sku,
@@ -90,16 +103,19 @@ class ViewAndRequest extends Component {
                 token: token
             }
             dispatch(updateInventory(data)).then(function(data){
-                dispatch(getInventories({ token: token }));
+                dispatch(changeInventory({id: inventory.id, stock: inventory.stock - quantity}));
             });
+            this.setState({column: null});
         }
     }
+
     onPressDelete(inventory) {
         const { token, dispatch } = this.props;
         dispatch(deleteInventory({ token: token, inventory: inventory })).then(function (data) {
             dispatch(getInventories({ token: token }));
         });
     }
+
     handleInput(e){
         const { token, dispatch } = this.props;
         dispatch(trackNumber(e.target.value));
@@ -110,9 +126,28 @@ class ViewAndRequest extends Component {
         dispatch(filterInventory(e.target.value));
     }
 
+    handleSort = clickedColumn => () => {
+        const { dispatch } = this.props;
+        const { column, direction } = this.state;
+        const { inventories } = this.props.inventory;
+        if (column !== clickedColumn){
+            this.setState({
+              column: clickedColumn,
+              direction: 'ascending',
+            });
+            dispatch(sortInventory(clickedColumn));
+        }
+        else {
+            this.setState({
+               direction: direction === 'ascending' ? 'descending' : 'ascending',
+            });
+            dispatch(reverseInventory());
+        }
+    }
+
     render() {
+        const { column, direction } = this.state;
         const { user } = this.props.auth;
-        const isWorker = user.roles.indexOf("worker") >= 0;
         const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
                 deletingsInventoriesError, isUpdatingInventory, updatingInventoriesError } = this.props.inventory;
         const { quantity, openPlus, openMinus, errorInput } = this.props.inventory;
@@ -154,7 +189,6 @@ class ViewAndRequest extends Component {
                 <Table.Row key={inventory.id}>
                     <Table.Cell>{inventory.sku}</Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
-                    {/*<Table.Cell>{inventory.status}</Table.Cell>*/}
                     <Table.Cell >{inventory.price}</Table.Cell>
                     <Table.Cell >
                         {inventory.stock}
@@ -200,28 +234,26 @@ class ViewAndRequest extends Component {
                                       </Grid.Row>
                                     </Grid>  : null }
                     </Table.Cell>
-                    { (!isWorker) ?
-                      <Table.Cell >
+                    <Table.Cell >
                         <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
                         <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
                         <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} />
                         <Icon name='minus' size='large' onClick={this.onOpenMinus.bind(this, inventory)} />
-                    </Table.Cell> : null }
+                    </Table.Cell>
                 </Table.Row>
             )
         }, this);
         let tableView = <h4>No Inventories Found. Please Add Some </h4>
         if (inventories.length > 0) {
             tableView = (
-                <Table celled fixed color='blue'>
+                <Table sortable celled fixed color='blue'>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Product Description</Table.HeaderCell>
-                            {/*<Table.HeaderCell width={1}>Status</Table.HeaderCell>*/}
-                            <Table.HeaderCell width={1}>Price</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Stock</Table.HeaderCell>
-                            { (!isWorker) ? <Table.HeaderCell width={1}>Options</Table.HeaderCell> : null }
+                            <Table.HeaderCell width={1} sorted={column === 'sku' ? direction : null} onClick={this.handleSort('sku')}>SKU</Table.HeaderCell>
+                            <Table.HeaderCell width={2} sorted={column === 'productName.en' ? direction : null} onClick={this.handleSort('productName.en')}>Product Description</Table.HeaderCell>
+                            <Table.HeaderCell width={1} sorted={column === 'price' ? direction : null} onClick={this.handleSort('price')}>Price</Table.HeaderCell>
+                            <Table.HeaderCell width={2} sorted={column === 'stock' ? direction : null} onClick={this.handleSort('stock')}>Stock</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -256,4 +288,4 @@ function mapStatesToProps(state) {
     }
 }
 
-export default connect(mapStatesToProps)(ViewAndRequest);
+export default connect(mapStatesToProps)(ViewInventories);

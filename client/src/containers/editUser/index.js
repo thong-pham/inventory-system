@@ -127,8 +127,8 @@ class EditUser extends Component {
                           </Field>
                     </Form.Field> : null}
 
-                    <Button loading={submitting} disabled={submitting}>Save Changes</Button>
-                    <Button onClick={this.onBack.bind(this)}>Cancel</Button>
+                    <Button primary loading={submitting} disabled={submitting}>Save Changes</Button>
+                    <Button secondary onClick={this.onBack.bind(this)}>Cancel</Button>
                 </Form>
                 </Container>
             </Segment>

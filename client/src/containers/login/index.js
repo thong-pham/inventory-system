@@ -92,7 +92,7 @@ class Login extends Component {
                       <Form.Field inline>
                           <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
                       </Form.Field>
-                      <Button loading={submitting} disabled={submitting}>Login</Button>
+                      <Button primary loading={submitting} disabled={submitting}>Login</Button>
                   </Form>
                 </Container>
              </Segment>

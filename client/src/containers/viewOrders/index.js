@@ -10,7 +10,7 @@ import './../../styles/custom.css';
 
 //import { getInventories, deleteInventory, rejectEdit, getSubInventories, addToCart, trackNumber } from "./../../actions/InventoryActions";
 import { getPendingOrders, getPendingOrderByCompany, approveOrder, changePopUp, closePopUp,
-        changeOrder, trackNumber, deleteOrder } from "./../../actions/OrderActions";
+        changeOrder, trackNumber, deleteOrder, errorInput } from "./../../actions/OrderActions";
 
 class ViewOrders extends Component {
     state = { activeIndex: 0 };
@@ -47,6 +47,24 @@ class ViewOrders extends Component {
         const { token, dispatch } = this.props;
         const { quantity } = this.props.order;
         const { user } = this.props.auth;
+        if (isNaN(quantity) || quantity === null){
+            dispatch(errorInput("Invalid Input"));
+        }
+        else {
+            const change = {
+                orderId: orderId,
+                cartId: cartId,
+                quantity: quantity
+            }
+            dispatch(changeOrder({token: token, change: change})).then(function(data){
+                  if (user.company === 'ISRA'){
+                      dispatch(getPendingOrders({ token: token }));
+                  }
+                  else {
+                      dispatch(getPendingOrderByCompany({ token: token }));
+                  }
+            });
+        }
         /*pendingOrders.forEach(function(order){
             if (order.id === orderId){
                 order.details.forEach(function(cart){
@@ -56,19 +74,6 @@ class ViewOrders extends Component {
                 });
             }
         });*/
-        const change = {
-            orderId: orderId,
-            cartId: cartId,
-            quantity: quantity
-        }
-        dispatch(changeOrder({token: token, change: change})).then(function(data){
-              if (user.company === 'ISRA'){
-                  dispatch(getPendingOrders({ token: token }));
-              }
-              else {
-                  dispatch(getPendingOrderByCompany({ token: token }));
-              }
-        });
     }
 
     onCloseChange(){
@@ -116,7 +121,7 @@ class ViewOrders extends Component {
         const { activeIndex } = this.state;
         const { user } = this.props.auth;
         const { pendingOrders, fetchingPendingOrdersError, approvingOrderError,
-                change, quantity, cartErrors, orderError } = this.props.order;
+                change, quantity, cartErrors, orderError, errorInput } = this.props.order;
         let error = null;
         let approveError = null;
         if (fetchingPendingOrdersError) {
@@ -127,21 +132,22 @@ class ViewOrders extends Component {
                 </Message>
             )
         }
-        else if (approvingOrderError) {
+        else if (errorInput) {
+            error = (
+                <Message negative>
+                    <p>{errorInput}</p>
+                </Message>
+            )
+        }
+
+        if (approvingOrderError) {
             approveError = (
                 <Message negative>
                     <p>{approvingOrderError}</p>
                 </Message>
             )
         }
-        /*else if (updatingInventoriesError){
-          error = (
-              <Message negative>
-                  <Message.Header>Error while Updating Inventory</Message.Header>
-                  <p>{updatingInventoriesError}</p>
-              </Message>
-          )
-        }*/
+
         const ordersView = pendingOrders.map(function (order) {
             const detailsView = order.details.map(function(cart){
                 return (

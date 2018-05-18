@@ -98,8 +98,8 @@ class UpdateSubInventory extends Component {
                         <Form.Field inline>
                             <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>
                         </Form.Field>
-                        <Button loading={submitting} disabled={submitting}>Update</Button>
-                        <Button onClick={this.onBack.bind(this)}>Cancel</Button>
+                        <Button primary loading={submitting} disabled={submitting}>Update</Button>
+                        <Button secondary onClick={this.onBack.bind(this)}>Cancel</Button>
                     </Form>
                     </Container>
                 </Segment>

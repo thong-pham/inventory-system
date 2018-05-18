@@ -3,7 +3,7 @@ import validator from "validator";
 export function validateFeature(data, callback) {
     var errors = {};
     if (!data.description) {
-        errors["description"] = "description is Required";
+        errors["description"] = "Description is Required";
     }
     if (!data.key) {
         errors["key"] = "Key is Required";

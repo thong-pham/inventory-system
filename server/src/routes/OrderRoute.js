@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createOrder, getPendingOrders, getPendingOrderByCompany, approveOrder,
         changeOrder, removeOrder, getApprovedOrders, getApprovedOrdersByCompany } from "./../services/OrderService";
-import { validateOrderInventory } from "./../validators/OrderValidator"
+import { validateOrderInventory, validateChangeOrder } from "./../validators/OrderValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
@@ -20,10 +20,10 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
             createOrder(data, function (err, order) {
                 if (err) {
                     if (err.message === "Not Enough Permission to make Order") {
-                        res.status(400).send(err.message);
+                        res.status(401).send(err.message);
                     }
                     else if (err.message === "Order Already Exists"){
-                       res.status(401).send(err.message);
+                       res.status(402).send(err.message);
                     }
                     else {
                         console.log(err);
@@ -161,25 +161,30 @@ router.put('/:id/approveOrder', verifyAuthMiddleware, function (req, res, next) 
 
 router.put('/changeOrder', verifyAuthMiddleware, function (req, res, next) {
     //const id = req.params.id;
-
-        const userSession = req.session;
-        const { orderId, cartId, quantity } = req.body;
-        const data = { orderId, cartId, quantity, userSession };
-        changeOrder(data, function (err, order) {
-            if (err) {
-                if (err.message === "Not Enough Permission to change Order") {
-                    res.status(400).send(err.message);
+    validateChangeOrder(req.body, function (err) {
+        if (err) {
+            res.status(400).send(err);
+        }
+        else {
+            const userSession = req.session;
+            const { orderId, cartId, quantity } = req.body;
+            const data = { orderId, cartId, quantity, userSession };
+            changeOrder(data, function (err, order) {
+                if (err) {
+                    if (err.message === "Not Enough Permission to change Order") {
+                        res.status(401).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send(err);
+                    }
                 }
                 else {
-                    console.log(err);
-                    res.status(500).send(err);
+                    res.status(200).send("An Order has been changed");
                 }
-            }
-            else {
-                res.status(200).send("An Order has been changed");
-            }
-        });
-
+            });
+        }
+    });
 });
 
 

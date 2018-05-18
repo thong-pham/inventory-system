@@ -3,7 +3,7 @@ import { APPROVE_ORDER_STARTED, APPROVE_ORDER_FULFILLED, APPROVE_ORDER_REJECTED,
          GET_APPROVED_ORDERS_STARTED, GET_APPROVED_ORDERS_FULFILLED, GET_APPROVED_ORDERS_REJECTED,
          CHANGE_ORDER_STARTED, CHANGE_ORDER_FULFILLED, CHANGE_ORDER_REJECTED,
          DELETE_ORDER_STARTED, DELETE_ORDER_FULFILLED, DELETE_ORDER_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER
+         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT
          } from "./../actions/OrderActions";
 
 const initialState = {
@@ -25,7 +25,8 @@ const initialState = {
     quantity: null,
     add: false,
     cartErrors: null,
-    orderError: null
+    orderError: null,
+    errorInput: null
 }
 
 export default function (state = initialState, action) {
@@ -100,12 +101,12 @@ export default function (state = initialState, action) {
             return {...state, change: data}
         }
         case CLOSE_POPUP: {
-            return {...state, change: null}
+            return {...state, change: null, errorInput: null, quantity: null }
         }
         case TRACK_NUMBER: {
             var data = action.payload;
-            const number = parseInt(data);
-            return { ...state, quantity : number};
+            //const number = parseInt(data);
+            return { ...state, quantity : data};
         }
         case SET_VIEWING_ORDER: {
             const id = action.payload;
@@ -113,6 +114,10 @@ export default function (state = initialState, action) {
                 return element.id == id;
             })[0];
             return { ...state, order: newOrder };
+        }
+        case ERROR_INPUT: {
+            const error = action.payload;
+            return {...state, errorInput: error };
         }
         default: {
             return state;

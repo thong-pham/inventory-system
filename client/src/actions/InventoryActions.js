@@ -36,6 +36,9 @@ export const CLOSE_PLUS = "CLOSE_PLUS";
 export const ERROR_INPUT = "ERROR_INPUT";
 export const FILL_DATA = "FILL_DATA";
 export const FILTER_INVENTORY = "FILTER_INVENTORY";
+export const SORT_INVENTORY = "SORT_INVENTORY";
+export const REV_INVENTORY = "REV_INVENTORY";
+export const CHANGE_INVENTORY = "CHANGE_INVENTORY";
 
 const WS_URL = "https://api.israhospitality.com/inventories/";
 
@@ -222,3 +225,21 @@ export function filterInventory(data){
        dispatch({ type : FILTER_INVENTORY, payload: data})
    }
 }
+
+export function sortInventory(data){
+   return function (dispatch){
+       dispatch({ type : SORT_INVENTORY, payload: data})
+   }
+}
+
+export function reverseInventory(){
+   return function (dispatch){
+       dispatch({ type : REV_INVENTORY })
+   }
+}
+
+export function changeInventory(data){
+   return function (dispatch){
+       dispatch({ type : CHANGE_INVENTORY, payload: data })
+   }
+ }

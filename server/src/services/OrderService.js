@@ -263,7 +263,7 @@ export function changeOrder(data, callback){
      function (details, waterfallCallback){
          var temp = [];
          const id = data.orderId;
-         console.log(details);
+         //console.log(details);
          details.forEach(function(cart){
               if (cart.id === data.cartId){
                   cart.quantity = data.quantity;
@@ -274,7 +274,7 @@ export function changeOrder(data, callback){
               }
          });
          temp.sort(compare);
-         console.log(temp);
+         //console.log(temp);
          const update = {
             details: temp
          }

@@ -129,8 +129,8 @@ class AddUser extends Component {
                     <Form.Field inline>
                         <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
                     </Form.Field>
-                    <Button loading={submitting} disabled={submitting}>Add User</Button>
-                    <Button onClick={this.onBack.bind(this)}>Cancel</Button>
+                    <Button primary loading={submitting} disabled={submitting}>Add User</Button>
+                    <Button secondary onClick={this.onBack.bind(this)}>Cancel</Button>
                 </Form>
                 </Container>
             </Segment>

@@ -342,7 +342,7 @@ class AddSubInventory extends Component {
                         </Grid.Row>*/}
                       </Container>
                       <Container className="featureBox">
-                          <Button onClick={this.onCreate.bind(this)}>Create</Button>
+                          <Button primary onClick={this.onCreate.bind(this)}>Create</Button>
                       </Container>
                     </Container>
                 </Segment>
