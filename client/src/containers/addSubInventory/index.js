@@ -8,13 +8,16 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { addSubInventory, inputSKU, inputDesc, fillingData, errorInput, clearError } from "./../../actions/SubInventoryActions";
+import { addSubInventory, inputSKU, inputDesc, fillingData, clearError } from "./../../actions/SubInventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,
           chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit
         } from "./../../actions/FeatureActions";
 
 class AddSubInventory extends Component {
+    state = {
+        errorInput: null
+    }
     componentWillMount() {
         const { dispatch } = this.props;
         const { token } = this.props.auth;
@@ -57,8 +60,8 @@ class AddSubInventory extends Component {
                 qualities, types, patterns, colors, sizes, units } = this.props.feature;
         var sku = "";
         var desc = "";
-        if ((quality === null) || (type === null) || (pattern === null) || (color === null)){
-            dispatch(errorInput());
+        if ((quality === null) || (type === null) || (pattern === null) || (color.length === 0)){
+            this.setState({errorInput: "Invalid Input"});
         }
         else {
             qualities.forEach(function(item){
@@ -91,12 +94,12 @@ class AddSubInventory extends Component {
                     desc = desc.concat("-").concat(item.description);
                 }
             });
-            units.forEach(function(item){
+            /*units.forEach(function(item){
                 if (item.description === unit){
                     sku = sku.concat("-").concat(item.key);
                     desc = desc.concat("-").concat(item.description);
                 }
-            });
+            });*/
             //console.log(sku);
             //console.log(desc);
             const data = {
@@ -132,16 +135,17 @@ class AddSubInventory extends Component {
             }
         });
         if (check === true){
-            dispatch(errorInput("This product already exists in your inventory"));
+            this.setState({errorInput: "This product already exists in your inventory"});
         }
         else {
             if (!desc || (desc + "").trim() === ""){
                 desc = generatedDesc;
             }
             if (!sku || (sku + "").trim() === ""){
-                dispatch(errorInput("SKU cannot be empty"));
+                this.setState({errorInput: "SKU cannot be empty"});
             }
             else {
+                this.setState({errorInput: null});
                 const inv = {
                     token: token,
                     sku: sku,
@@ -156,9 +160,10 @@ class AddSubInventory extends Component {
         }
     }
     render() {
+        const { errorInput } = this.state;
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
         const { token, user, isAddingInventory, addingInventoryError, inventory,
-                generatedSKU, generatedDesc, errorInput } = this.props.inventory;
+                generatedSKU, generatedDesc } = this.props.inventory;
         const { qualities, types, patterns, colors, sizes, units,
                 quality, type, pattern, color, size, unit } = this.props.feature;
 
@@ -321,7 +326,7 @@ class AddSubInventory extends Component {
                               value={size}
                             />
                           </Grid.Column>
-                          <Grid.Column>
+                          {/*<Grid.Column>
                             <Dropdown
                               onChange={this.handleChange.bind(this)}
                               options={unitList}
@@ -329,7 +334,7 @@ class AddSubInventory extends Component {
                               selection
                               value={unit}
                             />
-                          </Grid.Column>
+                          </Grid.Column>*/}
                         </Grid.Row>
                       </Grid>
                      </Container>

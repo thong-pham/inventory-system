@@ -7,6 +7,8 @@ const InventorySchema = mongoose.Schema({
 
     sku: { type: String, required: true },
 
+    unit: { type: String, required: true },
+
     productName: {
         en: { type: String, required: true },
     },

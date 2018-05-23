@@ -27,12 +27,11 @@ const initialState = {
     isApprovingInventory: false,
     approvingInventoryError: null,
     quantity: null,
-    errorInput: null,
     openPlus: null,
     openMinus: null,
-    generatedSKU: null,
-    generatedDesc: null,
-
+    generatedSKU: [],
+    generatedDesc: [],
+    unitCode: null
 }
 
 export default function (state = initialState, action) {
@@ -42,8 +41,8 @@ export default function (state = initialState, action) {
         }
         case ADD_INVENTORY_FULFILLED: {
             const data = action.payload;
-            const newInventory = state.inventories.concat([data]);
-            return { ...state, isAddingInventory: false, inventories: newInventory, backUpInv: data, addingInventoryError: null };
+            //state.inventories.concat([data]);
+            return { ...state, isAddingInventory: false, addingInventoryError: null };
         }
         case ADD_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -129,22 +128,22 @@ export default function (state = initialState, action) {
             return { ...state, openPlus : data, quantity: null, openMinus: null };
         }
         case CLOSE_PLUS: {
-            return { ...state, openPlus : null, quantity: null, errorInput: null };
+            return { ...state, openPlus : null, quantity: null };
         }
         case OPEN_MINUS: {
           const data = action.payload;
             return { ...state, openMinus : data, quantity: null, openPlus: null };
         }
         case CLOSE_MINUS: {
-            return { ...state, openMinus : null, quantity: null, errorInput: null };
+            return { ...state, openMinus : null, quantity: null };
         }
         case ERROR_INPUT: {
-            const error = "Invalid Input";
-            return {...state, errorInput: error };
+            const error = action.payload;
+            return {...state };
         }
         case FILL_DATA:{
             const data = action.payload;
-            return { ...state, generatedSKU: data.sku, generatedDesc: data.desc, errorInput: null }
+            return { ...state, generatedSKU: data.sku, generatedDesc: data.desc, unitCode: data.unitCode }
         }
         case FILTER_INVENTORY: {
             const data = action.payload;

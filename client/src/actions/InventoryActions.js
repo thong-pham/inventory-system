@@ -171,9 +171,9 @@ export function clearInventory() {
     }
 }
 
-export function errorInput(){
+export function errorInput(data){
     return function (dispatch) {
-        dispatch({type: ERROR_INPUT});
+        dispatch({type: ERROR_INPUT, payload: data});
     }
 }
 

@@ -60,7 +60,7 @@ export default function (state = initialState, action) {
         }
         case ADD_SUBINVENTORY_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isAddingInventory: false, addingInventoryError: error, errorInput: null };
+            return { ...state, isAddingInventory: false, addingInventoryError: error };
         }
         case GET_SUBINVENTORIES_STARTED: {
             return { ...state, isFetchingInventories: true };
@@ -120,18 +120,15 @@ export default function (state = initialState, action) {
         }
         case FILL_DATA:{
             const data = action.payload;
-            return { ...state, generatedSKU: data.sku, generatedDesc: data.desc, errorInput: null }
+            return { ...state, generatedSKU: data.sku, generatedDesc: data.desc }
         }
         case ERROR_INPUT: {
             const error = action.payload;
             return {...state, errorInput: error };
         }
-        case CLEAR_ERROR: {
-            return {...state, errorInput: null, addingInventoryError: null };
-        }
         case OPEN_MODAL: {
             const data = action.payload;
-            return { ...state, modal: true, modalCart: data, errorInput: null };
+            return { ...state, modal: true, modalCart: data };
         }
         case CLOSE_MODAL: {
             return { ...state, modal: false, modalCart: null, quantity : null };
@@ -141,7 +138,7 @@ export default function (state = initialState, action) {
             return { ...state, openAdd : data, quantity: null };
         }
         case CLOSE_ADD: {
-            return { ...state, openAdd : null, quantity: null, errorInput: null };
+            return { ...state, openAdd : null, quantity: null };
         }
         case TRACK_NUMBER: {
             var data = action.payload;

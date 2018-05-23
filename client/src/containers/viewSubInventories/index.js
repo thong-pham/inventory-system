@@ -8,11 +8,14 @@ import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
 import { getSubInventories, getSubInventoriesByCompany, deleteSubInventory,
-        openAdd, closeAdd, trackNumber, errorInput, showModal, closeModal,
+        openAdd, closeAdd, trackNumber, showModal, closeModal,
         addCart, updateCart, deleteCart, submitOrder, getCarts, clearError
       } from "./../../actions/SubInventoryActions";
 
 class ViewSubInventory extends Component {
+    state = {
+        errorInput: null
+    }
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
@@ -39,6 +42,7 @@ class ViewSubInventory extends Component {
     onCloseAdd () {
         const { dispatch } = this.props;
         dispatch(closeAdd());
+        this.setState({errorInput: null});
     }
 
     handleInput(e){
@@ -51,7 +55,7 @@ class ViewSubInventory extends Component {
           const { quantity } = this.props.inventory;
           const { user } = this.props.auth;
           if (isNaN(quantity) || quantity === null){
-              dispatch(errorInput("Invalid Input"));
+              this.setState({errorInput: "Invalid Input"});
           }
           else {
             var data = {
@@ -62,6 +66,7 @@ class ViewSubInventory extends Component {
                 username: user.username
             }
             dispatch(showModal(data));
+            this.setState({errorInput: null});
           }
     }
 
@@ -120,9 +125,10 @@ class ViewSubInventory extends Component {
     }
 
     render() {
+        const { errorInput } = this.state;
         const { user } = this.props.auth;
         const { inventories, isFetchingInventories, fetchingInventoriesError, deletingsInventoriesError, updatingInventoriesError,
-                openAdd, closeAdd, quantity, errorInput, modalCart, modal,
+                openAdd, closeAdd, quantity, modalCart, modal,
                 pendingCarts } = this.props.inventory;
         let error = null;
         if (fetchingInventoriesError) {
@@ -186,6 +192,7 @@ class ViewSubInventory extends Component {
                                 </Grid.Row>
                               </Grid>  : null }
                     </Table.Cell>
+                    <Table.Cell>{inventory.unit}</Table.Cell>
                     <Table.Cell>{inventory.stock}</Table.Cell>
                     <Table.Cell >
                         <Button color='red' onClick={this.onPressDelete.bind(this, inventory)}>Delete</Button>
@@ -216,6 +223,7 @@ class ViewSubInventory extends Component {
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={3}>Product Description</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Main Stock</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Unit</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Your Stock</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>

@@ -8,13 +8,14 @@ import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
 import { getInventories, deleteInventory, rejectEdit, updateInventory, sortInventory, reverseInventory, changeInventory,
-         trackNumber, openPlus, closePlus, openMinus, closeMinus, errorInput, filterInventory } from "./../../actions/InventoryActions";
+         trackNumber, openPlus, closePlus, openMinus, closeMinus, filterInventory } from "./../../actions/InventoryActions";
 
 class ViewInventories extends Component {
-    
+
     state = {
       column: null,
       direction: null,
+      errorInput: null
     }
 
     componentWillMount() {
@@ -41,21 +42,25 @@ class ViewInventories extends Component {
     onOpenPlus(inventory){
         const { dispatch } = this.props;
         dispatch(openPlus(inventory.id));
+        this.setState({errorInput: null});
     }
 
     onClosePlus () {
         const { dispatch } = this.props;
         dispatch(closePlus());
+        this.setState({errorInput: null});
     }
 
     onOpenMinus(inventory){
         const { dispatch } = this.props;
         dispatch(openMinus(inventory.id));
+        this.setState({errorInput: null});
     }
 
     onCloseMinus () {
         const { dispatch } = this.props;
         dispatch(closeMinus());
+        this.setState({errorInput: null});
     }
 
     onAddInv(inventory){
@@ -63,7 +68,7 @@ class ViewInventories extends Component {
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
         if (isNaN(quantity) || quantity === null){
-            dispatch(errorInput());
+            this.setState({errorInput: "Quantity cannot be empty"});
         }
         else {
             const newStock = (inventory.stock + quantity).toString();
@@ -87,10 +92,10 @@ class ViewInventories extends Component {
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
         if (isNaN(quantity) || quantity === null){
-            dispatch(errorInput());
+            this.setState({errorInput: "Quantity cannot be empty"});
         }
         else if(quantity > inventory.stock){
-            dispatch(errorInput());
+            this.setState({errorInput: "Quantity must be larger than stock"});
         }
         else {
             const newStock = (inventory.stock - quantity).toString();
@@ -146,11 +151,11 @@ class ViewInventories extends Component {
     }
 
     render() {
-        const { column, direction } = this.state;
+        const { column, direction, errorInput } = this.state;
         const { user } = this.props.auth;
         const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
                 deletingsInventoriesError, isUpdatingInventory, updatingInventoriesError } = this.props.inventory;
-        const { quantity, openPlus, openMinus, errorInput } = this.props.inventory;
+        const { quantity, openPlus, openMinus } = this.props.inventory;
         let error = null;
         if (fetchingInventoriesError) {
             error = (
@@ -190,6 +195,7 @@ class ViewInventories extends Component {
                     <Table.Cell>{inventory.sku}</Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
                     <Table.Cell >{inventory.price}</Table.Cell>
+                    <Table.Cell >{inventory.unit}</Table.Cell>
                     <Table.Cell >
                         {inventory.stock}
                         <hr />
@@ -252,6 +258,7 @@ class ViewInventories extends Component {
                             <Table.HeaderCell width={1} sorted={column === 'sku' ? direction : null} onClick={this.handleSort('sku')}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={2} sorted={column === 'productName.en' ? direction : null} onClick={this.handleSort('productName.en')}>Product Description</Table.HeaderCell>
                             <Table.HeaderCell width={1} sorted={column === 'price' ? direction : null} onClick={this.handleSort('price')}>Price</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Unit</Table.HeaderCell>
                             <Table.HeaderCell width={2} sorted={column === 'stock' ? direction : null} onClick={this.handleSort('stock')}>Stock</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>

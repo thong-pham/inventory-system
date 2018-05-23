@@ -17,24 +17,34 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
         }
         else {
             const userSession = req.session;
-            const { sku, productName, price, stock } = req.body;
-            const data = { sku, productName: { en: productName }, price, stock, userSession };
-            createInventory(data, function (err, inventory) {
-                if (err) {
-                    if (err.message === "Not Enough Permission to create Inventory") {
-                        res.status(400).send(err.message);
-                    }
-                    else if (err.message === "SKU Already Exists"){
-                       res.status(401).send(err.message);
+            const { list, price, stock, unit } = req.body;
+            var count = 0;
+            list.forEach(function(item){
+                var sku = item.sku;
+                var productName = item.desc;
+                const data = { sku, productName: {en: productName}, price, stock, userSession, unit };
+                createInventory(data, function (err, inventory) {
+                    if (err) {
+                        if (count === list.length - 1){
+                            if (err.message === "Not Enough Permission to create Inventory") {
+                                res.status(401).send(err.message);
+                            }
+                            else if (err.message === "SKU Already Exists"){
+                                res.status(402).send(err.message);
+                            }
+                            else {
+                                console.log(err);
+                                res.status(500).send(err);
+                            }
+                        }                  
                     }
                     else {
-                        console.log(err);
-                        res.status(500).send(err);
+                        if (count === list.length - 1){
+                            res.status(201).send("Add Successfully");
+                        }
                     }
-                }
-                else {
-                    res.status(201).send(inventory);
-                }
+                    count += 1;
+                });
             });
         }
     });

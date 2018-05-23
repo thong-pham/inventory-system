@@ -11,6 +11,8 @@ const SubInventorySchema = mongoose.Schema({
 
     mainStock: { type: String, required: false },
 
+    unit: { type: String, required: false },
+
     productName: {
         en: { type: String, required: true },
     },

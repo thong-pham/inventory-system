@@ -8,7 +8,7 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { addInventory, setUpdatingInventory, updateInventory, fillingData, errorInput } from "./../../actions/InventoryActions";
+import { addInventory, setUpdatingInventory, updateInventory, fillingData, getInventories } from "./../../actions/InventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,
           chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit
@@ -44,10 +44,13 @@ function validate(values) {
 }
 
 class AddInventory extends Component {
-    state = {};
+    state = {
+       addingError: null
+    };
     componentWillMount() {
         const { dispatch } = this.props;
         const { token } = this.props.auth;
+        dispatch(getInventories({token: token}));
         dispatch(getQualities({ token: token }));
         dispatch(getTypes({ token: token }));
         dispatch(getPatterns({ token: token }));
@@ -92,94 +95,121 @@ class AddInventory extends Component {
         const { dispatch } = this.props;
         const { quality, type, pattern, color, size, unit,
                 qualities, types, patterns, colors, sizes, units } = this.props.feature;
-        var sku = "";
-        var desc = "";
-        if ((quality === null) || (type === null) || (pattern === null) || (color === null)){
-            dispatch(errorInput());
+
+        if ((quality === null) || (type === null) || (pattern === null) || (color.length === 0) || (unit === null)){
+            this.setState({addingError: "Invalid Input"})
         }
         else {
-            qualities.forEach(function(item){
-                if (item.description === quality){
-                    sku = sku.concat(item.key).concat("-");
-                    desc = desc.concat(item.description).concat("-");
-                }
-            });
-            types.forEach(function(item){
-                if (item.description === type){
-                    sku = sku.concat(item.key).concat("-");
-                    desc = desc.concat(item.description).concat("-");
-                }
-            });
-            patterns.forEach(function(item){
-                if (item.description === pattern){
-                    sku = sku.concat(item.key).concat("-");
-                    desc = desc.concat(item.description).concat("-");
-                }
-            });
-            colors.forEach(function(item){
-                if (item.description === color){
-                    sku = sku.concat(item.key);
-                    desc = desc.concat(item.description);
-                }
-            });
-            sizes.forEach(function(item){
-                if (item.description === size){
-                    sku = sku.concat("-").concat(item.key);
-                    desc = desc.concat("-").concat(item.description);
-                }
-            });
-            units.forEach(function(item){
-                if (item.description === unit){
-                    sku = sku.concat("-").concat(item.key);
-                    desc = desc.concat("-").concat(item.description);
-                }
-            });
-            //console.log(sku);
-            //console.log(desc);
+            var unitCode = null;
+            var skuList = [];
+            var descList = [];
+            for (var i = 0; i < color.length; i++){
+                var sku = "";
+                var desc = "";
+                qualities.forEach(function(item){
+                    if (item.description === quality){
+                        sku = sku.concat(item.key).concat("-");
+                        desc = desc.concat(item.description).concat("-");
+                    }
+                });
+                types.forEach(function(item){
+                    if (item.description === type){
+                        sku = sku.concat(item.key).concat("-");
+                        desc = desc.concat(item.description).concat("-");
+                    }
+                });
+                patterns.forEach(function(item){
+                    if (item.description === pattern){
+                        sku = sku.concat(item.key).concat("-");
+                        desc = desc.concat(item.description).concat("-");
+                    }
+                });
+                colors.forEach(function(item){
+                    if (item.description === color[i]){
+                        sku = sku.concat(item.key);
+                        desc = desc.concat(item.description);
+                    }
+                });
+                sizes.forEach(function(item){
+                    if (item.description === size){
+                        sku = sku.concat("-").concat(item.key);
+                        desc = desc.concat("-").concat(item.description);
+                    }
+                });
+                units.forEach(function(item){
+                    if (item.description === unit){
+                        unitCode = item.key;
+                        //desc = desc.concat("-").concat(item.description);
+                    }
+                });
+                skuList.push(sku);
+                descList.push(desc);
+                //console.log(skuList);
+                //console.log(desc);
+            }
             const data = {
-                sku: sku,
-                desc: desc
+                sku: skuList,
+                desc: descList,
+                unitCode: unitCode
             }
             dispatch(fillingData(data));
+            this.setState({addingError: null});
         }
     }
+
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
-        const { generatedSKU, generatedDesc } = this.props.inventory;
+        const { generatedSKU, generatedDesc, unitCode, inventories } = this.props.inventory;
+        var count = checkSKU(inventories, generatedSKU);
         if ((generatedSKU === null) || (generatedDesc === null)){
-            dispatch(errorInput());
+            this.setState({addingError: "Invalid Input"})
+        }
+        else if(count.length > 0){
+            var message = "";
+            count.forEach(function(sku){
+                message = message + sku + ", ";
+            });
+            this.setState({addingError: message + "already exist"});
         }
         else {
             values.token = token;
-            values.sku = generatedSKU;
-            values.productName = generatedDesc;
-            //console.log(values);
-            return dispatch(addInventory(values)).then(function (data) {
+            values.unit = unitCode;
+            var list = [];
+            for (var i = 0; i < generatedSKU.length; i++){
+                const data = {
+                    sku: generatedSKU[i],
+                    desc: generatedDesc[i]
+                }
+                list.push(data);
+            }
+            values.list = list;
+            dispatch(addInventory(values)).then(function(data){
                 dispatch(push("/inventory"));
             });
         }
-
     }
+
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
         const { token, user, isAddingInventory, addingInventoryError, inventory,
-                generatedSKU, generatedDesc, errorInput } = this.props.inventory;
+                generatedSKU, generatedDesc, errorInput, unitCode } = this.props.inventory;
         const { qualities, types, patterns, colors, sizes, units,
                 quality, type, pattern, color, size, unit } = this.props.feature;
-        const { value } = this.state;
+        const { addingError } = this.state;
         var qualityList = [];
         var typeList = [];
         var patternList = [];
         var colorList = [];
         var sizeList = [{key:1, text:'No Size', value:''}];
-        var unitList = [{key:1, text:'No Unit', value:''}];
+        //var unitList = [{key:1, text:'No Unit', value:''}];
+        var unitList = [];
 
         var qualityKey = 1;
         var typeKey = 1;
         var patternKey = 1;
         var colorKey = 1;
         var sizeKey = 2;
-        var unitKey = 2;
+        var unitKey = 1;
 
         if (qualities.length > 0){
             qualities.forEach(function(quality){
@@ -262,11 +292,11 @@ class AddInventory extends Component {
                 </Message>
             )
         }
-        if (errorInput) {
+        else if (addingError) {
             error = (
                 <Message negative>
                     <Message.Header>Error while Adding Inventory</Message.Header>
-                    <p>{errorInput}</p>
+                    <p>{addingError}</p>
                 </Message>
             )
         }
@@ -310,6 +340,8 @@ class AddInventory extends Component {
                         <Grid.Row>
                           <Grid.Column>
                             <Dropdown
+                              fluid
+                              multiple
                               onChange={this.handleChange.bind(this)}
                               options={colorList}
                               placeholder='Choose an color'
@@ -343,10 +375,15 @@ class AddInventory extends Component {
                     </Container>
                     <Container className="featureBox">
                       <Grid.Row className="generatedRow">
-                        <Label basic pointing='right'>SKU</Label><p className="generatedText">{generatedSKU}</p>
+                        <Label basic pointing='right'>SKU</Label>
+                        {generatedSKU.map((sku, index) => <p key={index} className="generatedText">{sku}</p>)}
+                      </Grid.Row>
+                      <Grid.Row className="generatedRow">
+                        <Label basic pointing='right'>Description</Label>
+                        {generatedDesc.map((desc, index) => <p key={index} className="generatedText">{desc}</p>)}
                       </Grid.Row>
                       <Grid.Row>
-                        <Label basic pointing='right'>Description</Label><p className="generatedText">{generatedDesc}</p>
+                        <Label basic pointing='right'>Unit</Label><p className="generatedText">{unitCode}</p>
                       </Grid.Row>
                     </Container>
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isAddingInventory}>
@@ -363,6 +400,16 @@ class AddInventory extends Component {
             </BaseLayout>
         )
     }
+}
+
+function checkSKU(inventories, sku){
+    var count = [];
+    inventories.forEach(function(inventory){
+        if (sku.includes(inventory.sku)){
+            count.push(inventory.sku)
+        }
+    });
+    return count;
 }
 
 function mapStatesToProps(state) {

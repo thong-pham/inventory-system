@@ -24,7 +24,7 @@ const initialState = {
     quality: null,
     type: null,
     pattern: null,
-    color: null,
+    color: [],
     size: null,
     unit: null,
     isFetchingQuality: false,
