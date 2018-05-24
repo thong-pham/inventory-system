@@ -11,7 +11,7 @@ import './../../styles/custom.css';
 import { addSubInventory, inputSKU, inputDesc, fillingData, clearError } from "./../../actions/SubInventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,
-          chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit
+          chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit, chooseColorForSub
         } from "./../../actions/FeatureActions";
 
 class AddSubInventory extends Component {
@@ -21,7 +21,6 @@ class AddSubInventory extends Component {
     componentWillMount() {
         const { dispatch } = this.props;
         const { token } = this.props.auth;
-        dispatch(clearError());
         dispatch(getQualities({ token: token }));
         dispatch(getTypes({ token: token }));
         dispatch(getPatterns({ token: token }));
@@ -42,7 +41,7 @@ class AddSubInventory extends Component {
               dispatch(choosePattern(data.value));
           }
           else if (data.placeholder == "Choose an color"){
-              dispatch(chooseColor(data.value));
+              dispatch(chooseColorForSub(data.value));
           }
           else if (data.placeholder == "Choose an size"){
               dispatch(chooseSize(data.value));
@@ -56,11 +55,11 @@ class AddSubInventory extends Component {
     }
     generateData(){
         const { dispatch } = this.props;
-        const { quality, type, pattern, color, size, unit,
+        const { quality, type, pattern, color, size, unit, colorForSub,
                 qualities, types, patterns, colors, sizes, units } = this.props.feature;
         var sku = "";
         var desc = "";
-        if ((quality === null) || (type === null) || (pattern === null) || (color.length === 0)){
+        if ((quality === null) || (type === null) || (pattern === null) || (colorForSub === null)){
             this.setState({errorInput: "Invalid Input"});
         }
         else {
@@ -83,7 +82,7 @@ class AddSubInventory extends Component {
                 }
             });
             colors.forEach(function(item){
-                if (item.description === color){
+                if (item.description === colorForSub){
                     sku = sku.concat(item.key);
                     desc = desc.concat(item.description);
                 }
@@ -165,7 +164,7 @@ class AddSubInventory extends Component {
         const { token, user, isAddingInventory, addingInventoryError, inventory,
                 generatedSKU, generatedDesc } = this.props.inventory;
         const { qualities, types, patterns, colors, sizes, units,
-                quality, type, pattern, color, size, unit } = this.props.feature;
+                quality, type, pattern, color, size, unit, colorForSub } = this.props.feature;
 
         var qualityList = [];
         var typeList = [];
@@ -314,7 +313,7 @@ class AddSubInventory extends Component {
                               options={colorList}
                               placeholder='Choose an color'
                               selection
-                              value={color}
+                              value={colorForSub}
                             />
                           </Grid.Column>
                           <Grid.Column>

@@ -57,6 +57,8 @@ export const CHOOSE_COLOR = "CHOOSE_COLOR";
 export const CHOOSE_SIZE = "CHOOSE_SIZE";
 export const CHOOSE_UNIT = "CHOOSE_UNIT";
 
+export const CHOOSE_COLOR_FOR_SUB = "CHOOSE_COLOR_FOR_SUB";
+
 export const INPUT_KEY = "INPUT_KEY";
 export const INPUT_DESC = "INPUT_DESC";
 
@@ -347,6 +349,12 @@ export function choosePattern(data){
 export function chooseColor(data){
     return function (dispatch) {
         dispatch({type: CHOOSE_COLOR, payload: data });
+    }
+}
+
+export function chooseColorForSub(data){
+    return function (dispatch) {
+        dispatch({type: CHOOSE_COLOR_FOR_SUB, payload: data });
     }
 }
 

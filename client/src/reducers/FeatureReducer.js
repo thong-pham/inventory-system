@@ -9,7 +9,7 @@ import { ADD_FEATURE_STARTED, ADD_FEATURE_FULFILLED, ADD_FEATURE_REJECTED,
           DELETE_FEATURE_STARTED, DELETE_FEATURE_FULFILLED, DELETE_FEATURE_REJECTED,
           ADD_QUALITY, ADD_TYPE, ADD_PATTERN, ADD_COLOR, ADD_SIZE, ADD_UNIT,
           CLOSE_QUALITY, CLOSE_TYPE, CLOSE_PATTERN, CLOSE_COLOR, CLOSE_SIZE, CLOSE_UNIT,
-          CHOOSE_QUALITY, CHOOSE_TYPE, CHOOSE_PATTERN, CHOOSE_COLOR, CHOOSE_SIZE, CHOOSE_UNIT,
+          CHOOSE_QUALITY, CHOOSE_TYPE, CHOOSE_PATTERN, CHOOSE_COLOR, CHOOSE_SIZE, CHOOSE_UNIT, CHOOSE_COLOR_FOR_SUB,
           INPUT_KEY, INPUT_DESC, FILL_DATA, CLEAR_DATA, ERROR_INPUT
           } from "./../actions/FeatureActions";
 
@@ -25,6 +25,7 @@ const initialState = {
     type: null,
     pattern: null,
     color: [],
+    colorForSub: null,
     size: null,
     unit: null,
     isFetchingQuality: false,
@@ -221,6 +222,10 @@ export default function (state = initialState, action) {
         case CHOOSE_COLOR:{
             const data = action.payload;
             return { ...state, color: data};
+        }
+        case CHOOSE_COLOR_FOR_SUB:{
+            const data = action.payload;
+            return { ...state, colorForSub: data};
         }
         case CHOOSE_SIZE:{
             const data = action.payload;
