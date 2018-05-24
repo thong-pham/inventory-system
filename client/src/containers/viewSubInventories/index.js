@@ -9,7 +9,7 @@ import './../../styles/custom.css';
 
 import { getSubInventories, getSubInventoriesByCompany, deleteSubInventory,
         openAdd, closeAdd, trackNumber, showModal, closeModal,
-        addCart, updateCart, deleteCart, submitOrder, getCarts, clearError
+        addCart, updateCart, deleteCart, submitOrder, getCarts, clearError, clearInventory
       } from "./../../actions/SubInventoryActions";
 
 class ViewSubInventory extends Component {
@@ -155,7 +155,7 @@ class ViewSubInventory extends Component {
               </Message>
           )
         }
-        else if (errorInput){
+        if (errorInput){
           error = (
               <Message negative>
                   <Message.Header>Error while Input Data</Message.Header>
@@ -195,8 +195,9 @@ class ViewSubInventory extends Component {
                     <Table.Cell>{inventory.unit}</Table.Cell>
                     <Table.Cell>{inventory.stock}</Table.Cell>
                     <Table.Cell >
-                        <Button color='red' onClick={this.onPressDelete.bind(this, inventory)}>Delete</Button>
-                        { (openAdd !== inventory.id) ? <Button color='blue' onClick={this.onOpenAdd.bind(this, inventory)}>Order</Button> : null }
+                        { (openAdd !== inventory.id) ? <Button color='blue' onClick={this.onOpenAdd.bind(this, inventory)}><Icon name='plus square' /></Button> : null }
+                        <Button color='teal' onClick={this.onPressEdit.bind(this, inventory)}><Icon name='pencil' /></Button>
+                        <Button color='red' onClick={this.onPressDelete.bind(this, inventory)}><Icon name='trash outline' /></Button>
                     </Table.Cell>
                 </Table.Row>
             )

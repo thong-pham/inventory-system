@@ -5,7 +5,7 @@ import { createInventory, approveInventory, removeInventory,
         approveRequest, importInventory, getPendingImports, removeImport
        } from "./../services/InventoryService";
 import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
-import { validateCreateInventory, validateUpdateByPhone } from "./../validators/InventoryValidator"
+import { validateCreateInventory, validateUpdateInventory, validateUpdateByPhone } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
@@ -36,7 +36,7 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
                                 console.log(err);
                                 res.status(500).send(err);
                             }
-                        }                  
+                        }
                     }
                     else {
                         if (count === list.length - 1){
@@ -85,14 +85,14 @@ router.post('/requestInventory', verifyAuthMiddleware, function (req, res, next)
 router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
     const id = req.params.id;
     if (id) {
-        validateCreateInventory(req.body, function (err) {
+        validateUpdateInventory(req.body, function (err) {
             if (err) {
                 res.status(400).send(err);
             }
             else {
                 const userSession = req.session;
-                const { sku, productName, price, stock } = req.body;
-                const data = { id, sku, productName: { en: productName }, price, stock, userSession };
+                const { sku, productName, price, stock, unit } = req.body;
+                const data = { id, sku, productName: { en: productName }, price, stock, unit, userSession };
                 updateInventory(data, function (err, inventory) {
                     if (err) {
                         if (err.message === "Only ISRA can edit Inventory"){

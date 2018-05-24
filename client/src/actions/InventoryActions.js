@@ -128,7 +128,7 @@ export function deleteInventory(data) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: DELETE_INVENTORY_FULFILLED, payload: data });
+                dispatch({ type: DELETE_INVENTORY_FULFILLED, payload: inventory.id });
                 return data;
             })
             .catch(function (error) {

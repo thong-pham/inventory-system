@@ -49,6 +49,7 @@ export const OPEN_ADD = "OPEN_ADD";
 export const CLOSE_ADD = "CLOSE_ADD";
 
 export const SET_UPDATING_SUBINVENTORY_FULFILLED = "SET_UPDATING_SUBINVENTORY_FULFILLED";
+export const CLEAR_INVENTORY_FULFILLED = "CLEAR_INVENTORY_FULFILLED";
 
 const WS_URL = "https://api.israhospitality.com/subInventories/";
 
@@ -291,5 +292,11 @@ export function showModal(data){
 export function closeModal(){
     return function (dispatch) {
         dispatch({type: CLOSE_MODAL });
+    }
+}
+
+export function clearInventory() {
+    return function (dispatch) {
+        dispatch({ type: CLEAR_INVENTORY_FULFILLED });
     }
 }

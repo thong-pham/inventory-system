@@ -14,17 +14,14 @@ function validate(values) {
     var errors = {
         batch: {}
     };
-    const { sku, productName, price, stock } = values;
+    const { sku, productName } = values;
     if (!sku || (sku + "").trim() === "") {
         errors.sku = "SKU is Required";
-    }
-    else if (sku.length > 20) {
-        errors.sku = "Must be 10 characters or less";
     }
     if (!productName || productName.trim() === "") {
         errors.productName = "Product Name is Required";
     }
-    if (!price || (price + "").trim() === "") {
+    /*if (!price || (price + "").trim() === "") {
         errors.price = "Price is Required";
     }
     else if (isNaN(Number(price))) {
@@ -35,7 +32,7 @@ function validate(values) {
     }
     else if (isNaN(Number(stock))){
         errors.stock = "Stock must be a number";
-    }
+    }*/
     return errors;
 }
 
@@ -63,9 +60,8 @@ class UpdateSubInventory extends Component {
     }
     onBack(){
       const { dispatch } = this.props;
-      dispatch(clearInventory()).then(function(data){
-          dispatch(push("/subInventory"));
-      });
+      dispatch(clearInventory());
+      dispatch(push("/subInventory"));
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
@@ -92,12 +88,12 @@ class UpdateSubInventory extends Component {
                         <Form.Field inline>
                             <Field name="productName" placeholder="Enter the Product Description" component={this.renderField}></Field>
                         </Form.Field>
-                        <Form.Field inline>
+                        {/*<Form.Field inline>
                             <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
                             <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>
-                        </Form.Field>
+                        </Form.Field>*/}
                         <Button primary loading={submitting} disabled={submitting}>Update</Button>
                         <Button secondary onClick={this.onBack.bind(this)}>Cancel</Button>
                     </Form>

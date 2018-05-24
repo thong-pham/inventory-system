@@ -8,7 +8,7 @@ import { GET_SUBINVENTORIES_STARTED, GET_SUBINVENTORIES_FULFILLED, GET_SUBINVENT
           GET_CARTS_STARTED, GET_CARTS_FULFILLED, GET_CARTS_REJECTED,
           UPDATE_CART_STARTED, UPDATE_CART_FULFILLED, UPDATE_CART_REJECTED,
           DELETE_CART_STARTED, DELETE_CART_FULFILLED, DELETE_CART_REJECTED,
-          SUBMIT_ORDER_STARTED, SUBMIT_ORDER_FULFILLED, SUBMIT_ORDER_REJECTED
+          SUBMIT_ORDER_STARTED, SUBMIT_ORDER_FULFILLED, SUBMIT_ORDER_REJECTED, CLEAR_INVENTORY_FULFILLED
          } from "./../actions/SubInventoryActions";
 
 const initialState = {
@@ -217,6 +217,9 @@ export default function (state = initialState, action) {
         case SUBMIT_ORDER_REJECTED: {
             const error = action.payload.data;
             return {...state, isAddingOrder: false, addingOrderError: error};
+        }
+        case CLEAR_INVENTORY_FULFILLED:{
+            return { ...state, inventory: null};
         }
         default: {
             return state;

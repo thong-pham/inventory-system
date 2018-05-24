@@ -126,8 +126,6 @@ export function updateSubInventory(data, callback) {
                     status: "approved",
                     sku: data.sku,
                     productName: data.productName,
-                    price: data.price,
-                    stock: data.stock,
                     $push: {
                         history: {
                             action: "updated",
@@ -136,8 +134,6 @@ export function updateSubInventory(data, callback) {
                             payload: {
                                 sku: data.sku,
                                 productName: data.productName,
-                                price: data.price,
-                                stock: data.stock,
                             }
                         }
                     }

@@ -117,9 +117,7 @@ class ViewInventories extends Component {
 
     onPressDelete(inventory) {
         const { token, dispatch } = this.props;
-        dispatch(deleteInventory({ token: token, inventory: inventory })).then(function (data) {
-            dispatch(getInventories({ token: token }));
-        });
+        dispatch(deleteInventory({ token: token, inventory: inventory }));
     }
 
     handleInput(e){
@@ -182,7 +180,7 @@ class ViewInventories extends Component {
               </Message>
           )
         }
-        else if (errorInput){
+        if (errorInput){
           error = (
               <Message negative>
                   <Message.Header>Error while Inputing Value</Message.Header>
@@ -241,11 +239,11 @@ class ViewInventories extends Component {
                                       </Grid.Row>
                                     </Grid>  : null }
                     </Table.Cell>
-                    <Table.Cell >
-                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
+                    <Table.Cell >                      
                         <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
                         <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} />
                         <Icon name='minus' size='large' onClick={this.onOpenMinus.bind(this, inventory)} />
+                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
                     </Table.Cell>
                 </Table.Row>
             )

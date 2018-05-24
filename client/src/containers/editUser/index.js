@@ -57,9 +57,8 @@ class EditUser extends Component {
     }
     onBack(){
       const { dispatch } = this.props;
-      dispatch(clearUser()).then(function(data){
-          dispatch(push("/users"));
-      });
+      dispatch(clearUser());
+      dispatch(push("/users"));
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting, roleOptions } = this.props;

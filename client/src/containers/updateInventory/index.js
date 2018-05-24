@@ -14,12 +14,15 @@ function validate(values) {
     var errors = {
         batch: {}
     };
-    const { sku, productName, price, stock } = values;
+    const { sku, productName, price, stock, unit } = values;
     if (!sku || (sku + "").trim() === "") {
         errors.sku = "SKU is Required";
     }
     if (!productName || productName.trim() === "") {
         errors.productName = "Product Name is Required";
+    }
+    if (!unit || unit.trim() === "") {
+        errors.unit = "Unit is Required";
     }
     if (!price || (price + "").trim() === "") {
         errors.price = "Price is Required";
@@ -64,9 +67,8 @@ class UpdateInventory extends Component {
     }
     onBack(){
       const { dispatch } = this.props;
-      dispatch(clearInventory()).then(function(data){
-          dispatch(push("/inventory"));
-      });
+      dispatch(clearInventory());
+      dispatch(push("/inventory"));
     }
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
@@ -95,6 +97,9 @@ class UpdateInventory extends Component {
                         </Form.Field>
                         <Form.Field inline>
                             <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
+                        </Form.Field>
+                        <Form.Field inline>
+                            <Field name="unit" placeholder="Enter the Unit" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
                             <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>

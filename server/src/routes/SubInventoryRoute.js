@@ -52,8 +52,8 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
             }
             else {
                 const userSession = req.session;
-                const { sku, productName, price, stock } = req.body;
-                const data = { id, sku, productName: { en: productName }, price, stock, userSession };
+                const { sku, productName } = req.body;
+                const data = { id, sku, productName: { en: productName }, userSession };
                 updateSubInventory(data, function (err, inventory) {
                     if (err) {
                         if (err.message === "Only Child Company can edit SubInventory"){

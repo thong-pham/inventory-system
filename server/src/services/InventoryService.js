@@ -121,6 +121,7 @@ export function updateInventory(data, callback) {
                     productName: data.productName,
                     price: data.price,
                     stock: data.stock,
+                    unit: data.unit,
                     $push: {
                         history: {
                             action: "updated",
@@ -131,6 +132,7 @@ export function updateInventory(data, callback) {
                                 productName: data.productName,
                                 price: data.price,
                                 stock: data.stock,
+                                unit: data.unit
                             }
                         }
                     }
