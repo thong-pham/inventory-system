@@ -104,6 +104,7 @@ class ViewInventories extends Component {
                 sku: inventory.sku,
                 productName: inventory.productName.en,
                 price: inventory.price,
+                unit: inventory.unit,
                 stock: newStock,
                 token: token
             }
