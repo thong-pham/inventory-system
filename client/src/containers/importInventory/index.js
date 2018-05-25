@@ -33,7 +33,7 @@ function validate(values) {
     else if (isNaN(Number(count))){
         errors.count = "Box Count must be a number";
     }
-    else if (box <= 0){
+    else if (count <= 0){
         errors.count = "Box Count must be larger than 0";
     }
     return errors;
