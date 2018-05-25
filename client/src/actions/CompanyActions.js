@@ -29,6 +29,7 @@ export const SET_UPDATING_COMPANY_FULFILLED = "SET_UPDATING_COMPANY_FULFILLED";
 export const CHANGE_COMPANY = "CHANGE_COMPANY";
 export const CANCEL_CHANGE = "CANCEL_CHANGE";
 export const TRACK_NAME = "TRACK_NAME";
+export const ERROR_INPUT_COMPANY = "ERROR_INPUT_COMPANY";
 
 const WS_URL = "https://api.israhospitality.com/companies/";
 
@@ -126,9 +127,14 @@ export function cancelChange(data) {
     }
 }
 
-
 export function trackName(data) {
     return function (dispatch) {
         dispatch({ type: TRACK_NAME, payload: data });
+    }
+}
+
+export function errorInput(data) {
+    return function (dispatch) {
+        dispatch({ type: ERROR_INPUT_COMPANY, payload: data });
     }
 }

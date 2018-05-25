@@ -65,7 +65,7 @@ export const INPUT_DESC = "INPUT_DESC";
 export const FILL_DATA = "FILL_DATA";
 export const CLEAR_DATA = "CLEAR_DATA";
 
-export const ERROR_INPUT = "ERROR_INPUT";
+export const ERROR_INPUT_FEATURE = "ERROR_INPUT_FEATURE";
 
 const WS_URL = "https://api.israhospitality.com/features/";
 
@@ -372,6 +372,6 @@ export function chooseUnit(data){
 
 export function errorInput(data){
     return function (dispatch) {
-        dispatch({type: ERROR_INPUT, payload: data});
+        dispatch({type: ERROR_INPUT_FEATURE, payload: data});
     }
 }

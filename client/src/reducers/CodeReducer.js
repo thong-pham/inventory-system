@@ -1,7 +1,7 @@
 import { GET_CODES_STARTED, GET_CODES_FULFILLED, GET_CODES_REJECTED,
         ADD_CODE_STARTED, ADD_CODE_FULFILLED, ADD_CODE_REJECTED,
         DELETE_CODE_STARTED, DELETE_CODE_FULFILLED, DELETE_CODE_REJECTED,
-        ADD_POPUP, CLOSE_POPUP, TRACK_INPUT, ERROR_INPUT
+        ADD_POPUP, CLOSE_POPUP, TRACK_INPUT, ERROR_INPUT_CODE
         } from "./../actions/CodeActions";
 
 const initialState = {
@@ -70,7 +70,7 @@ export default function (state = initialState, action) {
             var data = action.payload;
             return { ...state, codeInput : data};
         }
-        case ERROR_INPUT: {
+        case ERROR_INPUT_CODE: {
             const error = action.payload;
             return {...state, errorInput: error };
         }

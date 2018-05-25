@@ -53,7 +53,7 @@ export const TRACK_NEW = "TRACK_NEW";
 export const TRACK_NAME = "TRACK_NAME";
 export const TRACK_NUMBER = "TRACK_NUMBER";
 export const TRACK_EMAIL = "TRACK_EMAIL";
-export const ERROR_INPUT = "ERROR_INPUT";
+export const ERROR_INPUT_USER = "ERROR_INPUT_USER";
 
 const WS_URL = "https://api.israhospitality.com/users/";
 
@@ -290,6 +290,6 @@ export function trackEmail(email){
 
 export function errorInput(){
     return function (dispatch) {
-        dispatch({type: ERROR_INPUT});
+        dispatch({type: ERROR_INPUT_USER});
     }
 }

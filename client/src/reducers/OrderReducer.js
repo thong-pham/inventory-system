@@ -3,7 +3,7 @@ import { APPROVE_ORDER_STARTED, APPROVE_ORDER_FULFILLED, APPROVE_ORDER_REJECTED,
          GET_APPROVED_ORDERS_STARTED, GET_APPROVED_ORDERS_FULFILLED, GET_APPROVED_ORDERS_REJECTED,
          CHANGE_ORDER_STARTED, CHANGE_ORDER_FULFILLED, CHANGE_ORDER_REJECTED,
          DELETE_ORDER_STARTED, DELETE_ORDER_FULFILLED, DELETE_ORDER_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT
+         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT_ORDER
          } from "./../actions/OrderActions";
 
 const initialState = {
@@ -115,7 +115,7 @@ export default function (state = initialState, action) {
             })[0];
             return { ...state, order: newOrder };
         }
-        case ERROR_INPUT: {
+        case ERROR_INPUT_ORDER: {
             const error = action.payload;
             return {...state, errorInput: error };
         }

@@ -26,17 +26,22 @@ class ViewAccount extends Component {
     onSavePass() {
         const { dispatch, token } = this.props;
         const { currentPass, newPass } = this.props.user;
-        const submit = {
-            currentPass: currentPass,
-            newPass: newPass
+        if (currentPass === null || (currentPass + "").trim() === "" || newPass === null || (newPass + "").trim() === ""){
+            dispatch(errorInput());
         }
-        dispatch(submitNewPass({token: token, submit: submit}));
+        else {
+            const submit = {
+                currentPass: currentPass,
+                newPass: newPass
+            }
+            dispatch(submitNewPass({token: token, submit: submit}));
+        }
     }
 
     onSaveName() {
         const { dispatch, token } = this.props;
         const { user, newName, newNumber, newEmail } = this.props.user;
-        if (newName === null){
+        if (newName === null || (newName + "").trim() === ""){
             dispatch(errorInput());
         }
         else{
@@ -54,7 +59,7 @@ class ViewAccount extends Component {
     onSaveNumber() {
         const { dispatch, token } = this.props;
         const { user, ewName, newNumber, newEmail } = this.props.user;
-        if (newNumber === null){
+        if (newNumber === null || (newNumber + "").trim() === ""){
             dispatch(errorInput());
         }
         else{
@@ -72,7 +77,7 @@ class ViewAccount extends Component {
     onSaveEmail() {
         const { dispatch, token } = this.props;
         const { user, newName, newNumber, newEmail } = this.props.user;
-        if (newEmail === null){
+        if (newEmail === null || (newEmail + "").trim() === ""){
             dispatch(errorInput());
         }
         else if(!validateEmail(newEmail)){

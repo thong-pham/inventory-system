@@ -19,7 +19,7 @@ export const DELETE_CODE_REJECTED = "DELETE_CODE_REJECTED";
 export const ADD_POPUP = "ADD_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_INPUT = "TRACK_INPUT";
-export const ERROR_INPUT = "ERROR_INPUT";
+export const ERROR_INPUT_CODE = "ERROR_INPUT_CODE";
 
 const WS_URL = "https://api.israhospitality.com/code/";
 
@@ -120,6 +120,6 @@ export function deleteCode(data) {
 
 export function errorInput(data){
     return function (dispatch) {
-        dispatch({type: ERROR_INPUT, payload: data});
+        dispatch({type: ERROR_INPUT_CODE, payload: data});
     }
 }

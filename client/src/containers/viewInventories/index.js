@@ -67,7 +67,7 @@ class ViewInventories extends Component {
         const { dispatch, token } = this.props;
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
-        if (isNaN(quantity) || quantity === null){
+        if (isNaN(quantity) || quantity === null || (quantity + "").trim() === ""){
             this.setState({errorInput: "Quantity cannot be empty and must be a number"});
         }
         else if (quantity <= 0){
@@ -97,7 +97,7 @@ class ViewInventories extends Component {
         const { dispatch, token } = this.props;
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
-        if (isNaN(quantity) || quantity === null){
+        if (isNaN(quantity) || quantity === null || (quantity + "").trim() === ""){
             this.setState({errorInput: "Quantity cannot be empty and must be a number"});
         }
         else if (quantity <= 0){

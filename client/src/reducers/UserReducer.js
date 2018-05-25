@@ -6,7 +6,7 @@ import {  ADD_USER_STARTED, ADD_USER_FULFILLED, ADD_USER_REJECTED,
           SET_UPDATING_USER_FULFILLED, CLEAR_USER_FULFILLED, CHANGE_PASSWORD, CLOSE_PASSWORD, TRACK_CURRENT, TRACK_NEW,
           CHANGE_PASSWORD_STARTED, CHANGE_PASSWORD_FULFILLED, CHANGE_PASSWORD_REJECTED,
           CHANGE_NAME, CLOSE_NAME, CHANGE_EMAIL, CLOSE_EMAIL, CHANGE_NUMBER, CLOSE_NUMBER,
-          TRACK_NAME, TRACK_NUMBER, TRACK_EMAIL, ERROR_INPUT,
+          TRACK_NAME, TRACK_NUMBER, TRACK_EMAIL, ERROR_INPUT_USER,
           CHANGE_INFO_STARTED, CHANGE_INFO_FULFILLED, CHANGE_INFO_REJECTED, GET_USER,
           GET_USER_STARTED, GET_USER_FULFILLED, GET_USER_REJECTED
           } from "./../actions/UserActions";
@@ -140,25 +140,25 @@ export default function (state = initialState, action) {
            return {...state, passChange : true, nameChange: false, numberChange: false, emailChange: false};
         }
         case CLOSE_PASSWORD: {
-           return {...state, passChange : false, changingPassError: null, currentPass: null, newPass: null};
+           return {...state, passChange : false, changingPassError: null, currentPass: null, newPass: null, errorInput: null};
         }
         case CHANGE_NAME: {
            return {...state, nameChange : true, passChange: false, numberChange: false, emailChange: false};
         }
         case CLOSE_NAME: {
-           return {...state, nameChange : false, changingNameError: null, newName: null};
+           return {...state, nameChange : false, changingNameError: null, newName: null, errorInput: null};
         }
         case CHANGE_NUMBER: {
            return {...state, numberChange : true, passChange: false, nameChange: false, emailChange: false};
         }
         case CLOSE_NUMBER: {
-           return {...state, numberChange : false, changingNumberError: null, newNumber: null};
+           return {...state, numberChange : false, changingNumberError: null, newNumber: null, errorInput: null};
         }
         case CHANGE_EMAIL: {
            return {...state, emailChange : true, passChange: false, nameChange: false, numberChange: false};
         }
         case CLOSE_EMAIL: {
-           return {...state, emailChange : false, changingEmailError: null, newEmail: null};
+           return {...state, emailChange : false, changingEmailError: null, newEmail: null, errorInput: null};
         }
         case TRACK_CURRENT: {
            const data = action.payload;
@@ -180,7 +180,7 @@ export default function (state = initialState, action) {
            const data = action.payload;
            return {...state, newEmail : data};
         }
-        case ERROR_INPUT: {
+        case ERROR_INPUT_USER: {
             const error = "Invalid Input";
             return {...state, errorInput: error };
         }

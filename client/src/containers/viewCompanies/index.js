@@ -7,7 +7,7 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getCompanies, deleteCompany, triggerChange, cancelChange, trackName, editCompany } from "./../../actions/CompanyActions";
+import { getCompanies, deleteCompany, triggerChange, cancelChange, trackName, editCompany, errorInput } from "./../../actions/CompanyActions";
 
 //import { getUsers } from "./../../actions/UserActions";
 
@@ -45,19 +45,24 @@ class ViewCompanies extends Component {
     onSaveName = (id) => {
         const { dispatch, token } = this.props;
         const { newName } = this.props.company;
-        const data = {
-            id: id,
-            name: newName,
-            token: token
+        if (newName === null || (newName + "").trim() === ""){
+            dispatch(errorInput("Invalid Input"));
         }
-        dispatch(editCompany(data)).then(function(data){
-            dispatch(getCompanies({ token: token }));
-        });
+        else {
+            const data = {
+                id: id,
+                name: newName,
+                token: token
+            }
+            dispatch(editCompany(data)).then(function(data){
+                dispatch(getCompanies({ token: token }));
+            });
+        }
     }
 
     render() {
         const { companies, isFetchingCompanies, fetchingCompaniesError, deletingsCompaniesError,
-                nameChange, newName } = this.props.company;
+                nameChange, newName, errorInput } = this.props.company;
 
         let error = null;
         if (fetchingCompaniesError || deletingsCompaniesError) {
@@ -66,6 +71,14 @@ class ViewCompanies extends Component {
                     <Message.Header>Error while Fetching Companies</Message.Header>
                     <p>{fetchingCompaniesError}</p>
                     <p>{deletingsCompaniesError}</p>
+                </Message>
+            )
+        }
+        if (errorInput) {
+            error = (
+                <Message negative>
+                    <Message.Header>Error while Inputing Data</Message.Header>
+                    <p>{errorInput}</p>
                 </Message>
             )
         }
