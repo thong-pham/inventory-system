@@ -38,3 +38,9 @@ export function removeCodeById(id, callback) {
         callback(err, code);
     });
 }
+
+export function removeCodeBySku(sku, callback) {
+    Code.remove({ "mainSku": sku }, function (err, codes) {
+        callback(err, codes);
+    });
+}

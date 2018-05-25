@@ -68,20 +68,26 @@ class ViewInventories extends Component {
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
         if (isNaN(quantity) || quantity === null){
-            this.setState({errorInput: "Quantity cannot be empty"});
+            this.setState({errorInput: "Quantity cannot be empty and must be a number"});
+        }
+        else if (quantity <= 0){
+            this.setState({errorInput: "Quantity has to be larger than 0"});
         }
         else {
-            const newStock = (inventory.stock + quantity).toString();
+            const newStock = (inventory.stock + Number(quantity)).toString();
             const data = {
                 id: inventory.id,
                 sku: inventory.sku,
                 productName: inventory.productName.en,
                 price: inventory.price,
+                capacity: inventory.capacity,
+                unit: inventory.unit,
                 stock: newStock,
                 token: token
             }
+            console.log(data);
             dispatch(updateInventory(data)).then(function(data){
-                dispatch(changeInventory({id: inventory.id, stock: inventory.stock + quantity}));
+                dispatch(changeInventory({id: inventory.id, stock: inventory.stock + Number(quantity)}));
             });
             this.setState({column: null});
         }
@@ -92,24 +98,29 @@ class ViewInventories extends Component {
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
         if (isNaN(quantity) || quantity === null){
-            this.setState({errorInput: "Quantity cannot be empty"});
+            this.setState({errorInput: "Quantity cannot be empty and must be a number"});
+        }
+        else if (quantity <= 0){
+            this.setState({errorInput: "Quantity has to be larger than 0"});
         }
         else if(quantity > inventory.stock){
             this.setState({errorInput: "Quantity must be larger than stock"});
         }
         else {
-            const newStock = (inventory.stock - quantity).toString();
+            const newStock = (inventory.stock - Number(quantity)).toString();
             const data = {
                 id: inventory.id,
                 sku: inventory.sku,
                 productName: inventory.productName.en,
                 price: inventory.price,
                 unit: inventory.unit,
+                capacity: inventory.capacity,
+                unit: inventory.unit,
                 stock: newStock,
                 token: token
             }
             dispatch(updateInventory(data)).then(function(data){
-                dispatch(changeInventory({id: inventory.id, stock: inventory.stock - quantity}));
+                dispatch(changeInventory({id: inventory.id, stock: inventory.stock - Number(quantity)}));
             });
             this.setState({column: null});
         }
@@ -195,6 +206,7 @@ class ViewInventories extends Component {
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
                     <Table.Cell >{inventory.price}</Table.Cell>
                     <Table.Cell >{inventory.unit}</Table.Cell>
+                    <Table.Cell >{inventory.capacity}</Table.Cell>
                     <Table.Cell >
                         {inventory.stock}
                         <hr />
@@ -239,7 +251,7 @@ class ViewInventories extends Component {
                                       </Grid.Row>
                                     </Grid>  : null }
                     </Table.Cell>
-                    <Table.Cell >                      
+                    <Table.Cell >
                         <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
                         <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} />
                         <Icon name='minus' size='large' onClick={this.onOpenMinus.bind(this, inventory)} />
@@ -258,6 +270,7 @@ class ViewInventories extends Component {
                             <Table.HeaderCell width={2} sorted={column === 'productName.en' ? direction : null} onClick={this.handleSort('productName.en')}>Product Description</Table.HeaderCell>
                             <Table.HeaderCell width={1} sorted={column === 'price' ? direction : null} onClick={this.handleSort('price')}>Price</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Unit</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell width={2} sorted={column === 'stock' ? direction : null} onClick={this.handleSort('stock')}>Stock</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>

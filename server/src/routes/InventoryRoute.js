@@ -2,10 +2,10 @@ import { Router } from "express";
 import { createInventory, approveInventory, removeInventory,
         getInventories, getPendingInventories,
         updateInventory, createRequest, getPendingRequests,
-        approveRequest, importInventory, getPendingImports, removeImport
+        approveRequest, importInventory, getPendingImports, removeImport, updateImport
        } from "./../services/InventoryService";
 import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
-import { validateCreateInventory, validateUpdateInventory, validateUpdateByPhone } from "./../validators/InventoryValidator"
+import { validateCreateInventory, validateUpdateInventory, validateImportInventory } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
@@ -17,12 +17,12 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
         }
         else {
             const userSession = req.session;
-            const { list, price, stock, unit } = req.body;
+            const { list, price, unit, capacity } = req.body;
             var count = 0;
             list.forEach(function(item){
                 var sku = item.sku;
                 var productName = item.desc;
-                const data = { sku, productName: {en: productName}, price, stock, userSession, unit };
+                const data = { sku, productName: {en: productName}, price, capacity, userSession, unit };
                 createInventory(data, function (err, inventory) {
                     if (err) {
                         if (count === list.length - 1){
@@ -91,8 +91,8 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
             }
             else {
                 const userSession = req.session;
-                const { sku, productName, price, stock, unit } = req.body;
-                const data = { id, sku, productName: { en: productName }, price, stock, unit, userSession };
+                const { sku, productName, price, stock, unit, capacity } = req.body;
+                const data = { id, sku, productName: { en: productName }, price, stock, unit, capacity, userSession };
                 updateInventory(data, function (err, inventory) {
                     if (err) {
                         if (err.message === "Only ISRA can edit Inventory"){
@@ -225,7 +225,7 @@ router.delete('/:id/import', verifyAuthMiddleware, function (req, res, next) {
                 else if (err.message === "Only pending import can be removed") {
                     res.status(403).send(err.message);
                 }
-                else if (err.message === "Inventory Not Found") {
+                else if (err.message === "Import Not Found") {
                     res.status(404).send(err.message);
                 }
                 else {
@@ -244,14 +244,14 @@ router.delete('/:id/import', verifyAuthMiddleware, function (req, res, next) {
 });
 
 router.post('/importInventory', verifyAuthMiddleware, function (req, res, next) {
-    validateUpdateByPhone(req.body, function (err) {
+    validateImportInventory(req.body, function (err) {
         if (err) {
             res.status(400).send(err);
         }
         else {
             const userSession = req.session;
-            const { code, quantity } = req.body;
-            const data = { code, quantity, userSession };
+            const { code, quantity, capacity, count } = req.body;
+            const data = { code, quantity, capacity, count, userSession };
             importInventory(data, function (err, inventory) {
                 if (err) {
                     if (err.message === "Not Enough Permission to import Inventory") {
@@ -272,6 +272,48 @@ router.post('/importInventory', verifyAuthMiddleware, function (req, res, next) 
             });
         }
     });
+});
+
+router.put('/:id/import', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+      validateImportInventory(req.body, function (err) {
+          if (err) {
+              res.status(400).send(err);
+          }
+          else {
+              const userSession = req.session;
+              const { code, quantity, capacity, count } = req.body;
+              const data = { id, userSession, code, quantity, capacity, count };
+              updateImport(data, function (err, importData) {
+                  if (err) {
+                      if (err.message === "Only ISRA can change Import"){
+                         res.status(401).send(err.message);
+                      }
+                      else if (err.message === "Not Enough Permission to change Import") {
+                          res.status(402).send(err.message);
+                      }
+                      else if (err.message === "Only pending import can be changed") {
+                          res.status(403).send(err.message);
+                      }
+                      else if (err.message === "Import Not Found") {
+                          res.status(404).send(err.message);
+                      }
+                      else {
+                          console.log(err);
+                          res.status(500).send(err);
+                      }
+                  }
+                  else {
+                      res.status(200).send("Update Successfully");
+                  }
+              });
+            }
+       });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
 });
 
 export default router;

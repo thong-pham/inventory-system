@@ -8,7 +8,7 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { importInventory } from "./../../actions/ImportActions";
+import { importInventory, clearImport } from "./../../actions/ImportActions";
 
 function validate(values) {
     var errors = {
@@ -56,17 +56,14 @@ class ImportInventory extends Component {
         const { token, user } = this.props.auth;
         const data = {
            code: values.code,
-           quantity: values.box * values.capacity
+           quantity: values.count * values.capacity,
+           capacity: values.capacity,
+           count: values.count
         }
         data.token = token;
         //console.log(data);
         return dispatch(importInventory(data)).then(function (data) {
-            if (user.roles.indexOf("admin") >= 0){
-                dispatch(push("/inventory"));
-            }
-            else{
-                dispatch(push("/imports"));
-            }
+            alert("Import Successfully");
         });
     }
     render() {
@@ -98,7 +95,7 @@ class ImportInventory extends Component {
                         </Form.Field>
                         <Form.Field inline>
                             <Label>Box Count</Label>
-                            <Field name="box" placeholder="Box Count" component={this.renderField}></Field>
+                            <Field name="count" placeholder="Box Count" component={this.renderField}></Field>
                         </Form.Field>
                         <Button primary loading={submitting} disabled={submitting} disabled={pristine || submitting}>Submit</Button>
                     </Form>

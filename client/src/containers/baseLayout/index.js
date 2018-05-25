@@ -94,7 +94,7 @@ class BaseLayout extends Component {
                     </Menu.Item>*/}
                     <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
                       <Icon name='add' />
-                        Add Inventory
+                        Add Product
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
                       <Icon name='list ul' />
@@ -198,7 +198,7 @@ class BaseLayout extends Component {
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
                   <Icon name='add' />
-                    Add Inventory
+                    Add Product
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "importInventory")} >
                   <Icon name='add' />
@@ -259,7 +259,7 @@ class BaseLayout extends Component {
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "addSubInventory")} >
                     <Icon name='add' />
-                      Add Inventory
+                      Add Product
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
                     <Icon name='list ul' />

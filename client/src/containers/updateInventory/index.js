@@ -14,7 +14,7 @@ function validate(values) {
     var errors = {
         batch: {}
     };
-    const { sku, productName, price, stock, unit } = values;
+    const { sku, productName, price, stock, unit, capacity } = values;
     if (!sku || (sku + "").trim() === "") {
         errors.sku = "SKU is Required";
     }
@@ -30,6 +30,9 @@ function validate(values) {
     else if (isNaN(Number(price))) {
         errors.price = "Price must be a number";
     }
+    else if (price <= 0){
+        errors.price = "Price must be larger than or equal to 0";
+    }
     if (!stock || (stock + "").trim() === "") {
         errors.stock = "Stock is Required";
     }
@@ -38,6 +41,15 @@ function validate(values) {
     }
     else if (stock < 0){
         errors.stock = "Stock must be larger than or equal to 0";
+    }
+    if (!capacity || (capacity + "").trim() === "") {
+        errors.capacity = "Box Capacity is Required";
+    }
+    else if (isNaN(Number(capacity))){
+        errors.capacity = "Box Capacity must be a number";
+    }
+    else if (capacity <= 0){
+        errors.capacity = "Box Capacity must be larger than or equal to 0";
     }
     return errors;
 }
@@ -59,6 +71,8 @@ class UpdateInventory extends Component {
     }
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
+        const { inventory } = this.props.inventory;
+        values.sku = inventory.sku;
         values.token = token;
         //console.log(values);
         return dispatch(updateInventory(values)).then(function (data) {
@@ -88,20 +102,30 @@ class UpdateInventory extends Component {
                   <Container>
                     <Header as="h2">Update Inventory</Header>
                     {error}
+                    {(inventory !== null) ? <h3>{inventory.sku}</h3> : null}
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isUpdatingInventory}>
-                        <Form.Field inline>
+                        {/*<Form.Field inline>
+                            <Label>SKU</Label>
                             <Field name="sku" placeholder="Enter the SKU" component={this.renderField} disabled={true}></Field>
+                        </Form.Field>*/}
+                        <Form.Field inline>
+                            <Label>Product Description</Label>
+                            <Field name="productName" placeholder="Enter the Product Description" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
-                            <Field name="productName" placeholder="Enter the Product Name" component={this.renderField}></Field>
-                        </Form.Field>
-                        <Form.Field inline>
+                            <Label>Price</Label>
                             <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
+                            <Label>Unit</Label>
                             <Field name="unit" placeholder="Enter the Unit" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
+                            <Label>Box Capacity</Label>
+                            <Field name="capacity" placeholder="Enter the Box Capacity" component={this.renderField}></Field>
+                        </Form.Field>
+                        <Form.Field inline>
+                            <Label>Stock</Label>
                             <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>
                         </Form.Field>
                         <Button primary loading={submitting} disabled={submitting}>Update</Button>

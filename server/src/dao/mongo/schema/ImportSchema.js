@@ -9,6 +9,10 @@ const ImportSchema = mongoose.Schema({
 
     quantity: { type: Number, required: true },
 
+    capacity: { type: Number, required: true },
+
+    count: { type: Number, required: true },
+
     username: { type: String, required: true },
 
     status: { type: String, required: true, enum: ["approved", "pending"] },

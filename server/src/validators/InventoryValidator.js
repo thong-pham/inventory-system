@@ -8,8 +8,8 @@ export function validateCreateInventory(data, callback) {
     if (!data.price) {
         errors["price"] = "Price is Required";
     }
-    if (!data.stock) {
-        errors["stock"] = "Stock is Required";
+    if (!data.capacity) {
+        errors["capacity"] = "Capacity is Required";
     }
     if (!data.unit) {
         errors["unit"] = "Unit is Required";
@@ -36,6 +36,9 @@ export function validateUpdateInventory(data, callback) {
     if (!data.stock) {
         errors["stock"] = "Stock is Required";
     }
+    if (!data.capacity) {
+        errors["capacity"] = "Capacity is Required";
+    }
     if (!data.unit) {
         errors["unit"] = "Unit is Required";
     }
@@ -47,13 +50,19 @@ export function validateUpdateInventory(data, callback) {
     }
 }
 
-export function validateUpdateByPhone(data, callback) {
+export function validateImportInventory(data, callback) {
     var errors = {};
     if (!data.code) {
         errors["code"] = "Code is Required";
     }
-    if (!data.quantity) {
+    if (data.quantity === null) {
         errors["quantity"] = "Quantity is Required";
+    }
+    if (data.capacity === null) {
+        errors["capacity"] = "Capacity is Required";
+    }
+    if (data.count === null) {
+        errors["count"] = "Count is Required";
     }
     if (Object.keys(errors).length === 0) {
         callback();

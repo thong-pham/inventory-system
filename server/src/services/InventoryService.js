@@ -15,14 +15,22 @@ import {
 import { createImport as createImportDAO,
         getPendingImports as getPendingImportsDAO,
         getImportById as getImportByIdDAO,
-        removeImportById as removeImportByIdDAO
+        removeImportById as removeImportByIdDAO,
+        updateImportById as updateImportByIdDAO
     } from "./../dao/mongo/impl/ImportDAO";
+
+import {
+    removeCodeBySku as removeCodeBySkuDAO
+} from "./../dao/mongo/impl/CodeDAO";
 
 import { createInventoryInTrash as createInventoryInTrashDAO } from "./../dao/mongo/impl/TrashDAO";
 
-import { getNextInventoryId, getNextSubInventoryId, getNextTrashId, getNextImportId } from "./CounterService";
+import { getNextInventoryId, getNextSubInventoryId, getNextTrashId, getNextImportId, getNextCodeId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
-import { getCodeByKey as getCodeByKeyDAO } from "./../dao/mongo/impl/CodeDAO";
+import {
+      createCode as createCodeDAO,
+      getCodeByKey as getCodeByKeyDAO
+      } from "./../dao/mongo/impl/CodeDAO";
 
 export function createInventory(data, callback) {
     async.waterfall([
@@ -63,12 +71,29 @@ export function createInventory(data, callback) {
         function (data, counterDoc, waterfallCallback) {
             data.id = counterDoc.counter;
             //console.log(data.userSession);
+            data.stock = 0;
             data.history = [{
                 action: "created",
                 userId: data.userSession.userId,
                 timestamp: new Date()
             }]
             createInventoryDAO(data, waterfallCallback);
+        },
+        function (inventory, waterfallCallback){
+           getNextCodeId(function (err, counterDoc){
+               waterfallCallback(err, inventory, counterDoc);
+           });
+        },
+        function (inventory, counterDoc, waterfallCallback){
+            const { company } = data.userSession;
+            const code = {
+                id: counterDoc.counter,
+                key: inventory.sku,
+                sku: inventory.sku,
+                mainSku: inventory.sku,
+                company: company
+            }
+            createCodeDAO(code, waterfallCallback);
         }
     ], callback);
 }
@@ -122,6 +147,7 @@ export function updateInventory(data, callback) {
                     price: data.price,
                     stock: data.stock,
                     unit: data.unit,
+                    capacity: data.capacity,
                     $push: {
                         history: {
                             action: "updated",
@@ -132,7 +158,8 @@ export function updateInventory(data, callback) {
                                 productName: data.productName,
                                 price: data.price,
                                 stock: data.stock,
-                                unit: data.unit
+                                unit: data.unit,
+                                capacity: data.capacity
                             }
                         }
                     }
@@ -372,8 +399,10 @@ export function removeInventory(data, callback) {
                 productName: inventory.productName
             }
             createInventoryInTrashDAO(trash, waterfallCallback);
+        },
+        function(trash, waterfallCallback){
+            removeCodeBySkuDAO(trash.sku, waterfallCallback);
         }
-
     ], callback);
 }
 
@@ -384,7 +413,7 @@ export function importInventory(data, callback){
           const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
           const key = data.code;
           if (company === 'ISRA'){
-              if(isStoreManager || isAdmin)
+              /*if(isStoreManager || isAdmin)
               {
                   getCodeByKeyDAO(key, function(err, code){
                       if (err){
@@ -416,8 +445,8 @@ export function importInventory(data, callback){
                           waterfallCallback(err);
                       }
                   });
-              }
-              else if (isWorker) {
+              }*/
+              if (isWorker || isStoreManager || isAdmin) {
                   const key = data.code
                   getNextImportId(function (err, counterDoc) {
                         if (err){
@@ -434,6 +463,8 @@ export function importInventory(data, callback){
                                         code: data.code,
                                         sku: code.mainSku,
                                         quantity: data.quantity,
+                                        capacity: data.capacity,
+                                        count: data.count,
                                         username: username,
                                         status: "pending"
                                      }
@@ -461,39 +492,6 @@ export function importInventory(data, callback){
     ],callback)
 }
 
-export function decreaseByPhone(data, callback){
-    async.waterfall([
-      function(waterfallCallback){
-          const key = data.code;
-          getCodeByKeyDAO(key, function(err, code){
-              if (err){
-                  waterfallCallback(err);
-              }
-              else{
-                  getInventoryBySkuDAO(code.sku, function(err, inventory){
-                      if (err){
-                          waterfallCallback(err);
-                      }
-                      else {
-                          if (data.quantity > inventory.stock){
-                              const err = new Error("Deduction exceeds the current stock");
-                              waterfallCallback(err);
-                          }
-                          else {
-                              var newStock = inventory.stock - data.quantity;
-                              const update = {
-                                 stock: newStock
-                              }
-                              updateInventoryBySkuDAO(code.sku, update, waterfallCallback);
-                          }
-                      }
-                  });
-              }
-          });
-      }
-    ],callback)
-}
-
 export function removeImport(data, callback){
     async.waterfall([
       function(waterfallCallback){
@@ -513,7 +511,7 @@ export function removeImport(data, callback){
               if (err){
                 waterfallCallback(err);
               }
-              else{
+              else if (importData){
                   if (importData.status !== "pending"){
                       const err = new Error("Only pending import can be removed");
                       waterfallCallback(err);
@@ -521,6 +519,51 @@ export function removeImport(data, callback){
                   else{
                       removeImportByIdDAO(id, waterfallCallback);
                   }
+              }
+              else {
+                  const err = new Error("Import Not Found");
+                  waterfallCallback(err);
+              }
+          });
+      }
+    ],callback)
+}
+
+export function updateImport(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+         const { roles, company } = data.userSession;
+         const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+         if (company !== 'ISRA') {
+             const err = new Error("Only ISRA can change Import");
+             waterfallCallback(err)
+         }
+         if (isStoreManager || isAdmin){
+            waterfallCallback()
+         }
+         else{
+           const err = new Error("Not Enough Permission to change Import");
+           waterfallCallback(err);
+         }
+      },
+      function(waterfallCallback){
+          const id = data.id;
+          getImportByIdDAO(id, function(err, importData){
+              if (err){
+                waterfallCallback(err);
+              }
+              else if (importData){
+                  if (importData.status !== "pending"){
+                      const err = new Error("Only pending import can be removed");
+                      waterfallCallback(err);
+                  }
+                  else {
+                      updateImportByIdDAO(id, data, waterfallCallback);
+                  }
+              }
+              else {
+                  const err = new Error("Import Not Found");
+                  waterfallCallback(err);
               }
           });
       }

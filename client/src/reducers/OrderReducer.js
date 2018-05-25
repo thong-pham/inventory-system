@@ -98,7 +98,7 @@ export default function (state = initialState, action) {
         }
         case CHANGE_POPUP: {
             const data = action.payload;
-            return {...state, change: data}
+            return {...state, change: data, quantity: null}
         }
         case CLOSE_POPUP: {
             return {...state, change: null, errorInput: null, quantity: null }

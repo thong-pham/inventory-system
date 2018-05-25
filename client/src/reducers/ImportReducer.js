@@ -3,7 +3,7 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          GET_APPROVED_IMPORTS_STARTED, GET_APPROVED_IMPORTS_FULFILLED, GET_APPROVED_IMPORTS_REJECTED,
          CHANGE_IMPORT_STARTED, CHANGE_IMPORT_FULFILLED, CHANGE_IMPORT_REJECTED,
          DELETE_IMPORT_STARTED, DELETE_IMPORT_FULFILLED, DELETE_IMPORT_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, FILL_CODE,
+         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, FILL_CODE, CLEAR_IMPORT, INPUT_CAPACITY, INPUT_COUNT,
          IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED,
          } from "./../actions/ImportActions";
 
@@ -31,7 +31,9 @@ const initialState = {
         code: null,
         capacity: 24,
         box: null
-    }
+    },
+    capacity: null,
+    count: null
 }
 
 export default function (state = initialState, action) {
@@ -93,11 +95,11 @@ export default function (state = initialState, action) {
         }
         case CHANGE_IMPORT_FULFILLED: {
             const data = action.payload;
-            return {...state, isChangingImport: false, change: false, quantity: null };
+            return {...state, isChangingImport: false  };
         }
         case CHANGE_IMPORT_REJECTED: {
-            const data = action.payload.data;
-            return {...state, isChangingImport: false, changingImportError: data};
+            const error = action.payload.data;
+            return {...state, isChangingImport: false, changingImportError: error };
         }
         case DELETE_IMPORT_STARTED: {
             return {...state, isDeletingImport: true };
@@ -125,6 +127,17 @@ export default function (state = initialState, action) {
         case FILL_CODE:{
             const data = action.payload;
             return { ...state, defaultImport: {code: data, capacity: 24, box: null} };
+        }
+        case CLEAR_IMPORT:{
+            return { ...state, defaultImport: {code: null, capacity: 24, box: null} };
+        }
+        case INPUT_CAPACITY:{
+            const data = action.payload;
+            return { ...state, capacity: data };
+        }
+        case INPUT_COUNT:{
+            const data = action.payload;
+            return { ...state, count: data };
         }
         default: {
             return state;

@@ -25,6 +25,9 @@ export const IMPORT_INVENTORY_FULFILLED = "IMPORT_INVENTORY_FULFILLED";
 export const IMPORT_INVENTORY_REJECTED = "IMPORT_INVENTORY_REJECTED";
 
 export const FILL_CODE = "FILL_CODE";
+export const CLEAR_IMPORT = "CLEAR_IMPORT";
+export const INPUT_CAPACITY = "INPUT_CAPACITY";
+export const INPUT_COUNT = "INPUT_COUNT";
 
 const WS_URL = "https://api.israhospitality.com/inventories/";
 
@@ -86,8 +89,45 @@ export function deleteImport(data) {
     }
 }
 
+export function updateImport(importData) {
+    return function (dispatch) {
+        dispatch({ type: CHANGE_IMPORT_STARTED });
+        return axios.put(WS_URL + importData.id + "/import", importData)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: CHANGE_IMPORT_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: CHANGE_IMPORT_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
 export function fillingCode(data){
    return function (dispatch){
        dispatch({ type : FILL_CODE, payload: data})
+   }
+}
+
+export function clearImport(data){
+   return function (dispatch){
+       dispatch({ type : CLEAR_IMPORT })
+   }
+}
+
+export function inputCapacity(data){
+   return function (dispatch){
+       dispatch({ type : INPUT_CAPACITY, payload: data })
+   }
+}
+
+export function inputCount(data){
+   return function (dispatch){
+       dispatch({ type : INPUT_COUNT, payload: data })
    }
 }

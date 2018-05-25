@@ -54,7 +54,7 @@ class ViewSubInventory extends Component {
           const { dispatch } = this.props;
           const { quantity } = this.props.inventory;
           const { user } = this.props.auth;
-          if (isNaN(quantity) || quantity === null){
+          if (isNaN(quantity) || quantity === null || quantity <= 0){
               this.setState({errorInput: "Invalid Input"});
           }
           else {

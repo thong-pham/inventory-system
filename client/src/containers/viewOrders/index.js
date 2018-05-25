@@ -47,7 +47,7 @@ class ViewOrders extends Component {
         const { token, dispatch } = this.props;
         const { quantity } = this.props.order;
         const { user } = this.props.auth;
-        if (isNaN(quantity) || quantity === null){
+        if (isNaN(quantity) || quantity === null || quantity <= 0){
             dispatch(errorInput("Invalid Input"));
         }
         else {

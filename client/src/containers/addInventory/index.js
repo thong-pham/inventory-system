@@ -18,7 +18,7 @@ function validate(values) {
     var errors = {
         batch: {}
     };
-    const { sku, productName, price, stock } = values;
+    const { sku, productName, price, capacity } = values;
     if (!sku || (sku + "").trim() === "") {
         errors.sku = "SKU is Required";
     }
@@ -31,14 +31,17 @@ function validate(values) {
     else if (isNaN(Number(price))) {
         errors.price = "Price must be a number";
     }
-    if (!stock || (stock + "").trim() === "") {
-        errors.stock = "Stock is Required";
+    else if (price <= 0){
+        errors.price = "Price must be larger than or equal to 0";
     }
-    else if (isNaN(Number(stock))){
-        errors.stock = "Stock must be a number";
+    if (!capacity || (capacity + "").trim() === "") {
+        errors.capacity = "Box Capacity is Required";
     }
-    else if (stock < 0){
-        errors.stock = "Stock must be larger than or equal to 0";
+    else if (isNaN(Number(capacity))){
+        errors.capacity = "Box Capacity must be a number";
+    }
+    else if (capacity <= 0){
+        errors.capacity = "Box Capacity must be larger than or equal to 0";
     }
     return errors;
 }
@@ -388,10 +391,12 @@ class AddInventory extends Component {
                     </Container>
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isAddingInventory}>
                         <Form.Field inline>
-                            <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
+                            <Label>Box Capacity</Label>
+                            <Field name="capacity" placeholder="Enter the Box Capacity" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
-                            <Field name="stock" placeholder="Enter the Stock" component={this.renderField}></Field>
+                            <Label>Price</Label>
+                            <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
                         </Form.Field>
                         <Button primary loading={submitting} disabled={submitting} disabled={pristine || submitting}>Add Inventory</Button>
                     </Form>
@@ -413,14 +418,12 @@ function checkSKU(inventories, sku){
 }
 
 function mapStatesToProps(state) {
-    const initialValues = state.inventory.inventory;
+    //const initialValues = state.inventory.inventory;
     //console.log(initialValues);
     return {
-        initialValues: initialValues,
         auth: state.auth,
         inventory: state.inventory,
-        feature: state.feature,
-        location: state.router.location
+        feature: state.feature
     }
 }
 
