@@ -159,6 +159,8 @@ class ApproveImport extends Component {
                 <div key={importData.id}>
                     <p>SKU: {importData.sku}</p>
                     <p>Code: {importData.code}</p>
+                    <p>Box Capacity: {importData.capacity}</p>
+                    <p>Box Count: {importData.count}</p>
                     <p>Quantity: {importData.quantity}</p>
                     <p>Status: {importData.status}</p>
                     <p>Imported By: {importData.username}</p>

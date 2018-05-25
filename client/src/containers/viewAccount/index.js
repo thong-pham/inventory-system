@@ -222,14 +222,14 @@ class ViewAccount extends Component {
                                               <Input className="pwdBox" defaultValue={newName} onChange={this.handleName.bind(this)}/>
                                             </Grid.Column>
                                             <Grid.Column width={6}>
-                                                <Button onClick={this.onSaveName.bind(this)}>Save Changes</Button>
+                                                <Button color='green' onClick={this.onSaveName.bind(this)}>Save Changes</Button>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid> : null}
                             </Table.Cell>
                             <Table.Cell>
-                                { (!nameChange) ? <Button onClick={this.onChangeName.bind(this)}>Edit</Button> : null }
-                                { (nameChange) ? <Button onClick={this.onChangeNameClose.bind(this)}>Close</Button> : null}
+                                { (!nameChange) ? <Button primary onClick={this.onChangeName.bind(this)}>Edit</Button> : null }
+                                { (nameChange) ? <Button secondary onClick={this.onChangeNameClose.bind(this)}>Close</Button> : null}
                             </Table.Cell>
                         </Table.Row>
                         <Table.Row>
@@ -243,14 +243,14 @@ class ViewAccount extends Component {
                                               <Input className="pwdBox" defaultValue={newEmail} onChange={this.handleEmail.bind(this)}/>
                                             </Grid.Column>
                                             <Grid.Column width={6}>
-                                                <Button onClick={this.onSaveEmail.bind(this)}>Save Changes</Button>
+                                                <Button color='green' onClick={this.onSaveEmail.bind(this)}>Save Changes</Button>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid> : null}
                             </Table.Cell>
                             <Table.Cell>
-                                { (!emailChange) ? <Button onClick={this.onChangeEmail.bind(this)}>Edit</Button> : null }
-                                { (emailChange) ? <Button onClick={this.onChangeEmailClose.bind(this)}>Close</Button> : null}
+                                { (!emailChange) ? <Button primary onClick={this.onChangeEmail.bind(this)}>Edit</Button> : null }
+                                { (emailChange) ? <Button secondary onClick={this.onChangeEmailClose.bind(this)}>Close</Button> : null}
                             </Table.Cell>
                         </Table.Row>
                         <Table.Row>
@@ -264,14 +264,14 @@ class ViewAccount extends Component {
                                               <Input className="pwdBox" defaultValue={newNumber} onChange={this.handleNumber.bind(this)}/>
                                             </Grid.Column>
                                             <Grid.Column width={6}>
-                                                <Button onClick={this.onSaveNumber.bind(this)}>Save Changes</Button>
+                                                <Button color='green' onClick={this.onSaveNumber.bind(this)}>Save Changes</Button>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid> : null}
                             </Table.Cell>
                             <Table.Cell>
-                                { (!numberChange) ? <Button onClick={this.onChangeNumber.bind(this)}>Edit</Button> : null }
-                                { (numberChange) ? <Button onClick={this.onChangeNumberClose.bind(this)}>Close</Button> : null}
+                                { (!numberChange) ? <Button primary onClick={this.onChangeNumber.bind(this)}>Edit</Button> : null }
+                                { (numberChange) ? <Button secondary onClick={this.onChangeNumberClose.bind(this)}>Close</Button> : null}
                             </Table.Cell>
                         </Table.Row>
                         <Table.Row>
@@ -312,14 +312,14 @@ class ViewAccount extends Component {
                                         </Grid.Row>
                                         <Grid.Row textAlign='center'>
                                             <Grid.Column>
-                                              <Button onClick={this.onSavePass.bind(this)}>Save Changes</Button>
+                                              <Button color='green' onClick={this.onSavePass.bind(this)}>Save Changes</Button>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid> : null}
                             </Table.Cell>
                             <Table.Cell>
-                                  { (!passChange) ? <Button onClick={this.onChangePass.bind(this)}>Edit</Button> : null }
-                                  { (passChange) ? <Button onClick={this.onChangePassClose.bind(this)}>Close</Button> : null}
+                                  { (!passChange) ? <Button primary onClick={this.onChangePass.bind(this)}>Edit</Button> : null }
+                                  { (passChange) ? <Button secondary onClick={this.onChangePassClose.bind(this)}>Close</Button> : null}
                             </Table.Cell>
                         </Table.Row>
                     </Table.Body>

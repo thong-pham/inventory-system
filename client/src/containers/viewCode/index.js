@@ -186,7 +186,7 @@ class ViewCode extends Component {
                             </Grid> : null}
                     </Table.Cell>
                     <Table.Cell>
-                        <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
+                        <Button primary onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
                     </Table.Cell>
                 </Table.Row>
             )
