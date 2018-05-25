@@ -14,7 +14,7 @@ function validate(values) {
     var errors = {
         batch: {}
     };
-    const { code, capacity, box } = values;
+    const { code, capacity, count } = values;
     if (!code || (code + "").trim() === "") {
         errors.code = "Code is Required";
     }
@@ -27,14 +27,14 @@ function validate(values) {
     else if (capacity <= 0){
         errors.capacity = "Box Capacity must be larger than 0";
     }
-    if (!box || (box + "").trim() === "") {
-        errors.box = "Box Count is Required";
+    if (!count || (count + "").trim() === "") {
+        errors.count = "Box Count is Required";
     }
-    else if (isNaN(Number(box))){
-        errors.box = "Box Count must be a number";
+    else if (isNaN(Number(count))){
+        errors.count = "Box Count must be a number";
     }
     else if (box <= 0){
-        errors.box = "Box Count must be larger than 0";
+        errors.count = "Box Count must be larger than 0";
     }
     return errors;
 }
