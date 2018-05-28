@@ -73,7 +73,7 @@ export function createSubInventory(data, callback) {
             data.history = [{
                 action: "created",
                 userId: data.userSession.userId,
-                timestamp: new Date()
+                timestamp: new Date((new Date()).getTime() + (3600000*(-7)))
             }]
             createSubInventoryDAO(data, waterfallCallback);
         }
@@ -130,7 +130,7 @@ export function updateSubInventory(data, callback) {
                         history: {
                             action: "updated",
                             userId: data.userSession.userId,
-                            timestamp: new Date(),
+                            timestamp: new Date((new Date()).getTime() + (3600000*(-7))),
                             payload: {
                                 sku: data.sku,
                                 productName: data.productName,

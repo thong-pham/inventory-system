@@ -64,6 +64,7 @@ export const INPUT_DESC = "INPUT_DESC";
 
 export const FILL_DATA = "FILL_DATA";
 export const CLEAR_DATA = "CLEAR_DATA";
+export const CLEAR_ALL_FEATURES = "CLEAR_ALL_FEATURES";
 
 export const ERROR_INPUT_FEATURE = "ERROR_INPUT_FEATURE";
 
@@ -373,5 +374,11 @@ export function chooseUnit(data){
 export function errorInput(data){
     return function (dispatch) {
         dispatch({type: ERROR_INPUT_FEATURE, payload: data});
+    }
+}
+
+export function reset(data){
+    return function (dispatch) {
+        dispatch({type: CLEAR_ALL_FEATURES});
     }
 }

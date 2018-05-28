@@ -21,14 +21,14 @@ export function getCartBySku(sku, callback) {
 }
 
 export function updateCartById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Cart.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, cart) {
         callback(err, cart);
     });
 }
 
 export function updateCartBySku(sku, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Cart.findOneAndUpdate({ "sku": sku }, data, { "new": true }, function (err, cart) {
         callback(err, cart);
     });

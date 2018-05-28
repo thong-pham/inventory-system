@@ -41,7 +41,7 @@ export function getSubInventories(callback) {
 }
 
 export function updateSubInventoryById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     SubInventory.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, inventory) {
         callback(err, inventory);
     });

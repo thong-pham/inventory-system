@@ -7,8 +7,8 @@ const ColorSchema = mongoose.Schema({
 
     key: { type: String, required: true},
 
-    createdAt: { type: Date, default: new Date },
-    lastModifiedAt: { type: Date, default: new Date },
+    createdAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
+    lastModifiedAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
 });
 
 export default mongoose.model("Color", ColorSchema);

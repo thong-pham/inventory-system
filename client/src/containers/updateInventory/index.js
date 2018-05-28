@@ -27,17 +27,17 @@ function validate(values) {
     if (!price || (price + "").trim() === "") {
         errors.price = "Price is Required";
     }
-    else if (isNaN(Number(price))) {
-        errors.price = "Price must be a number";
+    else if (isNaN(Number(price)) || !Number.isInteger(Number(price))) {
+        errors.price = "Price must be an integer";
     }
-    else if (price <= 0){
+    else if (price < 0){
         errors.price = "Price must be larger than or equal to 0";
     }
     if (!stock || (stock + "").trim() === "") {
         errors.stock = "Stock is Required";
     }
-    else if (isNaN(Number(stock))){
-        errors.stock = "Stock must be a number";
+    else if (isNaN(Number(stock)) || !Number.isInteger(Number(stock))){
+        errors.stock = "Stock must be an integer";
     }
     else if (stock < 0){
         errors.stock = "Stock must be larger than or equal to 0";
@@ -45,10 +45,10 @@ function validate(values) {
     if (!capacity || (capacity + "").trim() === "") {
         errors.capacity = "Box Capacity is Required";
     }
-    else if (isNaN(Number(capacity))){
-        errors.capacity = "Box Capacity must be a number";
+    else if (isNaN(Number(capacity)) || !Number.isInteger(Number(capacity))){
+        errors.capacity = "Box Capacity must be an integer";
     }
-    else if (capacity <= 0){
+    else if (capacity < 0){
         errors.capacity = "Box Capacity must be larger than or equal to 0";
     }
     return errors;

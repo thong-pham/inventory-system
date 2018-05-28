@@ -33,6 +33,7 @@ export function getColors(callback) {
 }
 
 export function updateColorById(id, data, callback) {
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Color.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, color) {
         callback(err, color);
     });
@@ -70,6 +71,7 @@ export function getPatterns(callback) {
 }
 
 export function updatePatternById(id, data, callback) {
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Pattern.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, pattern) {
         callback(err, pattern);
     });
@@ -107,6 +109,7 @@ export function getQualities(callback) {
 }
 
 export function updateQualityById(id, data, callback) {
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Quality.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, quality) {
         callback(err, quality);
     });
@@ -144,6 +147,7 @@ export function getSizes(callback) {
 }
 
 export function updateSizeById(id, data, callback) {
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Size.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, size) {
         callback(err, size);
     });
@@ -181,6 +185,7 @@ export function getTypes(callback) {
 }
 
 export function updateTypeById(id, data, callback) {
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Type.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, type) {
         callback(err, type);
     });
@@ -218,6 +223,7 @@ export function getUnits(callback) {
 }
 
 export function updateUnitById(id, data, callback) {
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Unit.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, unit) {
         callback(err, unit);
     });

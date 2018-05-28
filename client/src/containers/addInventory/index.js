@@ -8,39 +8,35 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { addInventory, setUpdatingInventory, updateInventory, fillingData, getInventories } from "./../../actions/InventoryActions";
+import { addInventory, setUpdatingInventory, updateInventory, fillingData, getInventories,
+         clearFailedProducts, clearCompletedProducts } from "./../../actions/InventoryActions";
 
 import { getQualities, getTypes, getPatterns, getColors, getSizes, getUnits,
-          chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit
+          chooseQuality, chooseType, choosePattern, chooseColor, chooseSize, chooseUnit, reset
         } from "./../../actions/FeatureActions";
 
 function validate(values) {
     var errors = {
         batch: {}
     };
-    const { sku, productName, price, capacity } = values;
-    if (!sku || (sku + "").trim() === "") {
-        errors.sku = "SKU is Required";
-    }
-    if (!productName || productName.trim() === "") {
-        errors.productName = "Product Name is Required";
-    }
+    const { price, capacity } = values;
     if (!price || (price + "").trim() === "") {
         errors.price = "Price is Required";
     }
-    else if (isNaN(Number(price))) {
+    else if (isNaN(price)) {
         errors.price = "Price must be a number";
     }
-    else if (price <= 0){
+    else if (price < 0){
         errors.price = "Price must be larger than or equal to 0";
     }
+
     if (!capacity || (capacity + "").trim() === "") {
         errors.capacity = "Box Capacity is Required";
     }
-    else if (isNaN(Number(capacity))){
+    else if (isNaN(capacity)){
         errors.capacity = "Box Capacity must be a number";
     }
-    else if (capacity <= 0){
+    else if (capacity < 0){
         errors.capacity = "Box Capacity must be larger than or equal to 0";
     }
     return errors;
@@ -48,7 +44,9 @@ function validate(values) {
 
 class AddInventory extends Component {
     state = {
-       addingError: null
+       addingError: null,
+       addingComplete: null,
+       errorInput: null
     };
     componentWillMount() {
         const { dispatch } = this.props;
@@ -94,13 +92,13 @@ class AddInventory extends Component {
               alert("undefined");
           }
     }
-    generateData(){
+    generateData = () => {
         const { dispatch } = this.props;
         const { quality, type, pattern, color, size, unit,
                 qualities, types, patterns, colors, sizes, units } = this.props.feature;
 
         if ((quality === null) || (type === null) || (pattern === null) || (color.length === 0) || (unit === null)){
-            this.setState({addingError: "Invalid Input"})
+            return {generatedSKU: null, generatedDesc: null, unitCode: null};
         }
         else {
             var unitCode = null;
@@ -151,30 +149,61 @@ class AddInventory extends Component {
                 //console.log(desc);
             }
             const data = {
-                sku: skuList,
-                desc: descList,
+                generatedSKU: skuList,
+                generatedDesc: descList,
                 unitCode: unitCode
             }
-            dispatch(fillingData(data));
+            //dispatch(fillingData(data));
             this.setState({addingError: null});
+            return data;
         }
     }
 
     onSubmit(values, dispatch) {
+        const { generatedSKU, generatedDesc, unitCode } = this.generateData();
+
         const { token } = this.props.auth;
-        const { generatedSKU, generatedDesc, unitCode, inventories } = this.props.inventory;
-        var count = checkSKU(inventories, generatedSKU);
-        if ((generatedSKU === null) || (generatedDesc === null)){
-            this.setState({addingError: "Invalid Input"})
-        }
-        else if(count.length > 0){
-            var message = "";
-            count.forEach(function(sku){
-                message = message + sku + ", ";
-            });
-            this.setState({addingError: message + "already exist"});
+        const { inventories } = this.props.inventory;
+        const store = [];
+        if ((generatedSKU === null) || (generatedDesc === null) || (unitCode === null)){
+            this.setState({errorInput: "Invalid Input"})
         }
         else {
+            /*var count = checkSKU(inventories, generatedSKU);
+            if(count.length > 0){
+                var errorMessage = "";
+                count.forEach(function(sku){
+                    errorMessage = errorMessage + sku + " | ";
+                    var index = generatedSKU.indexOf(sku);
+                    generatedSKU.splice(index,1);
+                    generatedDesc.splice(index,1);
+                });
+                this.setState({addingError: errorMessage});
+            }
+
+            if (generatedSKU.length > 0)
+            {
+                values.token = token;
+                values.unit = unitCode;
+                var list = [];
+                for (var i = 0; i < generatedSKU.length; i++){
+                    const data = {
+                        sku: generatedSKU[i],
+                        desc: generatedDesc[i]
+                    }
+                    list.push(data);
+                }
+                values.list = list;
+
+                dispatch(addInventory(values)).then(function(data){
+                      //dispatch(push("/inventory"));
+                      dispatch(reset());
+                });
+
+                var completeMessage = "";
+                generatedSKU.forEach((sku) => {completeMessage = completeMessage + sku + " | "});
+                this.setState({addingComplete: completeMessage});
+            }*/
             values.token = token;
             values.unit = unitCode;
             var list = [];
@@ -187,18 +216,30 @@ class AddInventory extends Component {
             }
             values.list = list;
             dispatch(addInventory(values)).then(function(data){
-                dispatch(push("/inventory"));
+                  //dispatch(push("/inventory"));
+                  dispatch(reset());
             });
+            this.setState({errorInput: null});
         }
+    }
+
+    handleFail = () => {
+       const { dispatch } = this.props;
+       dispatch(clearFailedProducts());
+    }
+
+    handleComplete = () => {
+        const { dispatch } = this.props;
+        dispatch(clearCompletedProducts());
     }
 
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting } = this.props;
-        const { token, user, isAddingInventory, addingInventoryError, inventory,
-                generatedSKU, generatedDesc, errorInput, unitCode } = this.props.inventory;
+        const { isAddingInventory, addingInventoryError, inventory,
+                generatedSKU, generatedDesc, unitCode, completedProducts, failedProducts } = this.props.inventory;
         const { qualities, types, patterns, colors, sizes, units,
                 quality, type, pattern, color, size, unit } = this.props.feature;
-        const { addingError } = this.state;
+        const { addingError, addingComplete, errorInput } = this.state;
         var qualityList = [];
         var typeList = [];
         var patternList = [];
@@ -287,6 +328,8 @@ class AddInventory extends Component {
         }
         //console.log(qualityList);
         let error = null;
+        let failedMessage = null;
+        let completedMessage = null;
         if (addingInventoryError) {
             error = (
                 <Message negative>
@@ -295,11 +338,28 @@ class AddInventory extends Component {
                 </Message>
             )
         }
-        else if (addingError) {
+        if (errorInput) {
             error = (
                 <Message negative>
-                    <Message.Header>Error while Adding Inventory</Message.Header>
-                    <p>{addingError}</p>
+                    <Message.Header>Error while Inputing Value</Message.Header>
+                    <p>{errorInput}</p>
+                </Message>
+            )
+        }
+        if (failedProducts) {
+            failedMessage = (
+                <Message negative onDismiss={() => this.handleFail()}>
+                    <Message.Header>Failed Products</Message.Header>
+                    <p>{failedProducts}</p>
+                </Message>
+            )
+        }
+
+        if (completedProducts) {
+            completedMessage = (
+                <Message positive onDismiss={() => this.handleComplete()}>
+                    <Message.Header>Successful Products</Message.Header>
+                    <p>{completedProducts}</p>
                 </Message>
             )
         }
@@ -309,6 +369,8 @@ class AddInventory extends Component {
                   <Container>
                     <Header as="h2">Add Inventory</Header>
                     {error}
+                    {failedMessage}
+                    {completedMessage}
                     <Container className="featureBox">
                       <Grid columns={3} divided>
                         <Grid.Row>
@@ -373,8 +435,8 @@ class AddInventory extends Component {
                         </Grid.Row>
                       </Grid>
                     </Container>
-                    <Container className="featureBox">
-                        <Button primary onClick={this.generateData.bind(this)}>Generate</Button>
+                    {/*<Container className="featureBox">
+                        <Button primary onClick={() => this.generateData()}>Create</Button>
                     </Container>
                     <Container className="featureBox">
                       <Grid.Row className="generatedRow">
@@ -388,7 +450,7 @@ class AddInventory extends Component {
                       <Grid.Row>
                         <Label basic pointing='right'>Unit</Label><p className="generatedText">{unitCode}</p>
                       </Grid.Row>
-                    </Container>
+                    </Container>*/}
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isAddingInventory}>
                         <Form.Field inline>
                             <Label>Box Capacity</Label>
@@ -398,7 +460,7 @@ class AddInventory extends Component {
                             <Label>Price</Label>
                             <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
                         </Form.Field>
-                        <Button primary loading={submitting} disabled={submitting} disabled={pristine || submitting}>Add Inventory</Button>
+                        <Button primary loading={submitting} disabled={submitting}>Add Product</Button>
                     </Form>
                     </Container>
                 </Segment>
@@ -418,9 +480,10 @@ function checkSKU(inventories, sku){
 }
 
 function mapStatesToProps(state) {
-    //const initialValues = state.inventory.inventory;
+    const initialValues = state.inventory.defaultValue;
     //console.log(initialValues);
     return {
+        initialValues: initialValues,
         auth: state.auth,
         inventory: state.inventory,
         feature: state.feature

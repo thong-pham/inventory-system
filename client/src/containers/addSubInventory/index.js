@@ -102,8 +102,8 @@ class AddSubInventory extends Component {
             //console.log(sku);
             //console.log(desc);
             const data = {
-                sku: sku,
-                desc: desc
+                generatedSKU: sku,
+                generatedDesc: desc
             }
             //dispatch(fillingData(data));
             return data;
@@ -122,12 +122,10 @@ class AddSubInventory extends Component {
     onCreate() {
         const { dispatch } = this.props;
         const { token } = this.props.auth;
-        this.generateData();
+        const { generatedSKU, generatedDesc } = this.generateData();
         var { sku, desc, inventories } = this.props.inventory;
         var check = false;
-        const generatedSKU = this.generateData().sku;
-        const generatedDesc = this.generateData().desc;
-        //console.log(generatedSKU);
+        
         inventories.forEach(function(inventory){
             if (inventory.mainSku === generatedSKU){
                 check = true;

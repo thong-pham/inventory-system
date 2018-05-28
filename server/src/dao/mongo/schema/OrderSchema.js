@@ -22,8 +22,8 @@ const OrderSchema = mongoose.Schema({
 
     status: { type: String, required: true, enum: ["approved", "pending"] },
 
-    createdAt: { type: Date, default: new Date },
-    lastModifiedAt: { type: Date, default: new Date },
+    createdAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
+    lastModifiedAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
 });
 
 export default mongoose.model("Order", OrderSchema);

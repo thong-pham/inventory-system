@@ -21,8 +21,8 @@ function validate(values) {
     if (!capacity || (capacity + "").trim() === "") {
         errors.capacity = "Box Capacity is Required";
     }
-    else if (isNaN(Number(capacity))){
-        errors.capacity = "Box Capacity must be a number";
+    else if (isNaN(Number(capacity)) || !Number.isInteger(Number(capacity))){
+        errors.capacity = "Box Capacity must be an integer";
     }
     else if (capacity <= 0){
         errors.capacity = "Box Capacity must be larger than 0";
@@ -30,8 +30,8 @@ function validate(values) {
     if (!count || (count + "").trim() === "") {
         errors.count = "Box Count is Required";
     }
-    else if (isNaN(Number(count))){
-        errors.count = "Box Count must be a number";
+    else if (isNaN(Number(count)) || !Number.isInteger(Number(count))){
+        errors.count = "Box Count must be an integer";
     }
     else if (count <= 0){
         errors.count = "Box Count must be larger than 0";

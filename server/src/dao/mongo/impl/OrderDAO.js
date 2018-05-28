@@ -15,14 +15,14 @@ export function getOrderById(id, callback) {
 }
 
 export function updateOrderById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Order.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, order) {
         callback(err, order);
     });
 }
 
 export function changeOrderDetails(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Order.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, order) {
         callback(err, order);
     });

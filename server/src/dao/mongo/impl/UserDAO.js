@@ -33,7 +33,7 @@ export function getUserByUsername(username, callback) {
 }
 
 export function updateUserById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     User.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, user) {
         callback(err, user);
     });

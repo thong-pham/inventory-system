@@ -1,29 +1,37 @@
 import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
          GET_INVENTORIES_STARTED, GET_INVENTORIES_FULFILLED, GET_INVENTORIES_REJECTED,
+         GET_INVENTORIES_TRASH_STARTED, GET_INVENTORIES_TRASH_FULFILLED, GET_INVENTORIES_TRASH_REJECTED,
          DELETE_INVENTORY_STARTED, DELETE_INVENTORY_FULFILLED, DELETE_INVENTORY_REJECTED,
-         GET_PENDING_INVENTORIES_STARTED, GET_PENDING_INVENTORIES_FULFILLED, GET_PENDING_INVENTORIES_REJECTED,
          UPDATE_INVENTORY_STARTED, UPDATE_INVENTORY_FULFILLED, UPDATE_INVENTORY_REJECTED,
          SET_UPDATING_INVENTORY_FULFILLED, CLEAR_INVENTORY_FULFILLED, REJECT_UPDATING_INVENTORY,
          APPROVE_INVENTORY_STARTED, APPROVE_INVENTORY_FULFILLED, APPROVE_INVENTORY_REJECTED,
          TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA, OPEN_MINUS, CLOSE_MINUS,
-         FILTER_INVENTORY, SORT_INVENTORY, REV_INVENTORY, CHANGE_INVENTORY
+         FILTER_INVENTORY, SORT_INVENTORY, REV_INVENTORY, CHANGE_INVENTORY,
+         RECOVER_INVENTORY_STARTED, RECOVER_INVENTORY_FULFILLED, RECOVER_INVENTORY_REJECTED,
+         DELETE_INVENTORY_TRASH_STARTED, DELETE_INVENTORY_TRASH_FULFILLED, DELETE_INVENTORY_TRASH_REJECTED,
+         CLEAR_FAIL, CLEAR_COMPLETE
          } from "./../actions/InventoryActions";
 
 const initialState = {
     inventories: [],
     backUpInv: [],
+    inventoriesInTrash: [],
+    inventory: null,
     isAddingInventory: false,
     addingInventoryError: null,
     isFetchingInventories: false,
     fetchingInventoriesError: null,
     isDeletingInventory: false,
-    deletingsInventoriesError: null,
+    deletingInventoryError: null,
+    isDeletingInventoryInTrash: false,
+    deletingInventoryInTrashError: null,
     pendingInventories: [],
-    isFetchingPendingInventories: false,
-    fetchingPendingInventoriesError: null,
-    inventory: null,
+    isFetchingInventoriesInTrash: false,
+    fetchingInventoriesInTrashError: null,
+    isRecoveringInventory: false,
+    recoveringInventoryError: null,
     isUpdatingInventory: false,
-    updatingInventoriesError: null,
+    updatingInventoryError: null,
     isApprovingInventory: false,
     approvingInventoryError: null,
     quantity: null,
@@ -31,7 +39,13 @@ const initialState = {
     openMinus: null,
     generatedSKU: [],
     generatedDesc: [],
-    unitCode: null
+    unitCode: null,
+    defaultValue: {
+        capacity: "0",
+        price: "0"
+    },
+    completedProducts: null,
+    failedProducts: null
 }
 
 export default function (state = initialState, action) {
@@ -41,8 +55,9 @@ export default function (state = initialState, action) {
         }
         case ADD_INVENTORY_FULFILLED: {
             const data = action.payload;
+            console.log(data);
             //state.inventories.concat([data]);
-            return { ...state, isAddingInventory: false, addingInventoryError: null };
+            return { ...state, isAddingInventory: false, addingInventoryError: null, completedProducts: data.completeMessage, failedProducts: data.errorMessage };
         }
         case ADD_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -71,33 +86,33 @@ export default function (state = initialState, action) {
                 }
             }
             state.inventories.splice(index,1);
-            return { ...state, isDeletingInventory: false, deletingsInventoriesError: null };
+            return { ...state, isDeletingInventory: false, deletingInventoryError: null };
         }
         case DELETE_INVENTORY_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isDeletingInventory: false, deletingsInventoriesError: error };
+            return { ...state, isDeletingInventory: false, deletingInventoryError: error };
         }
-        case GET_PENDING_INVENTORIES_STARTED: {
-            return { ...state, isFetchingPendingInventories: true };
+        case GET_INVENTORIES_TRASH_STARTED: {
+            return { ...state, isFetchingInventoriesInTrash: true };
         }
-        case GET_PENDING_INVENTORIES_FULFILLED: {
+        case GET_INVENTORIES_TRASH_FULFILLED: {
             const data = action.payload;
-            return { ...state, isFetchingPendingInventories: false, pendingInventories: data };
+            return { ...state, isFetchingInventoriesInTrash: false, inventoriesInTrash: data };
         }
-        case GET_PENDING_INVENTORIES_REJECTED: {
+        case GET_INVENTORIES_TRASH_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isFetchingPendingInventories: false, fetchingPendingInventoriesError: error };
+            return { ...state, isFetchingInventoriesInTrash: false, fetchingInventoriesInTrashError: error };
         }
         case UPDATE_INVENTORY_STARTED: {
             return { ...state, isUpdatingInventory: true };
         }
         case UPDATE_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isUpdatingInventory: false, inventory: null, openPlus: null, openMinus: null, quantity: null, updatingInventoriesError: null };
+            return { ...state, isUpdatingInventory: false, inventory: null, openPlus: null, openMinus: null, quantity: null, updatingInventoryError: null };
         }
         case UPDATE_INVENTORY_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isUpdatingInventory: false, updatingInventoriesError: error, openPlus: null, openMinus: null, quantity: null };
+            return { ...state, isUpdatingInventory: false, updatingInventoryError: error, openPlus: null, openMinus: null, quantity: null };
         }
         case APPROVE_INVENTORY_STARTED: {
             return { ...state, isApprovingInventory: true };
@@ -109,6 +124,42 @@ export default function (state = initialState, action) {
         case APPROVE_INVENTORY_REJECTED: {
             const error = action.payload.data;
             return { ...state, isApprovingInventory: false, approvingInventoryError: error };
+        }
+        case RECOVER_INVENTORY_STARTED:{
+            return { ...state, isRecoveringInventory: true };
+        }
+        case RECOVER_INVENTORY_FULFILLED:{
+            const id = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.inventoriesInTrash.length; i++){
+                if (state.inventoriesInTrash[i].id === id ){
+                    index = i;
+                }
+            }
+            state.inventoriesInTrash.splice(index,1);
+            return { ...state, isRecoveringInventory: false }
+        }
+        case RECOVER_INVENTORY_REJECTED: {
+            const error = action.payload;
+            return { ...state, isRecoveringInventory: false, recoveringInventoryError: error };
+        }
+        case DELETE_INVENTORY_TRASH_STARTED: {
+            return { ...state, isDeletingInventoryInTrash: true };
+        }
+        case DELETE_INVENTORY_TRASH_FULFILLED: {
+            const id = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.inventoriesInTrash.length; i++){
+                if (state.inventoriesInTrash[i].id === id ){
+                    index = i;
+                }
+            }
+            state.inventoriesInTrash.splice(index,1);
+            return { ...state, isDeletingInventoryInTrash: false, deletingInventoryInTrashError: null };
+        }
+        case DELETE_INVENTORY_TRASH_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isDeletingInventoryInTrash: false, deletingInventoryInTrashError: error };
         }
         case SET_UPDATING_INVENTORY_FULFILLED: {
             const id = action.payload;
@@ -122,7 +173,7 @@ export default function (state = initialState, action) {
         }
         case REJECT_UPDATING_INVENTORY: {
             const error = action.payload;
-            return { ...state, updatingInventoriesError: error, deletingsInventoriesError: null };
+            return { ...state, updatingInventoryError: error, deletingInventoryError: null };
         }
 
         case TRACK_NUMBER: {
@@ -176,6 +227,12 @@ export default function (state = initialState, action) {
                 if (inventory.id === data.id) inventory.stock = data.stock;
             });
             return { ...state };
+        }
+        case CLEAR_FAIL:{
+            return { ...state, failedProducts: null };
+        }
+        case CLEAR_COMPLETE:{
+            return { ...state, completedProducts: null };
         }
         default: {
             return state;

@@ -62,6 +62,9 @@ class BaseLayout extends Component {
         else if (menuItem === "viewFeatures") {
             dispatch(push('/feature'));
         }
+        else if (menuItem === "viewInventoriesTrash") {
+            dispatch(push('/inventoriesInTrash'));
+        }
         else if (menuItem === "logout") {
             dispatch(logoutUser());
             dispatch(push('/login'));
@@ -115,6 +118,10 @@ class BaseLayout extends Component {
                     <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
                       <Icon name='barcode' />
                         Features
+                    </Menu.Item>
+                    <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
+                      <Icon name='trash outline' />
+                        Trash
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                       <Icon name='user' />
@@ -223,6 +230,10 @@ class BaseLayout extends Component {
                 <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
                   <Icon name='barcode' />
                     Features
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
+                  <Icon name='trash outline' />
+                    Trash
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                   <Icon name='user' />

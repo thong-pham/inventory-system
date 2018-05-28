@@ -27,7 +27,7 @@ export function getCodeByKey(key, callback) {
 }
 
 export function updateCodeById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Code.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, code) {
         callback(err, code);
     });

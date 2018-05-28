@@ -31,7 +31,8 @@ class ApproveImport extends Component {
     onPressEdit = (importData) => {
         const { dispatch, token } = this.props;
         const { capacity, count } = this.props.import;
-        if (isNaN(capacity) || capacity === null || capacity <= 0 || isNaN(count) || count === null || count <= 0){
+        if (isNaN(capacity) || !Number.isInteger(Number(capacity)) || capacity === null || capacity <= 0 ||
+            isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0){
             this.setState({errorInput: "Invalid Input"});
         }
         else {
@@ -120,7 +121,7 @@ class ApproveImport extends Component {
                             </div> : null }
                     </Table.Cell>
                     <Table.Cell>{importData.quantity}</Table.Cell>
-                    <Table.Cell>{importData.status}</Table.Cell>
+                    <Table.Cell>{importData.lastModifiedAt.slice(0,10)}</Table.Cell>
                     <Table.Cell>{importData.username}</Table.Cell>
                     <Table.Cell >
                           { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='teal'  onClick={() => this.triggerChange(importData)}><Icon name='pencil' /></Button> : null }
@@ -143,7 +144,7 @@ class ApproveImport extends Component {
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell>Count</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
-                            <Table.HeaderCell>Status</Table.HeaderCell>
+                            <Table.HeaderCell>Last Modified At</Table.HeaderCell>
                             <Table.HeaderCell>Imported By</Table.HeaderCell>
                             <Table.HeaderCell width={3}>Options</Table.HeaderCell>
                         </Table.Row>
@@ -180,9 +181,8 @@ class ApproveImport extends Component {
         return (
             <BaseLayout>
                 <Segment textAlign='center' >
-                    <Header as="h2">Import List</Header>
+                    <Header as="h2">Pending Import List</Header>
                     {error}
-                    {/* <Segment loading={isFetchingImports}> */}
                     <Container>
                       <Responsive maxWidth={414}>
                           {phoneView}

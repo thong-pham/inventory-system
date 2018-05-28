@@ -47,7 +47,7 @@ class ViewOrders extends Component {
         const { token, dispatch } = this.props;
         const { quantity } = this.props.order;
         const { user } = this.props.auth;
-        if (isNaN(quantity) || quantity === null || quantity <= 0){
+        if (isNaN(quantity) || quantity === null || quantity <= 0 || !Number.isInteger(Number(quantity))){
             dispatch(errorInput("Invalid Input"));
         }
         else {
@@ -209,10 +209,11 @@ class ViewOrders extends Component {
                       </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>
                     <Table.Cell >{order.createdBy}</Table.Cell>
+                    <Table.Cell >{order.createdAt.slice(11,19)}</Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
                     <Table.Cell >
                         { (user.company !== 'ISRA') ? <Button color='red' onClick={this.onPressDelete.bind(this, order)}><Icon name='trash outline' />Delete</Button> : null }
-                        { (user.company === 'ISRA') ? <Button color='green' onClick={this.onPressApprove.bind(this, order)}><Icon name='checkmark' />Approve</Button> : null}
+                        { (user.company === 'ISRA') ? <Button size='tiny' color='green' onClick={this.onPressApprove.bind(this, order)}><Icon name='checkmark' />Approve</Button> : null}
                     </Table.Cell>
                 </Table.Row>
             )
@@ -224,9 +225,10 @@ class ViewOrders extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>Order Number</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Description</Table.HeaderCell>
+                            <Table.HeaderCell width={3}>Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Created At</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Company</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>

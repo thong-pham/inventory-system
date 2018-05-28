@@ -33,7 +33,7 @@ export function getCompanyByName(name, callback) {
 }
 
 export function updateCompanyById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Company.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, company) {
         callback(err, company);
     });

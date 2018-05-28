@@ -14,8 +14,8 @@ const MemberSchema = mongoose.Schema({
     passwordHash: { type: String, required: true },
     roles: [{ type: String, required: true, enum: ["admin","storeManager","worker","sales"] }],
 
-    createdAt: { type: Date, default: new Date },
-    lastModifiedAt: { type: Date, default: new Date },
+    createdAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
+    lastModifiedAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
 });
 
 export default mongoose.model("Member", MemberSchema);

@@ -33,22 +33,21 @@ export function getInventories(callback) {
     });
 }
 
-export function getPendingInventories(callback) {
-    Inventory.find({ "isRemoved": false, "status": "pending" }, function (err, inventories) {
-        //console.log(inventories);
+export function getInventoriesInTrash(callback) {
+    Inventory.find({ "isRemoved": true }, function (err, inventories) {
         callback(err, inventories)
     });
 }
 
 export function updateInventoryById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Inventory.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, inventory) {
         callback(err, inventory);
     });
 }
 
 export function updateInventoryBySku(sku, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Inventory.findOneAndUpdate({ "sku": sku }, data, { "new": true }, function (err, inventory) {
         callback(err, inventory);
     });

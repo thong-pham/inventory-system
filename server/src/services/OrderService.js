@@ -164,7 +164,7 @@ export function approveOrder(data, callback) {
                               history: {
                               action: "approvedOut",
                               userId: data.userSession.userId,
-                              timestamp: new Date()
+                              timestamp: new Date((new Date()).getTime() + (3600000*(-7)))
                               }
                           }
                       }
@@ -197,7 +197,7 @@ export function approveOrder(data, callback) {
                                    history: {
                                        action: "updated",
                                        userId: data.userSession.userId,
-                                       timestamp: new Date(),
+                                       timestamp: new Date((new Date()).getTime() + (3600000*(-7))),
                                        payload: {
                                            sku: subInv.sku,
                                            productName: subInv.productName,

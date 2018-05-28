@@ -33,6 +33,7 @@ import ViewOrders from "./containers/viewOrders";
 import ViewApprovedOrders from "./containers/viewApprovedOrders";
 import ViewCode from "./containers/viewCode";
 import ViewAccount from "./containers/viewAccount";
+import ViewInventoriesTrash from "./containers/viewInventoriesTrash";
 
 const history = createHistory();
 const logger = createLogger();
@@ -97,6 +98,7 @@ class App extends Component {
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />
                             <Route exact path="/feature" component={ViewFeatures} />
+                            <Route exact path="/inventoriesInTrash" component={ViewInventoriesTrash} />
                         </div>
                     </ConnectedRouter>
                 </Provider>

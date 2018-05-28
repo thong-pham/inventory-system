@@ -10,7 +10,7 @@ import { ADD_FEATURE_STARTED, ADD_FEATURE_FULFILLED, ADD_FEATURE_REJECTED,
           ADD_QUALITY, ADD_TYPE, ADD_PATTERN, ADD_COLOR, ADD_SIZE, ADD_UNIT,
           CLOSE_QUALITY, CLOSE_TYPE, CLOSE_PATTERN, CLOSE_COLOR, CLOSE_SIZE, CLOSE_UNIT,
           CHOOSE_QUALITY, CHOOSE_TYPE, CHOOSE_PATTERN, CHOOSE_COLOR, CHOOSE_SIZE, CHOOSE_UNIT, CHOOSE_COLOR_FOR_SUB,
-          INPUT_KEY, INPUT_DESC, FILL_DATA, CLEAR_DATA, ERROR_INPUT_FEATURE
+          INPUT_KEY, INPUT_DESC, FILL_DATA, CLEAR_DATA, ERROR_INPUT_FEATURE, CLEAR_ALL_FEATURES
           } from "./../actions/FeatureActions";
 
 const initialState = {
@@ -249,6 +249,9 @@ export default function (state = initialState, action) {
         }
         case CLEAR_DATA:{
            return { ...state, key: null, description: null};
+        }
+        case CLEAR_ALL_FEATURES:{
+            return { ...state, quality: null, type: null, pattern: null, color: [], size: null, unit: null };
         }
         case ERROR_INPUT_FEATURE: {
             const error = action.payload;

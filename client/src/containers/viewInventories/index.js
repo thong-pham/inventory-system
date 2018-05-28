@@ -73,6 +73,9 @@ class ViewInventories extends Component {
         else if (quantity <= 0){
             this.setState({errorInput: "Quantity has to be larger than 0"});
         }
+        else if(!Number.isInteger(Number(quantity))) {
+            this.setState({errorInput: "Quantity has to be integer"});
+        }
         else {
             const newStock = (inventory.stock + Number(quantity)).toString();
             const data = {
@@ -85,11 +88,11 @@ class ViewInventories extends Component {
                 stock: newStock,
                 token: token
             }
-            console.log(data);
+            //console.log(data);
             dispatch(updateInventory(data)).then(function(data){
                 dispatch(changeInventory({id: inventory.id, stock: inventory.stock + Number(quantity)}));
             });
-            this.setState({column: null});
+            this.setState({column: null, errorInput: null});
         }
     }
 
@@ -103,8 +106,11 @@ class ViewInventories extends Component {
         else if (quantity <= 0){
             this.setState({errorInput: "Quantity has to be larger than 0"});
         }
+        else if(!Number.isInteger(Number(quantity))) {
+            this.setState({errorInput: "Quantity has to be integer"});
+        }
         else if(quantity > inventory.stock){
-            this.setState({errorInput: "Quantity must be larger than stock"});
+            this.setState({errorInput: "Quantity must be less than or equal to stock"});
         }
         else {
             const newStock = (inventory.stock - Number(quantity)).toString();
@@ -122,7 +128,7 @@ class ViewInventories extends Component {
             dispatch(updateInventory(data)).then(function(data){
                 dispatch(changeInventory({id: inventory.id, stock: inventory.stock - Number(quantity)}));
             });
-            this.setState({column: null});
+            this.setState({column: null, errorInput: null});
         }
     }
 
@@ -164,7 +170,7 @@ class ViewInventories extends Component {
         const { column, direction, errorInput } = this.state;
         const { user } = this.props.auth;
         const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
-                deletingsInventoriesError, isUpdatingInventory, updatingInventoriesError } = this.props.inventory;
+                deletingInventoryError, isUpdatingInventory, updatingInventoryError } = this.props.inventory;
         const { quantity, openPlus, openMinus } = this.props.inventory;
         let error = null;
         if (fetchingInventoriesError) {
@@ -175,7 +181,7 @@ class ViewInventories extends Component {
                 </Message>
             )
         }
-        else if (deletingsInventoriesError) {
+        else if (deletingInventoryError) {
             error = (
                 <Message negative>
                     <Message.Header>Error while Deleting Inventory</Message.Header>
@@ -183,7 +189,7 @@ class ViewInventories extends Component {
                 </Message>
             )
         }
-        else if (updatingInventoriesError){
+        else if (updatingInventoryError){
           error = (
               <Message negative>
                   <Message.Header>Error while Updating Inventory</Message.Header>

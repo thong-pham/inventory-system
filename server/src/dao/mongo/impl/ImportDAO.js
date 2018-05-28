@@ -21,14 +21,14 @@ export function getImportBySku(sku, callback) {
 }
 
 export function updateImportById(id, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Import.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, importData) {
         callback(err, importData);
     });
 }
 
 export function updateImportBySku(sku, data, callback) {
-    data.lastModifiedAt = new Date();
+    data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     Import.findOneAndUpdate({ "sku": sku }, data, { "new": true }, function (err, importData) {
         callback(err, importData);
     });
