@@ -212,7 +212,7 @@ class ViewOrders extends Component {
                     <Table.Cell >{order.createdAt.slice(11,19)}</Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
                     <Table.Cell >
-                        { (user.company !== 'ISRA') ? <Button color='red' onClick={this.onPressDelete.bind(this, order)}><Icon name='trash outline' />Delete</Button> : null }
+                        { (user.company !== 'ISRA') ? <Button size='tiny' color='red' onClick={this.onPressDelete.bind(this, order)}><Icon name='trash outline' />Delete</Button> : null }
                         { (user.company === 'ISRA') ? <Button size='tiny' color='green' onClick={this.onPressApprove.bind(this, order)}><Icon name='checkmark' />Approve</Button> : null}
                     </Table.Cell>
                 </Table.Row>

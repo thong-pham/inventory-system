@@ -278,6 +278,7 @@ export function getSubInventoriesByCompany(company, callback){
                       }
                       else {
                           inventory.mainStock = 0;
+                          inventory.unit = "N/A"
                           newInv.push(inventory);
                           count += 1;
                           if (count === inventories.length){
