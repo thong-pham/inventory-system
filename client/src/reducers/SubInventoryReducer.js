@@ -1,4 +1,5 @@
 import { GET_SUBINVENTORIES_STARTED, GET_SUBINVENTORIES_FULFILLED, GET_SUBINVENTORIES_REJECTED,
+          GET_SUBINVENTORIES_TRASH_STARTED, GET_SUBINVENTORIES_TRASH_FULFILLED, GET_SUBINVENTORIES_TRASH_REJECTED,
           UPDATE_SUBINVENTORY_STARTED, UPDATE_SUBINVENTORY_FULFILLED, UPDATE_SUBINVENTORY_REJECTED,
           ADD_SUBINVENTORY_STARTED, ADD_SUBINVENTORY_FULFILLED, ADD_SUBINVENTORY_REJECTED,
           DELETE_SUBINVENTORY_STARTED, DELETE_SUBINVENTORY_FULFILLED, DELETE_SUBINVENTORY_REJECTED,
@@ -8,12 +9,15 @@ import { GET_SUBINVENTORIES_STARTED, GET_SUBINVENTORIES_FULFILLED, GET_SUBINVENT
           GET_CARTS_STARTED, GET_CARTS_FULFILLED, GET_CARTS_REJECTED,
           UPDATE_CART_STARTED, UPDATE_CART_FULFILLED, UPDATE_CART_REJECTED,
           DELETE_CART_STARTED, DELETE_CART_FULFILLED, DELETE_CART_REJECTED,
-          SUBMIT_ORDER_STARTED, SUBMIT_ORDER_FULFILLED, SUBMIT_ORDER_REJECTED, CLEAR_INVENTORY_FULFILLED
+          SUBMIT_ORDER_STARTED, SUBMIT_ORDER_FULFILLED, SUBMIT_ORDER_REJECTED, CLEAR_INVENTORY_FULFILLED,
+          RECOVER_SUBINVENTORY_STARTED, RECOVER_SUBINVENTORY_FULFILLED, RECOVER_SUBINVENTORY_REJECTED,
+          DELETE_SUBINVENTORY_TRASH_STARTED, DELETE_SUBINVENTORY_TRASH_FULFILLED, DELETE_SUBINVENTORY_TRASH_REJECTED
          } from "./../actions/SubInventoryActions";
 
 const initialState = {
     inventories: [],
     inventory: null,
+    inventoriesInTrash: [],
     isAddingInventory: false,
     addingInventoryError: null,
     isFetchingInventories: false,
@@ -22,6 +26,12 @@ const initialState = {
     updatingInventoriesError: null,
     isDeletingInventory: false,
     deletingsInventoriesError: null,
+    isFetchingInventoriesInTrash: false,
+    fetchingInventoriesInTrashError: null,
+    isRecoveringInventory: false,
+    recoveringInventoryError: null,
+    isDeletingInventoryInTrash: false,
+    deletingInventoryInTrashError: null,
     sku: null,
     desc: null,
     generatedSKU: null,
@@ -72,6 +82,17 @@ export default function (state = initialState, action) {
         case GET_SUBINVENTORIES_REJECTED: {
             const error = action.payload.data;
             return { ...state, isFetchingInventories: false, fetchingInventoriesError: error };
+        }
+        case GET_SUBINVENTORIES_TRASH_STARTED: {
+            return { ...state, isFetchingInventoriesInTrash: true };
+        }
+        case GET_SUBINVENTORIES_TRASH_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isFetchingInventoriesInTrash: false, inventoriesInTrash: data };
+        }
+        case GET_SUBINVENTORIES_TRASH_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isFetchingInventoriesInTrash: false, fetchingInventoriesInTrashError: error };
         }
         case SET_UPDATING_SUBINVENTORY_FULFILLED: {
             const id = action.payload;
@@ -220,6 +241,42 @@ export default function (state = initialState, action) {
         }
         case CLEAR_INVENTORY_FULFILLED:{
             return { ...state, inventory: null};
+        }
+        case RECOVER_SUBINVENTORY_STARTED:{
+            return { ...state, isRecoveringInventory: true };
+        }
+        case RECOVER_SUBINVENTORY_FULFILLED: {
+            const id = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.inventoriesInTrash.length; i++){
+                if (state.inventoriesInTrash[i].id === id ){
+                    index = i;
+                }
+            }
+            state.inventoriesInTrash.splice(index,1);
+            return { ...state, isRecoveringInventory: false };
+        }
+        case RECOVER_SUBINVENTORY_REJECTED:{
+            const error = action.payload;
+            return { ...state, isRecoveringInventory: false, recoveringInventoryError: error };
+        }
+        case DELETE_SUBINVENTORY_TRASH_STARTED: {
+            return { ...state, isDeletingInventoryInTrash: true };
+        }
+        case DELETE_SUBINVENTORY_TRASH_FULFILLED: {
+            const id = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.inventoriesInTrash.length; i++){
+                if (state.inventoriesInTrash[i].id === id ){
+                    index = i;
+                }
+            }
+            state.inventoriesInTrash.splice(index,1);
+            return { ...state, isDeletingInventoryInTrash: false, deletingInventoryInTrashError: null };
+        }
+        case DELETE_SUBINVENTORY_TRASH_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isDeletingInventoryInTrash: false, deletingInventoryInTrashError: error };
         }
         default: {
             return state;

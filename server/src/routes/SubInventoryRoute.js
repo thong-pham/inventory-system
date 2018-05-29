@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { getSubInventoriesByCompany, getSubInventories, updateSubInventory, createSubInventory, removeSubInventory } from "./../services/SubInventoryService";
+import { getSubInventoriesByCompany, getSubInventories, updateSubInventory,
+      createSubInventory, removeSubInventory, getSubInventoriesInTrash, recoverSubInventory, removeSubInventoryInTrash
+      } from "./../services/SubInventoryService";
 import { validateUpdateSubInventory, validateCreateSubInventory } from "./../validators/SubInventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -155,9 +157,90 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
     }
 });
 
+router.put('/:id/recover', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        const userSession = req.session;
+        const data = { id, userSession };
+        recoverSubInventory(data, function (err, inventory) {
+            if (err) {
+                if (err.message === "Only Child can recover Inventory"){
+                   res.status(401).send(err.message);
+                }
+                else if (err.message === "Not Enough Permission to recover Inventory") {
+                    res.status(402).send(err.message);
+                }
+                else if (err.message === "An Operation is Pending on the Inventory") {
+                    res.status(403).send(err.message);
+                }
+                else if (err.message === "Inventory Not Found") {
+                    res.status(404).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send("Recover Successfully");
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
+});
+
+router.delete('/:id/trash', verifyAuthMiddleware, function (req, res, next) {
+    const id = req.params.id;
+    if (id) {
+        const userSession = req.session;
+        const data = { id, userSession };
+        removeSubInventoryInTrash(data, function (err, inventory) {
+            if (err) {
+                if (err.message === "Only Child can remove Inventory"){
+                   res.status(401).send(err.message);
+                }
+                else if (err.message === "Not Enough Permission to remove Inventory") {
+                    res.status(402).send(err.message);
+                }
+                else if (err.message === "An Operation is Pending on the Inventory") {
+                    res.status(403).send(err.message);
+                }
+                else if (err.message === "Inventory Not Found") {
+                    res.status(404).send(err.message);
+                }
+                else {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            }
+            else {
+                res.status(200).send("Delete Successfully");
+            }
+        });
+    }
+    else {
+        res.status(400).send("id param required");
+    }
+});
+
 router.get('/', verifyAuthMiddleware, function (req, res, next) {
     const { company } = req.session;
     getSubInventoriesByCompany(company, function (err, inventories) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+        else {
+            res.status(200).send(inventories);
+        }
+    });
+});
+
+router.get('/trash', verifyAuthMiddleware, function (req, res, next) {
+    const { company } = req.session;
+    getSubInventoriesInTrash(company, function (err, inventories) {
         if (err) {
             console.log(err);
             res.status(500).send(err);

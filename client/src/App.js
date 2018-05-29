@@ -32,7 +32,8 @@ import ViewInventories from "./containers/viewInventories";
 
 import ViewCode from "./containers/viewCode";
 import ViewAccount from "./containers/viewAccount";
-import ViewInventoriesTrash from "./containers/viewInventoriesTrash";
+import ViewInventoriesTrash from "./containers/trash/mainInventories";
+import ViewSubInventoriesTrash from "./containers/trash/subInventories";
 
 import ViewOrders from "./containers/viewOrders/pendingOrders";
 import ViewApprovedOrders from "./containers/viewOrders/approvedOrders";
@@ -103,6 +104,7 @@ class App extends Component {
                             <Route exact path="/account" component={ViewAccount} />
                             <Route exact path="/feature" component={ViewFeatures} />
                             <Route exact path="/inventoriesInTrash" component={ViewInventoriesTrash} />
+                            <Route exact path="/subInventoriesInTrash" component={ViewSubInventoriesTrash} />
                         </div>
                     </ConnectedRouter>
                 </Provider>

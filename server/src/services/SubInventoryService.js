@@ -7,12 +7,15 @@ import {
     getSubInventoryById as getSubInventoryByIdDAO,
     getSubInventoryBySku as getSubInventoryBySkuDAO,
     updateSubInventoryById as updateSubInventoryByIdDAO,
-    removeSubInventoryById as removeSubInventoryByIdDAO
+    removeSubInventoryById as removeSubInventoryByIdDAO,
+    getSubInventoriesInTrash as getSubInventoriesInTrashDAO
 } from "./../dao/mongo/impl/SubInventoryDAO";
 import { getInventoryBySku as getInventoryBySkuDAO } from "./../dao/mongo/impl/InventoryDAO";
 //import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
-import { getNextInventoryId, getNextRequestId, getNextSubInventoryId } from "./CounterService";
+import { getNextInventoryId, getNextRequestId, getNextSubInventoryId, getNextTrashId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
+
+import { createInventoryInTrash as createInventoryInTrashDAO } from "./../dao/mongo/impl/TrashDAO";
 
 export function createSubInventory(data, callback) {
     async.waterfall([
@@ -211,7 +214,10 @@ export function removeSubInventory(data, callback) {
                 }
                 else if (inventory) {
                     if (inventory.status == "approved") {
-                        waterfallCallback(null, inventory);
+                        const update = {
+                            isRemoved: true
+                        }
+                        updateSubInventoryByIdDAO(id, update, waterfallCallback);
                     }
                     else {
                         const err = new Error("An Operation is Pending on the Inventory");
@@ -222,34 +228,8 @@ export function removeSubInventory(data, callback) {
                     const err = new Error("Inventory Not Found");
                     waterfallCallback(err);
                 }
-            });
-        },
-        function (inventory, waterfallCallback) {
-            const { roles } = data.userSession;
-            const { isSales } = getUserRoles(roles);
-            if (isSales) {
-                const id = data.id;
-                //updateInventoryByIdDAO(id, update, waterfallCallback);
-                removeSubInventoryByIdDAO(id, waterfallCallback);
-                //createInventoryInTrashDAO(inventory, waterfallCallback);
-            }
-            /*else if (isWorker) {
-                const update = {
-                    status: "pending",
-                    isRemoved: false,
-                    $push: {
-                        history: {
-                            action: "removed",
-                            userId: data.userSession.userId,
-                            timestamp: new Date()
-                        }
-                    }
-                }
-                const id = data.id;
-                updateInventoryByIdDAO(id, update, waterfallCallback);
-            }*/
-        }
-
+          });
+      }
     ], callback);
 }
 
@@ -292,8 +272,129 @@ export function getSubInventoriesByCompany(company, callback){
      });
 }
 
+export function recoverSubInventory(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const { isSales } = getUserRoles(roles);
+            if (company === 'ISRA') {
+                const err = new Error("Only Child can recover Inventory");
+                waterfallCallback(err)
+            }
+            else if (isSales) {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to recover Inventory");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            const id = data.id;
+            getSubInventoryByIdDAO(id, function (err, inventory) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else if (inventory) {
+                    if (inventory.status == "approved") {
+                          const update = {
+                              isRemoved: false,
+                              $push: {
+                                  history: {
+                                      action: "recovered",
+                                      userId: data.userSession.userId,
+                                      timestamp: new Date((new Date()).getTime() + (3600000*(-7)))
+                                  }
+                              }
+                          }
+                          const id = data.id;
+                          updateSubInventoryByIdDAO(id, update, waterfallCallback);
+                    }
+                    else {
+                        const err = new Error("An Operation is Pending on the Inventory");
+                        waterfallCallback(err);
+                    }
+                }
+                else {
+                    const err = new Error("Inventory Not Found");
+                    waterfallCallback(err);
+                }
+            });
+        }
+    ], callback);
+}
+
+export function removeSubInventoryInTrash(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const { isSales } = getUserRoles(roles);
+            if (company === 'ISRA') {
+                const err = new Error("Only Child can remove Inventory");
+                waterfallCallback(err)
+            }
+            else if (isSales) {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to remove Inventory");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            const id = data.id;
+            getSubInventoryByIdDAO(id, function (err, inventory) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else if (inventory) {
+                    if (inventory.status == "approved") {
+                        const update = {
+                            isRemoved: true,
+                            $push: {
+                                history: {
+                                    action: "removed",
+                                    userId: data.userSession.userId,
+                                    timestamp: new Date((new Date()).getTime() + (3600000*(-7)))
+                                }
+                            }
+                        }
+                        const id = data.id;
+                        removeSubInventoryByIdDAO(id, waterfallCallback);
+                    }
+                    else {
+                        const err = new Error("An Operation is Pending on the Inventory");
+                        waterfallCallback(err);
+                    }
+                }
+                else {
+                    const err = new Error("Inventory Not Found");
+                    waterfallCallback(err);
+                }
+            });
+        },
+        function(inventory, waterfallCallback){
+            getNextTrashId(function (err, counterDoc) {
+                waterfallCallback(err, inventory, counterDoc);
+            });
+        },
+        function(inventory, counterDoc, waterfallCallback){
+            const data = {
+                id: counterDoc.counter,
+                data: inventory,
+                type: "subInventory"
+            }
+            createInventoryInTrashDAO(data, waterfallCallback);
+        }
+    ], callback);
+}
+
 export function getSubInventories (callback){
     getSubInventoriesDAO(callback);
+}
+
+export function getSubInventoriesInTrash (company, callback){
+    getSubInventoriesInTrashDAO(company, callback);
 }
 
 function getUserRoles(roles) {

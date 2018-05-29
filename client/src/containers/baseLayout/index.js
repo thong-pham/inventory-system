@@ -68,6 +68,9 @@ class BaseLayout extends Component {
         else if (menuItem === "viewInventoriesTrash") {
             dispatch(push('/inventoriesInTrash'));
         }
+        else if (menuItem === "viewSubInventoriesTrash") {
+            dispatch(push('/subInventoriesInTrash'));
+        }
         else if (menuItem === "logout") {
             dispatch(logoutUser());
             dispatch(push('/login'));
@@ -89,37 +92,31 @@ class BaseLayout extends Component {
         if (company === 'ISRA'){
           if (isStoreManager) {
               dedicatedMenuItem = (
-                <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
-                    <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
-                      <Icon name='cube' />
-                        ISRA Inventories
+                <Menu inverted className="menuTop">
+                    <Menu.Item>
+                      <Dropdown item text='Inventory'>
+                        <Dropdown.Menu className="menuDropdown">
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "viewInventories")}><Icon name='cube' />ISRA Inventories</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "addInventory")}><Icon name='add' />Add Product</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </Menu.Item>
-                    {/*<Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
-                      <Icon name='cube' />
-                         View Sub-Inventories
-                    </Menu.Item>*/}
-                    <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
-                      <Icon name='add' />
-                        Add Product
-                    </Menu.Item>
-                    <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
-                      <Icon name='list ul' />
-                        Pending Import
-                    </Menu.Item>
-                    <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
-                      <Icon name='list ul' />
-                        Pending Orders
-                    </Menu.Item>
-                    <Menu.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")} >
-                      <Icon name='checkmark box' />
-                        Approved Orders
+                    <Menu.Item>
+                      <Dropdown item text='Order'>
+                        <Dropdown.Menu className="menuDropdown">
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "viewOrders")}><Icon name='list ul' />Pending Orders</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")}><Icon name='checkmark box' />Approved Orders</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")}><Icon name='checkmark box' />Canceled Orders</Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                       <Icon name='barcode' />
                         Code
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
-                      <Icon name='barcode' />
+                      <Icon name='file text' />
                         Features
                     </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
@@ -148,7 +145,7 @@ class BaseLayout extends Component {
                             </Message.List>
                         </Popup>
                     </Menu.Item>
-                </Sidebar>
+                </Menu>
               );
           }
           if (isWorker) {
@@ -193,49 +190,39 @@ class BaseLayout extends Component {
           }
           if (isAdmin) {
               dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
+              <Menu inverted className="menuTop">
                 <Menu.Item onClick={this.handleClick.bind(this, "viewUsers")}>
                   <Icon name='users' />
-                    View Users
+                    Users
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewCompanies")}>
                   <Icon name='building' />
-                    View Companies
+                    Companies
                 </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")} >
-                  <Icon name='cube' />
-                    ISRA Inventories
+                <Menu.Item>
+                  <Dropdown item text='Inventory'>
+                    <Dropdown.Menu className="menuDropdown">
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewInventories")}><Icon name='cube' />ISRA Inventories</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "addInventory")}><Icon name='add' />Add Product</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "addInventory")} >
-                  <Icon name='add' />
-                    Add Product
-                </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "importInventory")} >
-                  <Icon name='add' />
-                    Import Inventory
-                </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
-                  <Icon name='list ul' />
-                    Pending Import
-                </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
-                  <Icon name='list ul' />
-                    Pending Orders
-                </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")} >
-                  <Icon name='checkmark box' />
-                    Approved Orders
-                </Menu.Item>
-                <Menu.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")} >
-                  <Icon name='checkmark box' />
-                    Canceled Orders
+                <Menu.Item>
+                  <Dropdown item text='Order'>
+                    <Dropdown.Menu className="menuDropdown">
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewOrders")}><Icon name='list ul' />Pending Orders</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")}><Icon name='checkmark box' />Approved Orders</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")}><Icon name='checkmark box' />Canceled Orders</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                   <Icon name='barcode' />
                     Code
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
-                  <Icon name='barcode' />
+                  <Icon name='file text' />
                     Features
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
@@ -264,7 +251,7 @@ class BaseLayout extends Component {
                         </Message.List>
                     </Popup>
                 </Menu.Item>
-              </Sidebar>
+              </Menu>
               );
           }
         }
@@ -294,6 +281,10 @@ class BaseLayout extends Component {
                   <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                     <Icon name='barcode' />
                       Code
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventoriesTrash")} >
+                    <Icon name='trash outline' />
+                      Trash
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                     <Icon name='user' />

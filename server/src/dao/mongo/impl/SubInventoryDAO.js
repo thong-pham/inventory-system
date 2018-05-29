@@ -40,6 +40,12 @@ export function getSubInventories(callback) {
     });
 }
 
+export function getSubInventoriesInTrash(company, callback) {
+    SubInventory.find({ "isRemoved": true, "company" : company }, function (err, inventories) {
+        callback(err, inventories)
+    });
+}
+
 export function updateSubInventoryById(id, data, callback) {
     data.lastModifiedAt = new Date((new Date()).getTime() + (3600000*(-7)));
     SubInventory.findOneAndUpdate({ "id": parseInt(id) }, data, { "new": true }, function (err, inventory) {
