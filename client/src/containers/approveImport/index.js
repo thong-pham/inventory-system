@@ -121,7 +121,7 @@ class ApproveImport extends Component {
                             </div> : null }
                     </Table.Cell>
                     <Table.Cell>{importData.quantity}</Table.Cell>
-                    <Table.Cell>{importData.lastModifiedAt.slice(0,10)}</Table.Cell>
+                    <Table.Cell>{importData.createdAt.slice(0,10)}</Table.Cell>
                     <Table.Cell>{importData.username}</Table.Cell>
                     <Table.Cell >
                           { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='teal'  onClick={() => this.triggerChange(importData)}><Icon name='pencil' /></Button> : null }
@@ -144,7 +144,7 @@ class ApproveImport extends Component {
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell>Count</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
-                            <Table.HeaderCell>Last Modified At</Table.HeaderCell>
+                            <Table.HeaderCell>Date</Table.HeaderCell>
                             <Table.HeaderCell>Imported By</Table.HeaderCell>
                             <Table.HeaderCell width={3}>Options</Table.HeaderCell>
                         </Table.Row>

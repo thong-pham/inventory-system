@@ -10,7 +10,7 @@ import './../../styles/custom.css';
 
 //import { getInventories, deleteInventory, rejectEdit, getSubInventories, addToCart, trackNumber } from "./../../actions/InventoryActions";
 import { getPendingOrders, getPendingOrderByCompany, approveOrder, changePopUp, closePopUp,
-        changeOrder, trackNumber, deleteOrder, errorInput } from "./../../actions/OrderActions";
+        changeOrder, deleteItem, trackNumber, deleteOrder, cancelOrder, errorInput } from "./../../actions/OrderActions";
 
 class ViewOrders extends Component {
     state = { activeIndex: 0 };
@@ -25,15 +25,19 @@ class ViewOrders extends Component {
         }
 
     }
-    onPressEdit(cart){
+    onPressEdit = (cart) => {
         const { token, dispatch } = this.props;
         dispatch(changePopUp(cart.id));
     }
 
-    onPressDelete(order) {
+    onPressDeleteCart = (orderId, cartId) => {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        dispatch(deleteOrder({token: token, order: order})).then(function(data){
+        const item = {
+            orderId: orderId,
+            cartId: cartId
+        }
+        dispatch(deleteItem({token: token, item: item})).then(function(data){
               if (user.company === 'ISRA'){
                   dispatch(getPendingOrders({ token: token }));
               }
@@ -43,11 +47,23 @@ class ViewOrders extends Component {
         });
     }
 
+    onPressDelete = (order) => {
+        const { token, dispatch } = this.props;
+        const { user } = this.props.auth;
+        dispatch(deleteOrder({token: token, order: order}));
+    }
+
+    onPressCancel = (order) => {
+        const { token, dispatch } = this.props;
+        const { user } = this.props.auth;
+        dispatch(cancelOrder({token: token, order: order}));
+    }
+
     onPressChange(orderId, cartId){
         const { token, dispatch } = this.props;
         const { quantity } = this.props.order;
         const { user } = this.props.auth;
-        if (isNaN(quantity) || quantity === null || quantity <= 0 || !Number.isInteger(Number(quantity))){
+        if (isNaN(quantity) || quantity === null || quantity < 0 || !Number.isInteger(Number(quantity))){
             dispatch(errorInput("Invalid Input"));
         }
         else {
@@ -76,12 +92,12 @@ class ViewOrders extends Component {
         });*/
     }
 
-    onCloseChange(){
+    onCloseChange = () => {
         const { dispatch } = this.props;
         dispatch(closePopUp());
     }
 
-    onPressApprove(order){
+    onPressApprove = (order) => {
           const { token, dispatch } = this.props;
           const { pendingOrders } = this.props.order;
           dispatch(approveOrder({token: token, order: order })).then(function(data){
@@ -158,7 +174,8 @@ class ViewOrders extends Component {
                           { (user.company !== 'ISRA') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
                           { (user.company === 'ISRA') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
                           <p>Description : {cart.desc}</p>
-                          <p>Quantity : {cart.quantity}</p>
+                          <p>Request : {cart.quantity}</p>
+                          <p>Accept : {cart.accept}</p>
                         </Item.Description>
                         <hr />
                         { (change === cart.id) ? <Item.Extra className="extra">
@@ -171,10 +188,10 @@ class ViewOrders extends Component {
                                       <Grid columns={2}>
                                           <Grid.Row>
                                               <Grid.Column textAlign='center'>
-                                                  <Icon name='checkmark' size='large' onClick={this.onPressChange.bind(this, order.id, cart.id)} />
+                                                  <Icon name='checkmark' size='large' onClick={() => this.onPressChange(order.id, cart.id)} />
                                               </Grid.Column>
                                               <Grid.Column textAlign='center'>
-                                                  <Icon name='close' size='large' onClick={this.onCloseChange.bind(this)} />
+                                                  <Icon name='close' size='large' onClick={() => this.onCloseChange()} />
                                               </Grid.Column>
                                           </Grid.Row>
                                       </Grid>
@@ -183,11 +200,12 @@ class ViewOrders extends Component {
                             </Grid>
                         </Item.Extra> : null}
                       </Item.Content>
-                      { (user.company === 'ISRA' && change !== cart.id) ? <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, cart)} /> : null }
+                      { (user.company === 'ISRA' && change !== cart.id) ? <Icon name='pencil' size='large' onClick={() => this.onPressEdit(cart)} /> : null }
+                      { (user.company === 'ISRA' && change !== cart.id && order.details.length > 1) ? <Icon name='trash outline' size='large' onClick={() => this.onPressDeleteCart(order.id, cart.id)} /> : null }
                       { (approvingOrderError && this.checkOrderError(cart.id).check) ? <Message negative>
                                                     <p>{approvingOrderError} {this.checkOrderError(cart.id).stock}</p>
                                                 </Message> : null }
-                      <Divider horizontal>{cart.id}</Divider>
+                      <Divider horizontal></Divider>
                     </Item>
                 )
             }, this);
@@ -210,10 +228,12 @@ class ViewOrders extends Component {
                     <Table.Cell >{order.status}</Table.Cell>
                     <Table.Cell >{order.createdBy}</Table.Cell>
                     <Table.Cell >{order.createdAt.slice(11,19)}</Table.Cell>
+                    <Table.Cell >{order.createdAt.slice(0,10)}</Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
                     <Table.Cell >
-                        { (user.company !== 'ISRA') ? <Button size='tiny' color='red' onClick={this.onPressDelete.bind(this, order)}><Icon name='trash outline' />Delete</Button> : null }
-                        { (user.company === 'ISRA') ? <Button size='tiny' color='green' onClick={this.onPressApprove.bind(this, order)}><Icon name='checkmark' />Approve</Button> : null}
+                        { (user.company !== 'ISRA') ? <Button size='tiny' color='red' onClick={() => this.onPressDelete(order)}><Icon name='trash outline' />Delete</Button> : null }
+                        { (user.company === 'ISRA') ? <Button size='tiny' color='green' onClick={() => this.onPressApprove(order)}><Icon name='checkmark' /></Button> : null }
+                        { (user.company === 'ISRA') ? <Button size='tiny' color='black' onClick={() => this.onPressCancel(order)}><Icon name='cancel' /></Button> : null }
                     </Table.Cell>
                 </Table.Row>
             )
@@ -228,9 +248,10 @@ class ViewOrders extends Component {
                             <Table.HeaderCell width={3}>Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Created At</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Time</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Date</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Company</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Options</Table.HeaderCell>
+                            <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>

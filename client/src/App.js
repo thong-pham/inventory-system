@@ -29,11 +29,14 @@ import ViewFeatures from "./containers/viewFeatures";
 import ViewSubInventories from "./containers/viewSubInventories";
 import ApproveImport from "./containers/approveImport";
 import ViewInventories from "./containers/viewInventories";
-import ViewOrders from "./containers/viewOrders";
-import ViewApprovedOrders from "./containers/viewApprovedOrders";
+
 import ViewCode from "./containers/viewCode";
 import ViewAccount from "./containers/viewAccount";
 import ViewInventoriesTrash from "./containers/viewInventoriesTrash";
+
+import ViewOrders from "./containers/viewOrders/pendingOrders";
+import ViewApprovedOrders from "./containers/viewOrders/approvedOrders";
+import ViewCanceledOrders from "./containers/viewOrders/canceledOrders";
 
 const history = createHistory();
 const logger = createLogger();
@@ -95,6 +98,7 @@ class App extends Component {
                             <Route exact path="/subInventory" component={ViewSubInventories} />
                             <Route exact path="/orders" component={ViewOrders} />
                             <Route exact path="/approvedOrders" component={ViewApprovedOrders} />
+                            <Route exact path="/canceledOrders" component={ViewCanceledOrders} />
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />
                             <Route exact path="/feature" component={ViewFeatures} />

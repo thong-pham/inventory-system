@@ -30,14 +30,18 @@ export function changeOrderDetails(id, data, callback) {
 
 export function getPendingOrders(callback) {
     Order.find({"status" : "pending"}, function (err, orders) {
-        //console.log(inventories);
         callback(err, orders)
     });
 }
 
 export function getApprovedOrders(callback) {
     Order.find({"status" : "approved"}, function (err, orders) {
-        //console.log(inventories);
+        callback(err, orders)
+    });
+}
+
+export function getCanceledOrders(callback) {
+    Order.find({"status" : "canceled"}, function (err, orders) {
         callback(err, orders)
     });
 }
@@ -45,14 +49,18 @@ export function getApprovedOrders(callback) {
 
 export function getPendingOrderByCompany(company, callback) {
     Order.find({"status" : "pending", "company" : company}, function (err, orders) {
-        //console.log(inventories);
         callback(err, orders)
     });
 }
 
 export function getApprovedOrdersByCompany(company, callback) {
     Order.find({"status" : "approved", "company": company}, function (err, orders) {
-        //console.log(inventories);
+        callback(err, orders)
+    });
+}
+
+export function getCanceledOrdersByCompany(company, callback) {
+    Order.find({"status" : "canceled", "company": company}, function (err, orders) {
         callback(err, orders)
     });
 }

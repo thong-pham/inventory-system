@@ -57,6 +57,9 @@ class ViewSubInventory extends Component {
           if (isNaN(quantity) || quantity === null || quantity <= 0 || !Number.isInteger(Number(quantity))){
               this.setState({errorInput: "Invalid Input"});
           }
+          else if (quantity > inventory.mainStock) {
+              this.setState({errorInput: "Request cannot be larger than the current stock"});
+          }
           else {
             var data = {
                 sku : inventory.sku,
@@ -104,6 +107,7 @@ class ViewSubInventory extends Component {
                 id: cart.id,
                 sku: cart.sku,
                 quantity: cart.quantity,
+                accept: cart.quantity,
                 mainSku: cart.mainSku,
                 desc: cart.desc,
                 status: "added"
@@ -158,7 +162,7 @@ class ViewSubInventory extends Component {
         if (errorInput){
           error = (
               <Message negative>
-                  <Message.Header>Error while Input Data</Message.Header>
+                  <Message.Header>Error while Inputing Data</Message.Header>
                   <p>{errorInput}</p>
               </Message>
           )

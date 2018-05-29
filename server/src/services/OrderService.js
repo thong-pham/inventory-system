@@ -9,7 +9,9 @@ import {
     changeOrderDetails as changeOrderDetailsDAO,
     removeOrderById as removeOrderByIdDAO,
     getApprovedOrders as getApprovedOrdersDAO,
-    getApprovedOrdersByCompany as getApprovedOrdersByCompanyDAO
+    getApprovedOrdersByCompany as getApprovedOrdersByCompanyDAO,
+    getCanceledOrders as getCanceledOrdersDAO,
+    getCanceledOrdersByCompany as getCanceledOrdersByCompanyDAO
 
 } from "./../dao/mongo/impl/OrderDAO";
 
@@ -66,7 +68,7 @@ export function createOrder(data, callback){
          data.id = counterDoc.counter;
          data.company = company;
          data.createdBy = username;
-         data.approvedBy = " ";
+         data.processedBy = " ";
          createOrderDAO(data, waterfallCallback);
      }
    ],callback);
@@ -108,8 +110,8 @@ export function approveOrder(data, callback) {
                                      if (err){
                                         waterfallCallback(err);
                                      }
-                                     else {
-                                          if (cart.quantity <= inventory.stock){
+                                     else if (inventory) {
+                                          if (cart.accept <= inventory.stock){
                                               inventories.push(inventory);
                                               carts.push(cart);
                                               count += 1;
@@ -138,6 +140,10 @@ export function approveOrder(data, callback) {
                                               }
                                           }
                                        }
+                                       else {
+                                            const err = new Error("One product does not exist anymore");
+                                            waterfallCallback(err);
+                                       }
                                   });
                                }
                           });
@@ -151,11 +157,11 @@ export function approveOrder(data, callback) {
                 const latestHistory = getLatestHistory(inventory);
                 //const id = data.id;
                 if (latestHistory.action === "created" || latestHistory.action === "updated" ||
-                    latestHistory.action === "approvedOut" || latestHistory.action === "approvedIn") {
+                    latestHistory.action === "approvedOut" || latestHistory.action === "approvedIn" || latestHistory.action === "recovered") {
                     var newStock = 0;
                     carts.forEach(function(cart){
                         if (cart.mainSku === inventory.sku){
-                            newStock = inventory.stock - cart.quantity;
+                            newStock = inventory.stock - cart.accept;
                         }
                     });
                     const update = {
@@ -190,7 +196,7 @@ export function approveOrder(data, callback) {
              carts.forEach(function(cart){
                  getSubInventoryBySkuDAO(cart.sku, function (err, subInv){
                        if (subInv) {
-                           var updateStock = subInv.stock + cart.quantity;
+                           var updateStock = subInv.stock + cart.accept;
                            const update = {
                                stock: updateStock,
                                $push: {
@@ -224,9 +230,9 @@ export function approveOrder(data, callback) {
         },
         function (order, waterfallCallback){
               const id = data.id;
-              const { username } = data.userSession;;
+              const { username } = data.userSession;
               order.status = "approved";
-              order.approvedBy = username;
+              order.processedBy = username;
               updateOrderByIdDAO(id, order, waterfallCallback);
         }
     ], callback);
@@ -241,7 +247,7 @@ export function changeOrder(data, callback){
              waterfallCallback();
          }
          else {
-             const err = new Error("Not Enough Permission to approve Order");
+             const err = new Error("Not Enough Permission to change Order");
              waterfallCallback(err);
          }
      },
@@ -266,7 +272,7 @@ export function changeOrder(data, callback){
          //console.log(details);
          details.forEach(function(cart){
               if (cart.id === data.cartId){
-                  cart.quantity = data.quantity;
+                  cart.accept = data.quantity;
                   temp.push(cart);
               }
               else {
@@ -329,6 +335,102 @@ export function removeOrder(data, callback) {
     ], callback);
 }
 
+export function cancelOrder(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const { isStoreManager, isAdmin } = getUserRoles(roles);
+            if (company !== 'ISRA') {
+                const err = new Error("Only ISRA can cancel Order");
+                waterfallCallback(err)
+            }
+            else if (isStoreManager || isAdmin) {
+                waterfallCallback();
+            }
+            else {
+                const err = new Error("Not Enough Permission to cancel Order");
+                waterfallCallback(err);
+            }
+        },
+        function (waterfallCallback) {
+            const id = data.id;
+            const { username } = data.userSession;
+            getOrderByIdDAO(id, function (err, order) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else if (order) {
+                    if (order.status == "pending") {
+                        const update = {
+                            status: "canceled",
+                            processedBy: username
+                        }
+                        updateOrderByIdDAO(id, update, waterfallCallback);
+                    }
+                    else {
+                        const err = new Error("Only Pending Order can be canceled");
+                        waterfallCallback(err);
+                    }
+                }
+                else {
+                    const err = new Error("Order Not Found");
+                    waterfallCallback(err);
+                }
+            });
+        }
+    ], callback);
+}
+
+export function deleteItem(data, callback){
+   async.waterfall([
+     function (waterfallCallback) {
+         const { roles, company } = data.userSession;
+         const { isStoreManager, isAdmin } = getUserRoles(roles);
+         if ((isStoreManager || isAdmin) && company === 'ISRA') {
+             waterfallCallback();
+         }
+         else {
+             const err = new Error("Not Enough Permission to change Order");
+             waterfallCallback(err);
+         }
+     },
+     function (waterfallCallback){
+        getOrderByIdDAO(data.orderId, function(err, order){
+            if (err){
+                waterfallCallback(err);
+            }
+            else if (order.status === 'approved')
+            {
+                const err = new Error("Only pending orders can be changed");
+                waterfallCallback(err);
+            }
+            else {
+                waterfallCallback(null, order.details);
+            }
+        });
+     },
+     function (details, waterfallCallback){
+         var temp = [];
+         const id = data.orderId;
+         //console.log(details);
+         details.forEach(function(cart){
+              if (cart.id === data.cartId){
+                  
+              }
+              else {
+                  temp.push(cart);
+              }
+         });
+         temp.sort(compare);
+         //console.log(temp);
+         const update = {
+            details: temp
+         }
+         changeOrderDetailsDAO(id, update, waterfallCallback);
+     }
+   ],callback);
+}
+
 function compare(a,b){
     const idA = a.id;
     const idB = b.id;
@@ -358,10 +460,18 @@ export function getApprovedOrders(callback) {
     getApprovedOrdersDAO(callback);
 }
 
+export function getCanceledOrders(callback) {
+    getCanceledOrdersDAO(callback);
+}
+
 export function getApprovedOrdersByCompany(company, callback) {
     getApprovedOrdersByCompanyDAO(company, callback);
 }
 
 export function getPendingOrderByCompany(company, callback) {
     getPendingOrderByCompanyDAO(company, callback);
+}
+
+export function getCanceledOrdersByCompany(company, callback) {
+    getCanceledOrdersByCompanyDAO(company, callback);
 }

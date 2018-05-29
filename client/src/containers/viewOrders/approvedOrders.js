@@ -56,10 +56,11 @@ class ViewApprovedOrders extends Component {
                           { (user.company !== 'ISRA') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
                           { (user.company === 'ISRA') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
                           <p>Description : {cart.desc}</p>
-                          <p>Quantity : {cart.quantity}</p>
+                          <p>Request : {cart.quantity}</p>
+                          <p>Accept : {cart.accept}</p>
                         </Item.Description>
                       </Item.Content>
-                      <Divider horizontal>{cart.id}</Divider>
+                      <Divider horizontal></Divider>
                     </Item>
                 )
             }, this);
@@ -81,7 +82,7 @@ class ViewApprovedOrders extends Component {
                     </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>
                     <Table.Cell >{order.createdBy}</Table.Cell>
-                    <Table.Cell >{order.approvedBy}</Table.Cell>
+                    <Table.Cell >{order.processedBy}</Table.Cell>
                     { (user.company === 'ISRA') ? <Table.Cell >{order.company}</Table.Cell> : null }
                 </Table.Row>
             )

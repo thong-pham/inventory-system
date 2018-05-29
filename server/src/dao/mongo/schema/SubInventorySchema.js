@@ -9,7 +9,7 @@ const SubInventorySchema = mongoose.Schema({
 
     mainSku: { type: String, required: true },
 
-    mainStock: { type: String, required: false },
+    mainStock: { type: Number, required: false },
 
     unit: { type: String, required: false },
 

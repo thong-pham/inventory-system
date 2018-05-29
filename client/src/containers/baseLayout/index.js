@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { Container, Segment, Sidebar, Menu, Icon, Message, Header, Button, Popup } from 'semantic-ui-react';
+import { Container, Segment, Sidebar, Menu, Icon, Message, Header, Button, Popup, Dropdown } from 'semantic-ui-react';
 import { push } from 'react-router-redux';
 
 import { logoutUser } from "./../../actions/AuthActions";
@@ -52,6 +52,9 @@ class BaseLayout extends Component {
         }
         else if (menuItem === "viewApprovedOrders") {
             dispatch(push('/approvedOrders'));
+        }
+        else if (menuItem === "viewCanceledOrders") {
+            dispatch(push('/canceledOrders'));
         }
         else if (menuItem === "viewCode") {
             dispatch(push('/code'));
@@ -223,6 +226,10 @@ class BaseLayout extends Component {
                   <Icon name='checkmark box' />
                     Approved Orders
                 </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")} >
+                  <Icon name='checkmark box' />
+                    Canceled Orders
+                </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                   <Icon name='barcode' />
                     Code
@@ -279,6 +286,10 @@ class BaseLayout extends Component {
                   <Menu.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")} >
                     <Icon name='checkmark box' />
                       Approved Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")} >
+                    <Icon name='checkmark box' />
+                      Canceled Orders
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                     <Icon name='barcode' />

@@ -191,6 +191,7 @@ class ViewCode extends Component {
                 </Table.Row>
             )
         }, this);
+        
         const skuView = codes.map(function (code, index) {
            const codeView = code.keys.map(function(keyCode, index){
               return (

@@ -62,7 +62,7 @@ export function updateCart(data, callback) {
                 }
                 else if (cart) {
                     if (cart.status == "pending") {
-                        var updateQuantity = cart.quantity + data.quantity
+                        var updateQuantity = Number(cart.quantity) + Number(data.quantity)
                         const update = {
                             quantity : updateQuantity
                         }

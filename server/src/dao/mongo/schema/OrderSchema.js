@@ -11,6 +11,7 @@ const OrderSchema = mongoose.Schema({
         mainSku: { type: String, required: true },
         quantity: { type: Number, required: true },
         desc: { type: String, required: true },
+        accept: { type: Number, required: true },
         status: { type: String, required: true, enum: ["added", "pending"] }
     }],
 
@@ -18,9 +19,9 @@ const OrderSchema = mongoose.Schema({
 
     createdBy: { type: String, required: true },
 
-    approvedBy: { type: String, required: true },
+    processedBy: { type: String, required: true },
 
-    status: { type: String, required: true, enum: ["approved", "pending"] },
+    status: { type: String, required: true, enum: ["approved", "pending", "canceled"] },
 
     createdAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
     lastModifiedAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },

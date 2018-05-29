@@ -28,3 +28,19 @@ export function validateChangeOrder(data, callback) {
         callback(errors);
     }
 }
+
+export function validateDeleteItem(data, callback) {
+    var errors = {};
+    if (!data.orderId) {
+        errors["orderId"] = "Order Id is Required";
+    }
+    if (!data.cartId) {
+        errors["cartId"] = "Cart Id is Required";
+    }
+    if (Object.keys(errors).length === 0) {
+        callback();
+    }
+    else {
+        callback(errors);
+    }
+}

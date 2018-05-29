@@ -8,6 +8,10 @@ export const GET_APPROVED_ORDERS_STARTED = "GET_APPROVED_ORDERS_STARTED";
 export const GET_APPROVED_ORDERS_FULFILLED = "GET_APPROVED_ORDERS_FULFILLED";
 export const GET_APPROVED_ORDERS_REJECTED = "GET_APPROVED_ORDERS_REJECTED";
 
+export const GET_CANCELED_ORDERS_STARTED = "GET_CANCELED_ORDERS_STARTED";
+export const GET_CANCELED_ORDERS_FULFILLED = "GET_CANCELED_ORDERS_FULFILLED";
+export const GET_CANCELED_ORDERS_REJECTED = "GET_CANCELED_ORDERS_REJECTED";
+
 export const APPROVE_ORDER_STARTED = "APPROVE_ORDER_STARTED";
 export const APPROVE_ORDER_FULFILLED = "APPROVE_ORDER_FULFILLED";
 export const APPROVE_ORDER_REJECTED = "APPROVE_ORDER_REJECTED";
@@ -19,6 +23,10 @@ export const CHANGE_ORDER_REJECTED = "CHANGE_ORDER_REJECTED";
 export const DELETE_ORDER_STARTED = "DELETE_ORDER_STARTED";
 export const DELETE_ORDER_FULFILLED = "DELETE_ORDER_FULFILLED";
 export const DELETE_ORDER_REJECTED = "DELETE_ORDER_REJECTED";
+
+export const CANCEL_ORDER_STARTED = "CANCEL_ORDER_STARTED";
+export const CANCEL_ORDER_FULFILLED = "CANCEL_ORDER_FULFILLED";
+export const CANCEL_ORDER_REJECTED = "CANCEL_ORDER_REJECTED";
 
 export const CHANGE_POPUP = "CHANGE_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
@@ -32,6 +40,25 @@ export function getPendingOrders(data) {
     return function (dispatch) {
         dispatch({ type: GET_PENDING_ORDERS_STARTED });
         return axios.get(WS_URL + "all", { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: GET_PENDING_ORDERS_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: GET_PENDING_ORDERS_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function getPendingOrderByCompany(data) {
+    return function (dispatch) {
+        dispatch({ type: GET_PENDING_ORDERS_STARTED });
+        return axios.get(WS_URL, { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
@@ -85,35 +112,55 @@ export function getApprovedOrdersByCompany(data) {
     }
 }
 
-export function getPendingOrderByCompany(data) {
+export function getCanceledOrders(data) {
     return function (dispatch) {
-        dispatch({ type: GET_PENDING_ORDERS_STARTED });
-        return axios.get(WS_URL, { headers: { Authorization: data.token } })
+        dispatch({ type: GET_CANCELED_ORDERS_STARTED });
+        return axios.get(WS_URL + "allCanceledOrders", { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: GET_PENDING_ORDERS_FULFILLED, payload: data });
+                dispatch({ type: GET_CANCELED_ORDERS_FULFILLED, payload: data });
                 return data;
             })
             .catch(function (error) {
                 const response = error.response;
-                dispatch({ type: GET_PENDING_ORDERS_REJECTED, payload: response });
+                dispatch({ type: GET_CANCELED_ORDERS_REJECTED, payload: response });
                 throw response;
             })
     }
 }
 
-export function approveOrder(orderData) {
-    const order = orderData.order;
+export function getCanceledOrdersByCompany(data) {
     return function (dispatch) {
-        dispatch({ type: APPROVE_ORDER_STARTED });
-        return axios.put(WS_URL + order.id + "/approveOrder", null, { headers: { Authorization: orderData.token } })
+        dispatch({ type: GET_CANCELED_ORDERS_STARTED });
+        return axios.get(WS_URL + "canceledOrders", { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: APPROVE_ORDER_FULFILLED, payload: orderData.order });
+                dispatch({ type: GET_CANCELED_ORDERS_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: GET_CANCELED_ORDERS_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+
+export function approveOrder(data) {
+    const order = data.order;
+    return function (dispatch) {
+        dispatch({ type: APPROVE_ORDER_STARTED });
+        return axios.put(WS_URL + order.id + "/approveOrder", null, { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: APPROVE_ORDER_FULFILLED, payload: order.id });
                 return data;
             })
             .catch(function (error) {
@@ -144,6 +191,46 @@ export function changeOrder(data) {
     }
 }
 
+export function deleteItem(data) {
+    //const id = data.orderId;
+    return function (dispatch) {
+        dispatch({ type: CHANGE_ORDER_STARTED });
+        return axios.put(WS_URL + "deleteItem", data.item, { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: CHANGE_ORDER_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: CHANGE_ORDER_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function cancelOrder(data) {
+    const order = data.order;
+    return function (dispatch) {
+        dispatch({ type: CANCEL_ORDER_STARTED });
+        return axios.put(WS_URL + order.id + "/cancelOrder", null, { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: CANCEL_ORDER_FULFILLED, payload: order.id });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: CANCEL_ORDER_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
 export function deleteOrder(data) {
     const order = data.order;
     return function (dispatch) {
@@ -153,7 +240,7 @@ export function deleteOrder(data) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: DELETE_ORDER_FULFILLED, payload: data });
+                dispatch({ type: DELETE_ORDER_FULFILLED, payload: order.id });
                 return data;
             })
             .catch(function (error) {

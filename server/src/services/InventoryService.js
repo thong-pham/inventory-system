@@ -89,7 +89,7 @@ export function createInventory(data, callback) {
             const code = {
                 id: counterDoc.counter,
                 key: inventory.sku,
-                sku: inventory.sku,
+                sku: "",
                 mainSku: inventory.sku,
                 company: company
             }

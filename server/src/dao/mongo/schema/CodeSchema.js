@@ -5,7 +5,7 @@ const CodeSchema = mongoose.Schema({
 
     key: { type: String, required: true },
 
-    sku: { type: String, required: true },
+    sku: { type: String, required: false },
 
     mainSku: { type: String, required: true },
 

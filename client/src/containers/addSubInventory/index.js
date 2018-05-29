@@ -124,37 +124,27 @@ class AddSubInventory extends Component {
         const { token } = this.props.auth;
         const { generatedSKU, generatedDesc } = this.generateData();
         var { sku, desc, inventories } = this.props.inventory;
-        var check = false;
-        
-        inventories.forEach(function(inventory){
-            if (inventory.mainSku === generatedSKU){
-                check = true;
-            }
-        });
-        if (check === true){
-            this.setState({errorInput: "This product already exists in your inventory"});
+
+        if (!desc || (desc + "").trim() === ""){
+            desc = generatedDesc;
+        }
+        if (!sku || (sku + "").trim() === ""){
+            this.setState({errorInput: "SKU cannot be empty"});
         }
         else {
-            if (!desc || (desc + "").trim() === ""){
-                desc = generatedDesc;
+            this.setState({errorInput: null});
+            const inv = {
+                token: token,
+                sku: sku,
+                mainSku: generatedSKU,
+                productName: desc
             }
-            if (!sku || (sku + "").trim() === ""){
-                this.setState({errorInput: "SKU cannot be empty"});
-            }
-            else {
-                this.setState({errorInput: null});
-                const inv = {
-                    token: token,
-                    sku: sku,
-                    mainSku: generatedSKU,
-                    productName: desc
-                }
-                //console.log(inv);
-                dispatch(addSubInventory(inv)).then(function(data){
-                    dispatch(push("/subInventory"));
-                });
-            }
+            //console.log(inv);
+            dispatch(addSubInventory(inv)).then(function(data){
+                dispatch(push("/subInventory"));
+            });
         }
+
     }
     render() {
         const { errorInput } = this.state;
