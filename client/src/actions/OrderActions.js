@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const GET_PENDING_ORDERS_STARTED = "GET_PENDING_ORDERS_STARTED";
 export const GET_PENDING_ORDERS_FULFILLED = "GET_PENDING_ORDERS_FULFILLED";
@@ -32,7 +33,7 @@ export const ERROR_INPUT_ORDER = "ERROR_INPUT_ORDER";
 export const SORT_ORDER = "SORT_ORDER";
 export const REV_ORDER = "REV_ORDER";
 
-const WS_URL = "https://api.israhospitality.com/orders/";
+const WS_URL = URL + "/orders/";
 
 export function getPendingOrders(data) {
     return function (dispatch) {

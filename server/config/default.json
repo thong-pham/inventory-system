@@ -9,7 +9,7 @@
     "authenticate": {
         "clientSession": {
             "secretKey": "Inventory@123",
-            "expiresIn": 604800
+            "expiresIn": 2419200
         }
     }
 }

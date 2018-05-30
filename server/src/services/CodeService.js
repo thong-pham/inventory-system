@@ -95,7 +95,7 @@ export function removeCode(data, callback){
               waterfallCallback();
           }
           else {
-              const err = new Error("Not Enough Permission to create code");
+              const err = new Error("Not Enough Permission to delete code");
               waterfallCallback(err);
           }
       },

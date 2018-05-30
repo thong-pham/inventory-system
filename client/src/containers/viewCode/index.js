@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Grid, Accordion } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Input, Grid, Accordion, Confirm } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -13,7 +13,10 @@ import { getAllCode, addPopUp, closePopUp, trackInput, errorInput,
 import { getCompanies } from "./../../actions/CompanyActions";
 
 class ViewCode extends Component {
-    state = { activeIndex: null };
+    state = {
+      activeIndex: null,
+      openConfirm: false
+    };
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
@@ -30,7 +33,7 @@ class ViewCode extends Component {
         dispatch(addPopUp(sku));
 
     }
-    onPressDelete(keyCode) {
+    onPressDelete = (keyCode) => {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
         dispatch(deleteCode({ token: token, keyCode: keyCode })).then(function(data){
@@ -41,6 +44,7 @@ class ViewCode extends Component {
                     dispatch(getCodeByCompany({token: token}));
               }
         });
+        this.setState({openConfirm: false});
     }
 
     handleInput(e){
@@ -94,8 +98,12 @@ class ViewCode extends Component {
         this.setState({ activeIndex: newIndex })
     }
 
+    handleCancel = () => this.setState({ openConfirm: false });
+
+    openConfirm = () => this.setState({ openConfirm: true });
+
     render() {
-        const { activeIndex } = this.state;
+        const { activeIndex, openConfirm } = this.state;
         const { user } = this.props.auth;
         const { codes, fetchingCodesError, addingCodeError, openAdd, codeInput, errorInput } = this.props.code;
         const { companies } = this.props.company;
@@ -135,9 +143,10 @@ class ViewCode extends Component {
                          <Grid.Column>
                              <p>{keyCode.value}</p>
                            </Grid.Column>
-                           {(company.name.en === 'ISRA') ? <Grid.Column textAlign='right'>
-                              <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/>
-                           </Grid.Column> : null }
+                           <Grid.Column textAlign='right'>
+                              <Icon name='trash outline' onClick={this.openConfirm}/>
+                              <Confirm open={openConfirm} onCancel={this.handleCancel} onConfirm={() => this.onPressDelete(keyCode)} />
+                           </Grid.Column>
                      </Grid.Row>
                    </Grid> : null }
                  </div>
@@ -202,7 +211,8 @@ class ViewCode extends Component {
                            <p>{keyCode.value}</p>
                           </Grid.Column>
                         <Grid.Column textAlign='right'>
-                           <Icon name='close' onClick={this.onPressDelete.bind(this, keyCode)}/>
+                            <Icon name='trash outline' onClick={this.openConfirm}/>
+                            <Confirm open={openConfirm} onCancel={this.handleCancel} onConfirm={() => this.onPressDelete(keyCode)} />
                         </Grid.Column>
                     </Grid.Row>
                   </Grid>

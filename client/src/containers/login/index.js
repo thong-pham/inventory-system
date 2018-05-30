@@ -10,7 +10,7 @@ import './../../styles/custom.css';
 
 function validate(values) {
     var errors = {};
-    const { username, password, company } = values;
+    const { username, password } = values;
     if (!username || username.trim() === "") {
         errors.username = "Username is Required";
     }
@@ -26,7 +26,7 @@ class Login extends Component {
         const { dispatch } = this.props;
         if (token) {
             if (user.roles.indexOf("admin") >= 0){
-                dispatch(push("/users"));
+                dispatch(push("/inventory"));
             }
             else if (user.roles.indexOf("storeManager") >= 0) {
                 dispatch(push("/inventory"));
@@ -51,7 +51,7 @@ class Login extends Component {
     onSubmit(values, dispatch) {
         return dispatch(loginUser(values)).then(function (data) {
             if (data.user.roles.indexOf("admin") >= 0){
-                dispatch(push("/users"));
+                dispatch(push("/inventory"));
             }
             else if (data.user.roles.indexOf("storeManager") >= 0) {
                 dispatch(push("/inventory"));

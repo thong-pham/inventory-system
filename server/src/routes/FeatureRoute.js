@@ -10,7 +10,8 @@ const router = Router();
 router.post('/', verifyAuthMiddleware, function (req, res, next) {
     validateFeature(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -23,7 +24,7 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -51,7 +52,7 @@ router.get('/type', verifyAuthMiddleware, function (req, res, next) {
     getTypes(function (err, types) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -64,7 +65,7 @@ router.get('/pattern', verifyAuthMiddleware, function (req, res, next) {
     getPatterns(function (err, patterns) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -77,7 +78,7 @@ router.get('/color', verifyAuthMiddleware, function (req, res, next) {
     getColors(function (err, colors) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -90,7 +91,7 @@ router.get('/size', verifyAuthMiddleware, function (req, res, next) {
     getSizes(function (err, sizes) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -103,7 +104,7 @@ router.get('/unit', verifyAuthMiddleware, function (req, res, next) {
     getUnits(function (err, units) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -117,7 +118,8 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
     if (id) {
         validateFeature(req.body, function (err) {
             if (err) {
-                res.status(400).send(err);
+                console.log(err);
+                res.status(400).send("Data missing");
             }
             else {
                 const userSession = req.session;
@@ -133,7 +135,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                         }
                         else {
                             console.log(err);
-                            res.status(500).send(err);
+                            res.status(500).send("An error happens in the backend");
                         }
                     }
                     else {
@@ -164,7 +166,7 @@ router.delete('/:kind/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {

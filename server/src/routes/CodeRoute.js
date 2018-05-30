@@ -8,7 +8,8 @@ const router = Router();
 router.post('/',verifyAuthMiddleware, function (req, res, next) {
     validateCode(req.body, function (err) {
         if (err) {
-            res.status(401).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -21,7 +22,7 @@ router.post('/',verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -39,7 +40,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
         const data = { id, userSession };
         removeCode(data, function (err, code) {
             if (err) {
-                if (err.message === "Not Enough Permission to create code") {
+                if (err.message === "Not Enough Permission to delete code") {
                     res.status(402).send(err.message);
                 }
                 else if (err.message === "Code Not Found") {
@@ -47,7 +48,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -66,8 +67,7 @@ router.get('/',verifyAuthMiddleware, function (req, res, next) {
     getAllCode(function (err, codes) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
-
+            res.status(500).send("An error happens in the backend");
         }
         else {
             res.status(200).send(codes);
@@ -80,7 +80,7 @@ router.get('/company',verifyAuthMiddleware, function (req, res, next) {
     getCodeByCompany(company, function (err, codes) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -105,7 +105,7 @@ router.put('/:id/approveCode', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -131,7 +131,7 @@ router.put('/changeCode', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {

@@ -5,10 +5,10 @@ export function validateCreateInventory(data, callback) {
     if (data.list.length === 0) {
         errors["list"] = "List is Required";
     }
-    if (!data.price) {
+    if (data.price === null) {
         errors["price"] = "Price is Required";
     }
-    if (!data.capacity) {
+    if (data.capacity === null) {
         errors["capacity"] = "Capacity is Required";
     }
     if (!data.unit) {
@@ -30,13 +30,13 @@ export function validateUpdateInventory(data, callback) {
     if (!data.productName) {
         errors["productName"] = "Product Name is Required";
     }
-    if (!data.price) {
+    if (data.price === null) {
         errors["price"] = "Price is Required";
     }
-    if (!data.stock) {
+    if (data.stock === null) {
         errors["stock"] = "Stock is Required";
     }
-    if (!data.capacity) {
+    if (data.capacity === null) {
         errors["capacity"] = "Capacity is Required";
     }
     if (!data.unit) {

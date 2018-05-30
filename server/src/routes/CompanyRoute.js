@@ -34,7 +34,8 @@ const router = Router();
 router.post('/createCompany',verifyAuthMiddleware, function (req, res, next) {
     validateCreateCompany(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            rconsole.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const { name } = req.body;
@@ -49,7 +50,7 @@ router.post('/createCompany',verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -76,7 +77,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -104,7 +105,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -122,7 +123,7 @@ router.get('/',verifyAuthMiddleware, function (req, res, next) {
         getCompanies(function (err, companies) {
             if (err) {
                 console.log(err);
-                res.status(500).send(err);
+                res.status(500).send("An error happens in the backend");
             }
             else {
                 res.status(200).send(companies);
@@ -136,7 +137,7 @@ router.get('/:id',verifyAuthMiddleware, function (req, res, next) {
         getCompanyById(id, function (err, company) {
             if (err) {
                 console.log(err);
-                res.status(500).send(err);
+                res.status(500).send("An error happens in the backend");
             }
             else {
                 res.status(200).send(Company);

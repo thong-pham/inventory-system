@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const GET_CODES_STARTED = "GET_CODES_STARTED";
 export const GET_CODES_FULFILLED = "GET_CODES_FULFILLED";
@@ -21,7 +22,7 @@ export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_INPUT = "TRACK_INPUT";
 export const ERROR_INPUT_CODE = "ERROR_INPUT_CODE";
 
-const WS_URL = "https://api.israhospitality.com/code/";
+const WS_URL = URL + "/code/";
 
 export function getAllCode(data) {
     return function (dispatch) {

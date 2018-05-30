@@ -5,7 +5,7 @@ export function validateCart(data, callback) {
     if (!data.sku) {
         errors["sku"] = "SKU is Required";
     }
-    if (!data.quantity) {
+    if (data.quantity === null) {
         errors["quantity"] = "Quantity is Required";
     }
     if (!data.mainSku) {

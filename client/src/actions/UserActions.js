@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const ADD_USER_STARTED = "ADD_USER_STARTED";
 export const ADD_USER_FULFILLED = "ADD_USER_FULFILLED";
@@ -55,7 +56,7 @@ export const TRACK_NUMBER = "TRACK_NUMBER";
 export const TRACK_EMAIL = "TRACK_EMAIL";
 export const ERROR_INPUT_USER = "ERROR_INPUT_USER";
 
-const WS_URL = "https://api.israhospitality.com/users/";
+const WS_URL = URL + "/users/";
 
 export function addUser(data) {
     return function (dispatch) {

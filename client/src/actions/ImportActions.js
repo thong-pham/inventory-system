@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const GET_PENDING_IMPORTS_STARTED = "GET_PENDING_IMPORTS_STARTED";
 export const GET_PENDING_IMPORTS_FULFILLED = "GET_PENDING_IMPORTS_FULFILLED";
@@ -29,7 +30,7 @@ export const CLEAR_IMPORT = "CLEAR_IMPORT";
 export const INPUT_CAPACITY = "INPUT_CAPACITY";
 export const INPUT_COUNT = "INPUT_COUNT";
 
-const WS_URL = "https://api.israhospitality.com/inventories/";
+const WS_URL = URL + "/inventories/";
 
 export function getPendingImports(data) {
     return function (dispatch) {

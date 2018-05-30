@@ -13,7 +13,8 @@ const router = Router();
 router.post('/', verifyAuthMiddleware, function (req, res, next) {
     validateCreateInventory(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -59,7 +60,8 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
     if (id) {
         validateUpdateInventory(req.body, function (err) {
             if (err) {
-                res.status(400).send(err);
+                console.log(err);
+                res.status(400).send("Data missing");
             }
             else {
                 const userSession = req.session;
@@ -81,7 +83,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                         }
                         else {
                             console.log(err);
-                            res.status(500).send(err);
+                            res.status(500).send("An error happens in the backend");
                         }
                     }
                     else {
@@ -117,7 +119,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -151,7 +153,7 @@ router.put('/:id/approve', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -185,7 +187,7 @@ router.put('/:id/recover', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -219,7 +221,7 @@ router.delete('/:id/trash', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -236,7 +238,7 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
     getInventories(function (err, inventories) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -249,7 +251,7 @@ router.get('/trash', verifyAuthMiddleware, function (req, res, next) {
     getInventoriesInTrash(function (err, inventories) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -262,7 +264,7 @@ router.get('/pendingImports', verifyAuthMiddleware, function (req, res, next) {
     getPendingImports(function (err, imports) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -292,7 +294,7 @@ router.delete('/:id/import', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -308,7 +310,8 @@ router.delete('/:id/import', verifyAuthMiddleware, function (req, res, next) {
 router.post('/importInventory', verifyAuthMiddleware, function (req, res, next) {
     validateImportInventory(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -324,7 +327,7 @@ router.post('/importInventory', verifyAuthMiddleware, function (req, res, next) 
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -341,7 +344,8 @@ router.put('/:id/import', verifyAuthMiddleware, function (req, res, next) {
     if (id) {
       validateImportInventory(req.body, function (err) {
           if (err) {
-              res.status(400).send(err);
+              console.log(err);
+              res.status(400).send("Data missing");
           }
           else {
               const userSession = req.session;
@@ -363,7 +367,7 @@ router.put('/:id/import', verifyAuthMiddleware, function (req, res, next) {
                       }
                       else {
                           console.log(err);
-                          res.status(500).send(err);
+                          res.status(500).send("An error happens in the backend");
                       }
                   }
                   else {
@@ -377,20 +381,5 @@ router.put('/:id/import', verifyAuthMiddleware, function (req, res, next) {
         res.status(400).send("id param required");
     }
 });
-
-
-function checkSKU(list){
-
-    getInventories(function (err, inventories) {
-        if (err) {
-            console.log(err);
-            res.status(500).send(err);
-
-        }
-        else {
-            res.status(200).send(inventories);
-        }
-    });
-}
 
 export default router;

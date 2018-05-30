@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const ADD_COMPANY_STARTED = "ADD_COMPANY_STARTED";
 export const ADD_COMPANY_FULFILLED = "ADD_COMPANY_FULFILLED";
@@ -31,7 +32,7 @@ export const CANCEL_CHANGE = "CANCEL_CHANGE";
 export const TRACK_NAME = "TRACK_NAME";
 export const ERROR_INPUT_COMPANY = "ERROR_INPUT_COMPANY";
 
-const WS_URL = "https://api.israhospitality.com/companies/";
+const WS_URL = URL + "/companies/";
 
 export function addCompany(data) {
     return function (dispatch) {

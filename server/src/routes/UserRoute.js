@@ -32,10 +32,11 @@ const router = Router();
     });
 });*/
 
-router.post('/createUser', verifyAuthMiddleware, function (req, res, next) {
+router.post('/createUser', function (req, res, next) {
     validateCreateMember(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const { username, roles, company, password, name, email, number } = req.body;
@@ -47,7 +48,7 @@ router.post('/createUser', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -61,7 +62,8 @@ router.post('/createUser', verifyAuthMiddleware, function (req, res, next) {
 router.post('/login', function (req, res, next) {
     validateLoginMember(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const { username, password } = req.body;
@@ -69,11 +71,11 @@ router.post('/login', function (req, res, next) {
             loginUser(data, function (err, token, user) {
                 if (err) {
                     if (err.message === "Invalid Username or Password") {
-                        res.status(400).send(err.message);
+                        res.status(401).send(err.message);
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -87,7 +89,8 @@ router.post('/login', function (req, res, next) {
 router.put('/changePassword', verifyAuthMiddleware, function (req, res, next) {
     validateChangePassword(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const { currentPass, newPass } = req.body;
@@ -100,7 +103,7 @@ router.put('/changePassword', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -114,7 +117,8 @@ router.put('/changePassword', verifyAuthMiddleware, function (req, res, next) {
 router.put('/updateInfo', verifyAuthMiddleware, function (req, res, next) {
     validateUpdateInfo(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const { newName, newNumber, newEmail } = req.body;
@@ -127,7 +131,7 @@ router.put('/updateInfo', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -154,7 +158,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -182,7 +186,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -199,7 +203,7 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
         getUsers(function (err, users) {
             if (err) {
                 console.log(err);
-                res.status(500).send(err);
+                res.status(500).send("An error happens in the backend");
             }
             else {
                 res.status(200).send(users);
@@ -213,7 +217,7 @@ router.get('/:id',verifyAuthMiddleware, function (req, res, next) {
         getUser(id, function (err, user) {
             if (err) {
                 console.log(err);
-                res.status(500).send(err);
+                res.status(500).send("An error happens in the backend");
             }
             else {
                 res.status(200).send(user);

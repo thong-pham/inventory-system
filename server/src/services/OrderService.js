@@ -390,7 +390,7 @@ export function deleteItem(data, callback){
              waterfallCallback();
          }
          else {
-             const err = new Error("Not Enough Permission to change Order");
+             const err = new Error("Not Enough Permission to delete this item");
              waterfallCallback(err);
          }
      },

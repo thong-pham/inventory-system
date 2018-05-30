@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const USER_LOGIN_STARTED = "USER_LOGIN_STARTED";
 export const USER_LOGIN_FULFILLED = "USER_LOGIN_FULFILLED";
@@ -8,7 +9,7 @@ export const USER_LOGOUT_FULFILLED = "USER_LOGOUT_FULFILLED";
 
 export const VIEW_COMPANIES = "VIEW_COMPANIES";
 
-const WS_URL = "https://api.israhospitality.com/users/";
+const WS_URL = URL + "/users/";
 
 export function loginUser(data) {
     return function (dispatch) {

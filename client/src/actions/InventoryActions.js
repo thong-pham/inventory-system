@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const ADD_INVENTORY_STARTED = "ADD_INVENTORY_STARTED";
 export const ADD_INVENTORY_FULFILLED = "ADD_INVENTORY_FULFILLED";
@@ -51,7 +52,7 @@ export const CHANGE_INVENTORY = "CHANGE_INVENTORY";
 export const CLEAR_FAIL = "CLEAR_FAIL";
 export const CLEAR_COMPLETE = "CLEAR_COMPLETE";
 
-const WS_URL = "https://api.israhospitality.com/inventories/";
+const WS_URL = URL + "/inventories/";
 
 export function addInventory(data) {
     return function (dispatch) {

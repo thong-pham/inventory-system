@@ -9,7 +9,8 @@ const router = Router();
 router.post('/', verifyAuthMiddleware, function (req, res, next) {
     validateOrderInventory(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -27,7 +28,7 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -62,7 +63,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -79,7 +80,7 @@ router.get('/all', verifyAuthMiddleware, function (req, res, next) {
     getPendingOrders(function (err, orders) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -93,7 +94,7 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
     getPendingOrderByCompany(company, function (err, order) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -106,7 +107,7 @@ router.get('/allProcessedOrders', verifyAuthMiddleware, function (req, res, next
     getProcessedOrders(function (err, orders) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -120,7 +121,7 @@ router.get('/processedOrders', verifyAuthMiddleware, function (req, res, next) {
     getProcessedOrdersByCompany(company, function (err, orders) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -133,7 +134,7 @@ router.get('/allCanceledOrders', verifyAuthMiddleware, function (req, res, next)
     getCanceledOrders(function (err, orders) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -147,7 +148,7 @@ router.get('/canceledOrders', verifyAuthMiddleware, function (req, res, next) {
     getCanceledOrdersByCompany(company, function (err, orders) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -155,9 +156,6 @@ router.get('/canceledOrders', verifyAuthMiddleware, function (req, res, next) {
         }
     });
 });
-
-
-
 
 router.put('/:id/approveOrder', verifyAuthMiddleware, function (req, res, next) {
     const id = req.params.id;
@@ -178,7 +176,7 @@ router.put('/:id/approveOrder', verifyAuthMiddleware, function (req, res, next) 
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -213,7 +211,7 @@ router.put('/:id/cancelOrder', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -230,7 +228,8 @@ router.put('/changeOrder', verifyAuthMiddleware, function (req, res, next) {
     //const id = req.params.id;
     validateChangeOrder(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -246,7 +245,7 @@ router.put('/changeOrder', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -261,7 +260,8 @@ router.put('/deleteItem', verifyAuthMiddleware, function (req, res, next) {
     //const id = req.params.id;
     validateDeleteItem(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -269,7 +269,7 @@ router.put('/deleteItem', verifyAuthMiddleware, function (req, res, next) {
             const data = { orderId, cartId, userSession };
             deleteItem(data, function (err, order) {
                 if (err) {
-                    if (err.message === "Not Enough Permission to change Order") {
+                    if (err.message === "Not Enough Permission to delete this item") {
                         res.status(401).send(err.message);
                     }
                     else if (err.message === "Not Enough Permission to change Order") {
@@ -277,17 +277,15 @@ router.put('/deleteItem', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
-                    res.status(200).send("An Order has been changed");
+                    res.status(200).send("An Item has been deleted");
                 }
             });
         }
     });
 });
-
-
 
 export default router;

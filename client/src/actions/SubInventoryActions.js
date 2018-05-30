@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { URL } from "./URL";
 
 export const ADD_SUBINVENTORY_STARTED = "ADD_SUBINVENTORY_STARTED";
 export const ADD_SUBINVENTORY_FULFILLED = "ADD_SUBINVENTORY_FULFILLED";
@@ -63,11 +64,11 @@ export const CLOSE_ADD = "CLOSE_ADD";
 export const SET_UPDATING_SUBINVENTORY_FULFILLED = "SET_UPDATING_SUBINVENTORY_FULFILLED";
 export const CLEAR_INVENTORY_FULFILLED = "CLEAR_INVENTORY_FULFILLED";
 
-const WS_URL = "https://api.israhospitality.com/subInventories/";
+const WS_URL = URL + "/subInventories/";
 
-const WS_URL_CART = "https://api.israhospitality.com/carts/"
+const WS_URL_CART = URL + "/carts/"
 
-const WS_URL_ORDER = "https://api.israhospitality.com/orders/"
+const WS_URL_ORDER = URL + "/orders/"
 
 export function addSubInventory(data) {
     return function (dispatch) {

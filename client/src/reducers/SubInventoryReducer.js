@@ -257,7 +257,7 @@ export default function (state = initialState, action) {
             return { ...state, isRecoveringInventory: false };
         }
         case RECOVER_SUBINVENTORY_REJECTED:{
-            const error = action.payload;
+            const error = action.payload.data;
             return { ...state, isRecoveringInventory: false, recoveringInventoryError: error };
         }
         case DELETE_SUBINVENTORY_TRASH_STARTED: {

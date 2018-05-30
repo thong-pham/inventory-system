@@ -10,7 +10,8 @@ const router = Router();
 router.post('/', verifyAuthMiddleware, function (req, res, next) {
     validateCreateSubInventory(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -34,7 +35,7 @@ router.post('/', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -50,7 +51,8 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
     if (id) {
         validateUpdateSubInventory(req.body, function (err) {
             if (err) {
-                res.status(400).send(err);
+                console.log(err);
+                res.status(400).send("Data missing");
             }
             else {
                 const userSession = req.session;
@@ -69,7 +71,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                         }
                         else {
                             console.log(err);
-                            res.status(500).send(err);
+                            res.status(500).send("An error happens in the backend");
                         }
                     }
                     else {
@@ -105,7 +107,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -123,7 +125,8 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
     if (id) {
         validateCreateInventory(req.body, function (err) {
             if (err) {
-                res.status(400).send(err);
+                console.log(err);
+                res.status(400).send("Data missing");
             }
             else {
                 const userSession = req.session;
@@ -142,7 +145,7 @@ router.put('/:id', verifyAuthMiddleware, function (req, res, next) {
                         }
                         else {
                             console.log(err);
-                            res.status(500).send(err);
+                            res.status(500).send("An error happens in the backend");
                         }
                     }
                     else {
@@ -178,7 +181,7 @@ router.put('/:id/recover', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -212,7 +215,7 @@ router.delete('/:id/trash', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -230,7 +233,7 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
     getSubInventoriesByCompany(company, function (err, inventories) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
         }
         else {
             res.status(200).send(inventories);
@@ -243,7 +246,7 @@ router.get('/trash', verifyAuthMiddleware, function (req, res, next) {
     getSubInventoriesInTrash(company, function (err, inventories) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
         }
         else {
             res.status(200).send(inventories);

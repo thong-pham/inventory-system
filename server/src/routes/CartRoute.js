@@ -8,7 +8,8 @@ const router = Router();
 router.post('/createCart', verifyAuthMiddleware, function (req, res, next) {
     validateCart(req.body, function (err) {
         if (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400).send("Data missing");
         }
         else {
             const userSession = req.session;
@@ -26,7 +27,7 @@ router.post('/createCart', verifyAuthMiddleware, function (req, res, next) {
                     }
                     else {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(500).send("An error happens in the backend");
                     }
                 }
                 else {
@@ -49,7 +50,7 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
                 }
                 else {
                     console.log(err);
-                    res.status(500).send(err);
+                    res.status(500).send("An error happens in the backend");
                 }
             }
             else {
@@ -67,7 +68,7 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
     getPendingCarts(username, function (err, carts) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(500).send("An error happens in the backend");
 
         }
         else {
@@ -82,7 +83,8 @@ router.put('/updateCart/:id', verifyAuthMiddleware, function (req, res, next) {
     if (id) {
         validateCart(req.body, function (err) {
             if (err) {
-                res.status(400).send(err);
+                console.log(err);
+                res.status(400).send("Data missing");
             }
             else {
                 const userSession = req.session;
@@ -101,7 +103,7 @@ router.put('/updateCart/:id', verifyAuthMiddleware, function (req, res, next) {
                         }
                         else {
                             console.log(err);
-                            res.status(500).send(err);
+                            res.status(500).send("An error happens in the backend");
                         }
                     }
                     else {
@@ -115,7 +117,5 @@ router.put('/updateCart/:id', verifyAuthMiddleware, function (req, res, next) {
         res.status(400).send("id param required");
     }
 });
-
-
 
 export default router;

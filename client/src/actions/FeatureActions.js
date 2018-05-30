@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URL } from "./URL";
 
 export const GET_QUALITY_STARTED = "GET_QUALITY_STARTED";
 export const GET_QUALITY_FULFILLED = "GET_QUALITY_FULFILLED";
@@ -68,7 +69,7 @@ export const CLEAR_ALL_FEATURES = "CLEAR_ALL_FEATURES";
 
 export const ERROR_INPUT_FEATURE = "ERROR_INPUT_FEATURE";
 
-const WS_URL = "https://api.israhospitality.com/features/";
+const WS_URL = URL + "/features/";
 
 export function getQualities(data) {
     return function (dispatch) {

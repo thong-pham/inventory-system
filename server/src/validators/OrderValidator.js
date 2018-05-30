@@ -18,7 +18,7 @@ export function validateChangeOrder(data, callback) {
     if (!data.cartId) {
         errors["cartId"] = "Cart Id is Required";
     }
-    if (!data.quantity) {
+    if (data.quantity === null) {
         errors["quantity"] = "Quantity is Required";
     }
     if (Object.keys(errors).length === 0) {
