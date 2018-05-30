@@ -172,6 +172,7 @@ class ViewInventories extends Component {
         const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
                 deletingInventoryError, isUpdatingInventory, updatingInventoryError } = this.props.inventory;
         const { quantity, openPlus, openMinus } = this.props.inventory;
+
         let error = null;
         if (fetchingInventoriesError) {
             error = (
@@ -210,10 +211,10 @@ class ViewInventories extends Component {
                 <Table.Row key={inventory.id}>
                     <Table.Cell>{inventory.sku}</Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
-                    <Table.Cell >{inventory.price}</Table.Cell>
-                    <Table.Cell >{inventory.unit}</Table.Cell>
-                    <Table.Cell >{inventory.capacity}</Table.Cell>
-                    <Table.Cell >
+                    <Table.Cell>{inventory.price}</Table.Cell>
+                    <Table.Cell>{inventory.unit}</Table.Cell>
+                    <Table.Cell>{inventory.capacity}</Table.Cell>
+                    <Table.Cell>
                         {inventory.stock}
                         <hr />
                         { (openPlus === inventory.id) ?
@@ -257,7 +258,8 @@ class ViewInventories extends Component {
                                       </Grid.Row>
                                     </Grid>  : null }
                     </Table.Cell>
-                    <Table.Cell >
+                    <Table.Cell>{inventory.pending}</Table.Cell>
+                    <Table.Cell>
                         <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
                         <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} />
                         <Icon name='minus' size='large' onClick={this.onOpenMinus.bind(this, inventory)} />
@@ -278,6 +280,7 @@ class ViewInventories extends Component {
                             <Table.HeaderCell width={1}>Unit</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell width={2} sorted={column === 'stock' ? direction : null} onClick={this.handleSort('stock')}>Stock</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Pending</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>

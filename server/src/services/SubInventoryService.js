@@ -261,7 +261,7 @@ export function getSubInventoriesByCompany(company, callback){
               callback(err);
           }
           else {
-              var newInv = [];
+              //var newInv = [];
               var count = 0;
               inventories.forEach(function(inventory){
                   getInventoryBySkuDAO(inventory.mainSku, function(err, inv){
@@ -271,21 +271,21 @@ export function getSubInventoriesByCompany(company, callback){
                       else if (inv) {
                           inventory.mainStock = inv.stock;
                           inventory.unit = inv.unit;
-                          newInv.push(inventory);
+                          //newInv.push(inventory);
                           count += 1;
                             if (count === inventories.length){
                                 //console.log(newInv);
-                                callback(null, newInv);
+                                callback(null, inventories);
                             }
                       }
                       else {
                           inventory.mainStock = 0;
                           inventory.unit = "N/A"
-                          newInv.push(inventory);
+                          //newInv.push(inventory);
                           count += 1;
                           if (count === inventories.length){
                               //console.log(newInv);
-                              callback(null, newInv);
+                              callback(null, inventories);
                           }
                       }
                   });

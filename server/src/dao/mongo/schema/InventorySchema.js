@@ -11,6 +11,8 @@ const InventorySchema = mongoose.Schema({
 
     capacity: { type: Number, required: true },
 
+    pending: { type: Number, required: false },
+
     productName: {
         en: { type: String, required: true },
     },

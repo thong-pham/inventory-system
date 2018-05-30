@@ -15,6 +15,7 @@ import {
 import { createImport as createImportDAO,
         getPendingImports as getPendingImportsDAO,
         getImportById as getImportByIdDAO,
+        getImportBySku as getImportBySkuDAO,
         removeImportById as removeImportByIdDAO,
         updateImportById as updateImportByIdDAO
     } from "./../dao/mongo/impl/ImportDAO";
@@ -725,7 +726,42 @@ export function getPendingImports(callback){
 }
 
 export function getInventories(callback) {
-    getInventoriesDAO(callback);
+    getInventoriesDAO(function(err, inventories){
+        if (err){
+            callback(err);
+        }
+        else if(inventories){
+            var count = 0;
+            inventories.forEach(function(inventory){
+                getImportBySkuDAO(inventory.sku, function(err, importData){
+                     if (err){
+                        callback(err);
+                     }
+                     else if(importData){
+                         inventory.pending = importData.quantity;
+                         count += 1;
+                         if (count === inventories.length){
+                             //console.log(newInv);
+                             callback(null, inventories);
+                         }
+                     }
+                     else {
+                        inventory.pending = 0;
+                        count += 1;
+                        if (count === inventories.length){
+                            //console.log(newInv);
+                            callback(null, inventories);
+                        }
+                     }
+                });
+
+            });
+        }
+        else {
+            const err = new Error("Error");
+            callback(err);
+        }
+    });
 }
 
 export function getInventoriesInTrash(callback) {
