@@ -71,8 +71,12 @@
    height: 45px !important
 }
 
-.menuDropdown {
-    height: 110 !important;
+.inventoryDropdown {
+    height: 145 !important;
+}
+
+.orderDropdown {
+    height: 75 !important;
 }
 
 @media only screen and (max-width: 1280px) {

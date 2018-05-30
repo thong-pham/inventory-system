@@ -34,7 +34,7 @@ class ViewCompanies extends Component {
 
     handleName = (e) => {
         const { dispatch } = this.props;
-        dispatch(trackName(e.target.value));
+        dispatch(trackName(e.target.value.trim()));
     }
 
     onCancel = () => {

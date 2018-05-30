@@ -8,8 +8,7 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-//import { getInventories, deleteInventory, rejectEdit, getSubInventories, addToCart, trackNumber } from "./../../actions/InventoryActions";
-import { getApprovedOrders, getApprovedOrdersByCompany } from "./../../actions/OrderActions";
+import { getProcessedOrders, getProcessedOrdersByCompany } from "./../../actions/OrderActions";
 
 class ViewApprovedOrders extends Component {
     state = { activeIndex: 0 };
@@ -17,12 +16,11 @@ class ViewApprovedOrders extends Component {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
         if (user.company === 'ISRA'){
-            dispatch(getApprovedOrders({ token: token }));
+            dispatch(getProcessedOrders({ token: token }));
         }
         else {
-            dispatch(getApprovedOrdersByCompany({ token: token}));
+            dispatch(getProcessedOrdersByCompany({ token: token}));
         }
-
     }
 
     handleClick = (e, titleProps) => {
@@ -36,7 +34,7 @@ class ViewApprovedOrders extends Component {
     render() {
         const { activeIndex } = this.state;
         const { user } = this.props.auth;
-        const { approvedOrders, isFetchingApprovedOrders, fetchingApprovedOrdersError } = this.props.order;
+        const { processedOrders, fetchingApprovedOrdersError } = this.props.order;
         let error = null;
         if (fetchingApprovedOrdersError) {
             error = (
@@ -46,7 +44,7 @@ class ViewApprovedOrders extends Component {
                 </Message>
             )
         }
-        const ordersView = approvedOrders.map(function (order) {
+        const ordersView = processedOrders.map(function (order) {
             const detailsView = order.details.map(function(cart){
                 return (
                     <Item key={cart.id}>
@@ -88,7 +86,7 @@ class ViewApprovedOrders extends Component {
             )
         }, this);
         let tableView = <h4>No Approved Orders Found.</h4>
-        if (approvedOrders.length > 0) {
+        if (processedOrders.length > 0) {
             tableView = (
                 <Table celled fixed color='blue'>
                     <Table.Header>
@@ -97,7 +95,7 @@ class ViewApprovedOrders extends Component {
                             <Table.HeaderCell width={2}>Details</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Approved By</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Proccessed By</Table.HeaderCell>
                             { (user.company === 'ISRA') ? <Table.HeaderCell width={1}>Company</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
@@ -110,7 +108,7 @@ class ViewApprovedOrders extends Component {
         return (
           <BaseLayout>
               <Segment textAlign='center' >
-                  { (user.company === 'ISRA') ? <Header as="h2">Approved Inventory List</Header> : <Header as="h2">{user.company} - Approved Order List</Header> }
+                  { (user.company === 'ISRA') ? <Header as="h2">Processed Order List</Header> : <Header as="h2">{user.company} - Processed Order List</Header> }
                   {error}
                   <Container>
                       {tableView}

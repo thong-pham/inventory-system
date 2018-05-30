@@ -50,11 +50,8 @@ class BaseLayout extends Component {
         else if (menuItem === "viewOrders") {
             dispatch(push('/orders'));
         }
-        else if (menuItem === "viewApprovedOrders") {
-            dispatch(push('/approvedOrders'));
-        }
-        else if (menuItem === "viewCanceledOrders") {
-            dispatch(push('/canceledOrders'));
+        else if (menuItem === "viewProcessedOrders") {
+            dispatch(push('/processedOrders'));
         }
         else if (menuItem === "viewCode") {
             dispatch(push('/code'));
@@ -95,19 +92,19 @@ class BaseLayout extends Component {
                 <Menu inverted className="menuTop">
                     <Menu.Item>
                       <Dropdown item text='Inventory'>
-                        <Dropdown.Menu className="menuDropdown">
+                        <Dropdown.Menu className="inventoryDropdown">
                           <Dropdown.Item onClick={this.handleClick.bind(this, "viewInventories")}><Icon name='cube' />ISRA Inventories</Dropdown.Item>
                           <Dropdown.Item onClick={this.handleClick.bind(this, "addInventory")}><Icon name='add' />Add Product</Dropdown.Item>
-                          <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "importInventory")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='unordered list' />Pending Imports</Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     </Menu.Item>
                     <Menu.Item>
                       <Dropdown item text='Order'>
-                        <Dropdown.Menu className="menuDropdown">
+                        <Dropdown.Menu className="orderDropdown">
                           <Dropdown.Item onClick={this.handleClick.bind(this, "viewOrders")}><Icon name='list ul' />Pending Orders</Dropdown.Item>
-                          <Dropdown.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")}><Icon name='checkmark box' />Approved Orders</Dropdown.Item>
-                          <Dropdown.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")}><Icon name='checkmark box' />Canceled Orders</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "viewProcessedOrders")}><Icon name='checkmark box' />Processed Orders</Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     </Menu.Item>
@@ -201,19 +198,19 @@ class BaseLayout extends Component {
                 </Menu.Item>
                 <Menu.Item>
                   <Dropdown item text='Inventory'>
-                    <Dropdown.Menu className="menuDropdown">
+                    <Dropdown.Menu className="inventoryDropdown">
                       <Dropdown.Item onClick={this.handleClick.bind(this, "viewInventories")}><Icon name='cube' />ISRA Inventories</Dropdown.Item>
                       <Dropdown.Item onClick={this.handleClick.bind(this, "addInventory")}><Icon name='add' />Add Product</Dropdown.Item>
-                      <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "importInventory")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='unordered list' />Pending Imports</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </Menu.Item>
                 <Menu.Item>
                   <Dropdown item text='Order'>
-                    <Dropdown.Menu className="menuDropdown">
+                    <Dropdown.Menu className="orderDropdown">
                       <Dropdown.Item onClick={this.handleClick.bind(this, "viewOrders")}><Icon name='list ul' />Pending Orders</Dropdown.Item>
-                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")}><Icon name='checkmark box' />Approved Orders</Dropdown.Item>
-                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")}><Icon name='checkmark box' />Canceled Orders</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewProcessedOrders")}><Icon name='checkmark box' />Processed Orders</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </Menu.Item>
@@ -270,13 +267,9 @@ class BaseLayout extends Component {
                     <Icon name='list ul' />
                       Pending Orders
                   </Menu.Item>
-                  <Menu.Item onClick={this.handleClick.bind(this, "viewApprovedOrders")} >
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewProcessedOrders")} >
                     <Icon name='checkmark box' />
-                      Approved Orders
-                  </Menu.Item>
-                  <Menu.Item onClick={this.handleClick.bind(this, "viewCanceledOrders")} >
-                    <Icon name='checkmark box' />
-                      Canceled Orders
+                      Processed Orders
                   </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
                     <Icon name='barcode' />

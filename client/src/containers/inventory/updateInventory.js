@@ -77,6 +77,7 @@ class UpdateInventory extends Component {
         const { inventory } = this.props.inventory;
         values.sku = inventory.sku;
         values.token = token;
+        values.productName = values.productName.trim();
         //console.log(values);
         return dispatch(updateInventory(values)).then(function (data) {
             dispatch(push("/inventory"));

@@ -1,23 +1,20 @@
 import { APPROVE_ORDER_STARTED, APPROVE_ORDER_FULFILLED, APPROVE_ORDER_REJECTED,
          GET_PENDING_ORDERS_STARTED, GET_PENDING_ORDERS_FULFILLED, GET_PENDING_ORDERS_REJECTED,
-         GET_APPROVED_ORDERS_STARTED, GET_APPROVED_ORDERS_FULFILLED, GET_APPROVED_ORDERS_REJECTED,
-         GET_CANCELED_ORDERS_STARTED, GET_CANCELED_ORDERS_FULFILLED, GET_CANCELED_ORDERS_REJECTED,
+         GET_PROCESSED_ORDERS_STARTED, GET_PROCESSED_ORDERS_FULFILLED, GET_PROCESSED_ORDERS_REJECTED,
          CHANGE_ORDER_STARTED, CHANGE_ORDER_FULFILLED, CHANGE_ORDER_REJECTED,
          DELETE_ORDER_STARTED, DELETE_ORDER_FULFILLED, DELETE_ORDER_REJECTED,
          CANCEL_ORDER_STARTED, CANCEL_ORDER_FULFILLED, CANCEL_ORDER_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT_ORDER
+         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT_ORDER,
+         SORT_ORDER, REV_ORDER
          } from "./../actions/OrderActions";
 
 const initialState = {
     pendingOrders: [],
-    approvedOrders: [],
-    canceledOrders: [],
+    processedOrders: [],
     isFetchingPendingOrders: false,
     fetchingPendingOrdersError: null,
-    isFetchingApprovedOrders: false,
-    fetchingApprovedOrdersError: null,
-    isFetchingCanceledOrders: false,
-    fetchingCanceledOrdersError: null,
+    isFetchingProcessedOrders: false,
+    fetchingProcessedOrdersError: null,
     isApprovingOrder: false,
     approvingOrderError: null,
     isChangingOrder: false,
@@ -49,27 +46,16 @@ export default function (state = initialState, action) {
             const error = action.payload.data;
             return { ...state, isFetchingPendingOrders: false, fetchingPendingOrdersError: error };
         }
-        case GET_APPROVED_ORDERS_STARTED: {
-            return { ...state, isFetchingApprovedOrders: true };
+        case GET_PROCESSED_ORDERS_STARTED: {
+            return { ...state, isFetchingProcessedOrders: true };
         }
-        case GET_APPROVED_ORDERS_FULFILLED: {
+        case GET_PROCESSED_ORDERS_FULFILLED: {
             const data = action.payload;
-            return { ...state, isFetchingApprovedOrders: false, approvedOrders: data };
+            return { ...state, isFetchingProcessedOrders: false, processedOrders: data };
         }
-        case GET_APPROVED_ORDERS_REJECTED: {
+        case GET_PROCESSED_ORDERS_REJECTED: {
             const error = action.payload.data;
-            return { ...state, isFetchingApprovedOrders: false, fetchingApprovedOrdersError: error };
-        }
-        case GET_CANCELED_ORDERS_STARTED:{
-            return { ...state, isFetchingCanceledOrders: true };
-        }
-        case GET_CANCELED_ORDERS_FULFILLED:{
-            const data = action.payload;
-            return { ...state, isFetchingCanceledOrders: false, canceledOrders: data };
-        }
-        case GET_CANCELED_ORDERS_REJECTED:{
-            const error = action.payload.data;
-            return { ...state, isFetchingCanceledOrders: false, fetchingCanceledOrdersError: error };
+            return { ...state, isFetchingProcessedOrders: false, fetchingProcessedOrdersError: error };
         }
         case APPROVE_ORDER_STARTED: {
             return { ...state, isApprovingOrder: true };
@@ -161,8 +147,31 @@ export default function (state = initialState, action) {
             const error = action.payload;
             return {...state, errorInput: error };
         }
+        case SORT_ORDER:{
+            const data = action.payload;
+            if (data === 'time') state.pendingOrders.sort(compareTime);
+            return { ...state };
+        }
+        case REV_ORDER:{
+            state.pendingOrders.reverse();
+            return { ...state };
+        }
         default: {
             return state;
         }
     }
+}
+
+function compareTime(a,b){
+    const idA = a.createdAt;
+    const idB = b.createdAt;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
 }

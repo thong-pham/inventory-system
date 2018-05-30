@@ -4,13 +4,9 @@ export const GET_PENDING_ORDERS_STARTED = "GET_PENDING_ORDERS_STARTED";
 export const GET_PENDING_ORDERS_FULFILLED = "GET_PENDING_ORDERS_FULFILLED";
 export const GET_PENDING_ORDERS_REJECTED = "GET_PENDING_ORDERS_REJECTED";
 
-export const GET_APPROVED_ORDERS_STARTED = "GET_APPROVED_ORDERS_STARTED";
-export const GET_APPROVED_ORDERS_FULFILLED = "GET_APPROVED_ORDERS_FULFILLED";
-export const GET_APPROVED_ORDERS_REJECTED = "GET_APPROVED_ORDERS_REJECTED";
-
-export const GET_CANCELED_ORDERS_STARTED = "GET_CANCELED_ORDERS_STARTED";
-export const GET_CANCELED_ORDERS_FULFILLED = "GET_CANCELED_ORDERS_FULFILLED";
-export const GET_CANCELED_ORDERS_REJECTED = "GET_CANCELED_ORDERS_REJECTED";
+export const GET_PROCESSED_ORDERS_STARTED = "GET_PROCESSED_ORDERS_STARTED";
+export const GET_PROCESSED_ORDERS_FULFILLED = "GET_PROCESSED_ORDERS_FULFILLED";
+export const GET_PROCESSED_ORDERS_REJECTED = "GET_PROCESSED_ORDERS_REJECTED";
 
 export const APPROVE_ORDER_STARTED = "APPROVE_ORDER_STARTED";
 export const APPROVE_ORDER_FULFILLED = "APPROVE_ORDER_FULFILLED";
@@ -33,6 +29,8 @@ export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_NUMBER = "TRACK_NUMBER";
 export const SET_VIEWING_ORDER = "SET_VIEWING_ORDER";
 export const ERROR_INPUT_ORDER = "ERROR_INPUT_ORDER";
+export const SORT_ORDER = "SORT_ORDER";
+export const REV_ORDER = "REV_ORDER";
 
 const WS_URL = "https://api.israhospitality.com/orders/";
 
@@ -74,82 +72,43 @@ export function getPendingOrderByCompany(data) {
     }
 }
 
-export function getApprovedOrders(data) {
+export function getProcessedOrders(data) {
     return function (dispatch) {
-        dispatch({ type: GET_APPROVED_ORDERS_STARTED });
-        return axios.get(WS_URL + "allApprovedOrders", { headers: { Authorization: data.token } })
+        dispatch({ type: GET_PROCESSED_ORDERS_STARTED });
+        return axios.get(WS_URL + "allProcessedOrders", { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: GET_APPROVED_ORDERS_FULFILLED, payload: data });
+                dispatch({ type: GET_PROCESSED_ORDERS_FULFILLED, payload: data });
                 return data;
             })
             .catch(function (error) {
                 const response = error.response;
-                dispatch({ type: GET_APPROVED_ORDERS_REJECTED, payload: response });
+                dispatch({ type: GET_PROCESSED_ORDERS_REJECTED, payload: response });
                 throw response;
             })
     }
 }
 
-export function getApprovedOrdersByCompany(data) {
+export function getProcessedOrdersByCompany(data) {
     return function (dispatch) {
-        dispatch({ type: GET_APPROVED_ORDERS_STARTED });
-        return axios.get(WS_URL + "approvedOrders", { headers: { Authorization: data.token } })
+        dispatch({ type: GET_PROCESSED_ORDERS_STARTED });
+        return axios.get(WS_URL + "processedOrders", { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: GET_APPROVED_ORDERS_FULFILLED, payload: data });
+                dispatch({ type: GET_PROCESSED_ORDERS_FULFILLED, payload: data });
                 return data;
             })
             .catch(function (error) {
                 const response = error.response;
-                dispatch({ type: GET_APPROVED_ORDERS_REJECTED, payload: response });
+                dispatch({ type: GET_PROCESSED_ORDERS_REJECTED, payload: response });
                 throw response;
             })
     }
 }
-
-export function getCanceledOrders(data) {
-    return function (dispatch) {
-        dispatch({ type: GET_CANCELED_ORDERS_STARTED });
-        return axios.get(WS_URL + "allCanceledOrders", { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: GET_CANCELED_ORDERS_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: GET_CANCELED_ORDERS_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
-export function getCanceledOrdersByCompany(data) {
-    return function (dispatch) {
-        dispatch({ type: GET_CANCELED_ORDERS_STARTED });
-        return axios.get(WS_URL + "canceledOrders", { headers: { Authorization: data.token } })
-            .then(function (response) {
-                return response.data;
-            })
-            .then(function (data) {
-                dispatch({ type: GET_CANCELED_ORDERS_FULFILLED, payload: data });
-                return data;
-            })
-            .catch(function (error) {
-                const response = error.response;
-                dispatch({ type: GET_CANCELED_ORDERS_REJECTED, payload: response });
-                throw response;
-            })
-    }
-}
-
 
 export function approveOrder(data) {
     const order = data.order;
@@ -278,4 +237,16 @@ export function errorInput(data){
     return function (dispatch) {
         dispatch({type: ERROR_INPUT_ORDER, payload: data});
     }
+}
+
+export function sortOrder(data){
+   return function (dispatch){
+       dispatch({ type : SORT_ORDER, payload: data})
+   }
+}
+
+export function reverseOrder(){
+   return function (dispatch){
+       dispatch({ type : REV_ORDER })
+   }
 }

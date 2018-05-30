@@ -97,25 +97,25 @@ class ViewAccount extends Component {
 
     handleCurrent(e){
         const { dispatch } = this.props;
-        dispatch(trackCurrent(e.target.value));
+        dispatch(trackCurrent(e.target.value.trim()));
     }
 
     handleNew(e){
         const { dispatch } = this.props;
-        dispatch(trackNew(e.target.value));
+        dispatch(trackNew(e.target.value.trim()));
     }
 
     handleName(e){
         const { dispatch } = this.props;
-        dispatch(trackName(e.target.value));
+        dispatch(trackName(e.target.value.trim()));
     }
     handleNumber(e){
         const { dispatch } = this.props;
-        dispatch(trackNumber(e.target.value));
+        dispatch(trackNumber(e.target.value.trim()));
     }
     handleEmail(e){
         const { dispatch } = this.props;
-        dispatch(trackEmail(e.target.value));
+        dispatch(trackEmail(e.target.value.trim()));
     }
 
     onChangePass(){

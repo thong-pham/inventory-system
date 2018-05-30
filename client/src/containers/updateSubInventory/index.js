@@ -54,6 +54,7 @@ class UpdateSubInventory extends Component {
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
         values.token = token;
+        values.productName = values.productName.trim();
         return dispatch(updateSubInventory(values)).then(function (data) {
             dispatch(push("/subInventory"));
         });

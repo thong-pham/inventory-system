@@ -65,8 +65,8 @@ export default function (state = initialState, action) {
         }
         case ADD_SUBINVENTORY_FULFILLED: {
             const data = action.payload;
-            const newInventory = state.inventories.concat([data]);
-            return { ...state, isAddingInventory: false, inventories: newInventory, addingInventoryError: null };
+            //const newInventory = state.inventories.concat([data]);
+            return { ...state, isAddingInventory: false, addingInventoryError: null };
         }
         case ADD_SUBINVENTORY_REJECTED: {
             const error = action.payload.data;

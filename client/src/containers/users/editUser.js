@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { reduxForm, Field, formValueSelector } from "redux-form";
+import { reduxForm, Field } from "redux-form";
 import { Header, Segment, Input, Label, Form, Button, Message, Menu, Dropdown, Container } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 import axios from 'axios';
@@ -9,12 +9,12 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { addUser } from "./../../actions/UserActions";
+import { setUpdatingUser, editUser, clearUser } from "./../../actions/UserActions";
 import { getCompanies } from "./../../actions/CompanyActions";
 
 function validate(values) {
     var errors = {};
-    const { username, roles, company, password } = values;
+    const { username, roles, company } = values;
     if (!username || username.trim() === "") {
         errors.username = "Username is Required";
     }
@@ -24,21 +24,17 @@ function validate(values) {
     if (!company || company.trim() === "") {
         errors.company = "Company is Required";
     }
-    if (!password || password.trim() === "") {
-        errors.password = "Password is Required";
-    }
     return errors;
 }
 
-class AddUser extends Component {
+class EditUser extends Component {
     componentWillMount() {
         const { token } = this.props.auth;
         const { dispatch } = this.props;
-        //dispatch(getUsers({token:token}));
+        const idParam = this.props.location.pathname.split("/")[2];
+        dispatch(setUpdatingUser(idParam));
         dispatch(getCompanies({ token: token }));
-        //if (token) {
-        //    dispatch(push("/inventory"));
-        //}
+
     }
     renderField({ input, meta: { touched, error }, ...custom }) {
         const hasError = touched && error !== undefined;
@@ -52,21 +48,22 @@ class AddUser extends Component {
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
         values.token = token;
-        return dispatch(addUser(values)).then(function (data) {
+        values.username = values.username.trim();
+        return dispatch(editUser(values)).then(function (data) {
             dispatch(push("/users"));
         });
     }
     onBack(){
-        const { dispatch } = this.props;
-        dispatch(push("/users"));
+      const { dispatch } = this.props;
+      dispatch(clearUser());
+      dispatch(push("/users"));
     }
-
     render() {
         const { handleSubmit, pristine, initialValues, errors, submitting, roleOptions } = this.props;
-        const { addingUserError, isAddingUser, pendingUsers } = this.props.user;
+        const { updatingUserError, isUpdatingUser, user } = this.props.user;
         const { companies } = this.props.company;
 
-        const renderSelectCompany = ({ input, type, meta: { touched, error }, children }) => (
+        const renderSelectField = ({ input, type, meta: { touched, error }, children }) => (
               <div className="selectDiv">
                   <select {...input}>
                     {children}
@@ -83,11 +80,11 @@ class AddUser extends Component {
                </div>
         )
         let error = null;
-        if (addingUserError) {
+        if (updatingUserError) {
             error = (
                 <Message negative>
-                    <Message.Header>Error while Add User</Message.Header>
-                    <p>{addingUserError}</p>
+                    <Message.Header>Error while Editing User</Message.Header>
+                    <p>{updatingUserError}</p>
                 </Message>
             )
         }
@@ -95,15 +92,15 @@ class AddUser extends Component {
           <BaseLayout>
             <Segment textAlign='center'>
                 <Container>
-                <Header as="h2">Add User</Header>
+                <Header as="h2">Edit User</Header>
                 {error}
-                <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isAddingUser}>
+                <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isUpdatingUser}>
                     <Form.Field inline>
                         <Field name="username" placeholder="Enter the username" component={this.renderField}></Field>
                     </Form.Field>
                     <Form.Field inline>
                         <label>Select Company</label>
-                        <Field name="company" component={renderSelectCompany}>
+                        <Field name="company" component={renderSelectField}>
                             <option />
                              {Object.keys(companies).map(key =>
                                 <option key={key} value={companies[key].name.en}>{companies[key].name.en}</option>)}
@@ -126,10 +123,8 @@ class AddUser extends Component {
                             <option value="sales">Sales</option>
                           </Field>
                     </Form.Field> : null}
-                    <Form.Field inline>
-                        <Field name="password" type="password" placeholder="Enter the Password" component={this.renderField}></Field>
-                    </Form.Field>
-                    <Button primary loading={submitting} disabled={submitting}>Add User</Button>
+
+                    <Button primary loading={submitting} disabled={submitting}>Save Changes</Button>
                     <Button secondary onClick={this.onBack.bind(this)}>Cancel</Button>
                 </Form>
                 </Container>
@@ -140,22 +135,29 @@ class AddUser extends Component {
 }
 
 function mapStatesToProps(state) {
-    const initialValues = state.user.user;
-    if (initialValues && initialValues.name && initialValues.id) {
-        initialValues.name = initialValues.name.en;
+    const user = state.user.user;
+    var initialValues = null;
+    var roleOptions = null;
+    if (user){
+        roleOptions = user.company;
+        initialValues = {
+            id: user.id,
+            username: user.username,
+            roles: user.roles[0],
+            company: user.company
+        }
     }
-    const selectRoles = selector(state, "company");
     return {
         initialValues: initialValues,
         auth: state.auth,
         user: state.user,
         company: state.company,
         location: state.router.location,
-        roleOptions: selectRoles
+        roleOptions: roleOptions
     }
 }
-const selector = formValueSelector("AddUser");
-export default reduxForm({
-    form: "AddUser",
+
+export default connect(mapStatesToProps)(reduxForm({
+    form: "EditUser",
     validate
-})(connect(mapStatesToProps)(AddUser));
+})(EditUser));

@@ -197,12 +197,12 @@ class ViewFeatures extends Component {
 
     handleKey(e){
         const { dispatch } = this.props;
-        dispatch(handleInputKey(e.target.value));
+        dispatch(handleInputKey(e.target.value.trim()));
     }
 
     handleDescription(e){
         const { dispatch } = this.props;
-        dispatch(handleInputDescription(e.target.value));
+        dispatch(handleInputDescription(e.target.value.trim()));
     }
 
     onSaveAdd(kind){

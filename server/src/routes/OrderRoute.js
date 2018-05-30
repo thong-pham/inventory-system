@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createOrder, getPendingOrders, getPendingOrderByCompany, approveOrder, cancelOrder, deleteItem,
-        changeOrder, removeOrder, getApprovedOrders, getApprovedOrdersByCompany, getCanceledOrders, getCanceledOrdersByCompany } from "./../services/OrderService";
+        changeOrder, removeOrder, getProcessedOrders, getProcessedOrdersByCompany, getCanceledOrders, getCanceledOrdersByCompany } from "./../services/OrderService";
 import { validateOrderInventory, validateChangeOrder, validateDeleteItem } from "./../validators/OrderValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -102,8 +102,8 @@ router.get('/', verifyAuthMiddleware, function (req, res, next) {
     });
 });
 
-router.get('/allApprovedOrders', verifyAuthMiddleware, function (req, res, next) {
-    getApprovedOrders(function (err, orders) {
+router.get('/allProcessedOrders', verifyAuthMiddleware, function (req, res, next) {
+    getProcessedOrders(function (err, orders) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -115,9 +115,9 @@ router.get('/allApprovedOrders', verifyAuthMiddleware, function (req, res, next)
     });
 });
 
-router.get('/approvedOrders', verifyAuthMiddleware, function (req, res, next) {
+router.get('/processedOrders', verifyAuthMiddleware, function (req, res, next) {
     const company = req.session.company;
-    getApprovedOrdersByCompany(company, function (err, orders) {
+    getProcessedOrdersByCompany(company, function (err, orders) {
         if (err) {
             console.log(err);
             res.status(500).send(err);

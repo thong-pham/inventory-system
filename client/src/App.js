@@ -14,30 +14,35 @@ import { ConnectedRouter, routerMiddleware, push } from 'react-router-redux';
 import rootReducers from './reducers';
 
 import Login from "./containers/login";
-import AddUser from "./containers/addUser";
-import EditUser from "./containers/editUser";
-import ViewUsers from "./containers/viewUsers";
-import AddInventory from "./containers/addInventory";
-import AddSubInventory from "./containers/addSubInventory";
-import ImportInventory from "./containers/importInventory";
-import ImportInventoryByCamera from "./containers/importInventoryByCamera";
-import AddCompany from "./containers/addCompany";
-import ViewCompanies from "./containers/viewCompanies";
-import UpdateInventory from "./containers/updateInventory";
-import UpdateSubInventory from "./containers/updateSubInventory";
-import ViewFeatures from "./containers/viewFeatures";
-import ViewSubInventories from "./containers/viewSubInventories";
-import ApproveImport from "./containers/approveImport";
-import ViewInventories from "./containers/viewInventories";
+import AddUser from "./containers/users/addUser";
+import EditUser from "./containers/users/editUser";
+import ViewUsers from "./containers/users/viewUsers";
 
-import ViewCode from "./containers/viewCode";
 import ViewAccount from "./containers/viewAccount";
+
+import AddInventory from "./containers/inventory/addInventory";
+import ViewInventories from "./containers/inventory/viewInventories";
+import ImportInventory from "./containers/inventory/importInventory";
+import UpdateInventory from "./containers/inventory/updateInventory";
+import ApproveImport from "./containers/inventory/approveImport";
+
+import ImportInventoryByCamera from "./containers/importInventoryByCamera";
+
+import AddSubInventory from "./containers/addSubInventory";
+import ViewSubInventories from "./containers/viewSubInventories";
+import UpdateSubInventory from "./containers/updateSubInventory";
+
 import ViewInventoriesTrash from "./containers/trash/mainInventories";
 import ViewSubInventoriesTrash from "./containers/trash/subInventories";
 
+import AddCompany from "./containers/company/addCompany";
+import ViewCompanies from "./containers/company/viewCompanies";
+
+import ViewFeatures from "./containers/viewFeatures";
+import ViewCode from "./containers/viewCode";
+
 import ViewOrders from "./containers/viewOrders/pendingOrders";
-import ViewApprovedOrders from "./containers/viewOrders/approvedOrders";
-import ViewCanceledOrders from "./containers/viewOrders/canceledOrders";
+import ViewProcessedOrders from "./containers/viewOrders/processedOrders";
 
 const history = createHistory();
 const logger = createLogger();
@@ -98,8 +103,7 @@ class App extends Component {
                             <Route exact path="/inventory" component={ViewInventories} />
                             <Route exact path="/subInventory" component={ViewSubInventories} />
                             <Route exact path="/orders" component={ViewOrders} />
-                            <Route exact path="/approvedOrders" component={ViewApprovedOrders} />
-                            <Route exact path="/canceledOrders" component={ViewCanceledOrders} />
+                            <Route exact path="/processedOrders" component={ViewProcessedOrders} />
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />
                             <Route exact path="/feature" component={ViewFeatures} />

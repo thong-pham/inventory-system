@@ -11,11 +11,17 @@ import {
     getSubInventoriesInTrash as getSubInventoriesInTrashDAO
 } from "./../dao/mongo/impl/SubInventoryDAO";
 import { getInventoryBySku as getInventoryBySkuDAO } from "./../dao/mongo/impl/InventoryDAO";
-//import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
-import { getNextInventoryId, getNextRequestId, getNextSubInventoryId, getNextTrashId } from "./CounterService";
+
+import { getNextInventoryId, getNextSubInventoryId, getNextTrashId, getNextCodeId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
 
 import { createInventoryInTrash as createInventoryInTrashDAO } from "./../dao/mongo/impl/TrashDAO";
+
+import {
+      createCode as createCodeDAO,
+      getCodeByKey as getCodeByKeyDAO,
+      removeCodeBySku as removeCodeBySkuDAO
+      } from "./../dao/mongo/impl/CodeDAO";
 
 export function createSubInventory(data, callback) {
     async.waterfall([
@@ -79,6 +85,22 @@ export function createSubInventory(data, callback) {
                 timestamp: new Date((new Date()).getTime() + (3600000*(-7)))
             }]
             createSubInventoryDAO(data, waterfallCallback);
+        },
+        function (inventory, waterfallCallback){
+           getNextCodeId(function (err, counterDoc){
+               waterfallCallback(err, inventory, counterDoc);
+           });
+        },
+        function (inventory, counterDoc, waterfallCallback){
+            const { company } = data.userSession;
+            const code = {
+                id: counterDoc.counter,
+                key: inventory.sku,
+                sku: inventory.sku,
+                mainSku: inventory.mainSku,
+                company: company
+            }
+            createCodeDAO(code, waterfallCallback);
         }
     ], callback);
 }

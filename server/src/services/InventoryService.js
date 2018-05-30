@@ -19,17 +19,14 @@ import { createImport as createImportDAO,
         updateImportById as updateImportByIdDAO
     } from "./../dao/mongo/impl/ImportDAO";
 
-import {
-    removeCodeBySku as removeCodeBySkuDAO
-} from "./../dao/mongo/impl/CodeDAO";
-
 import { createInventoryInTrash as createInventoryInTrashDAO } from "./../dao/mongo/impl/TrashDAO";
 
 import { getNextInventoryId, getNextSubInventoryId, getNextTrashId, getNextImportId, getNextCodeId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
 import {
       createCode as createCodeDAO,
-      getCodeByKey as getCodeByKeyDAO
+      getCodeByKey as getCodeByKeyDAO,
+      removeCodeBySku as removeCodeBySkuDAO
       } from "./../dao/mongo/impl/CodeDAO";
 
 export function createInventory(data, callback) {

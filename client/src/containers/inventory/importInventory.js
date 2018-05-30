@@ -54,6 +54,7 @@ class ImportInventory extends Component {
     }
     onSubmit(values, dispatch) {
         const { token, user } = this.props.auth;
+        values.code = values.code.trim();
         const data = {
            code: values.code,
            quantity: values.count * values.capacity,

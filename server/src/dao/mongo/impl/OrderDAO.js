@@ -34,8 +34,8 @@ export function getPendingOrders(callback) {
     });
 }
 
-export function getApprovedOrders(callback) {
-    Order.find({"status" : "approved"}, function (err, orders) {
+export function getProcessedOrders(callback) {
+    Order.find({"status" : ["approved","canceled"] }, function (err, orders) {
         callback(err, orders)
     });
 }
@@ -53,8 +53,8 @@ export function getPendingOrderByCompany(company, callback) {
     });
 }
 
-export function getApprovedOrdersByCompany(company, callback) {
-    Order.find({"status" : "approved", "company": company}, function (err, orders) {
+export function getProcessedOrdersByCompany(company, callback) {
+    Order.find({"status" : ["approved","canceled"], "company": company}, function (err, orders) {
         callback(err, orders)
     });
 }

@@ -8,8 +8,8 @@ import {
     getPendingOrderByCompany as getPendingOrderByCompanyDAO,
     changeOrderDetails as changeOrderDetailsDAO,
     removeOrderById as removeOrderByIdDAO,
-    getApprovedOrders as getApprovedOrdersDAO,
-    getApprovedOrdersByCompany as getApprovedOrdersByCompanyDAO,
+    getProcessedOrders as getProcessedOrdersDAO,
+    getProcessedOrdersByCompany as getProcessedOrdersByCompanyDAO,
     getCanceledOrders as getCanceledOrdersDAO,
     getCanceledOrdersByCompany as getCanceledOrdersByCompanyDAO
 
@@ -415,7 +415,7 @@ export function deleteItem(data, callback){
          //console.log(details);
          details.forEach(function(cart){
               if (cart.id === data.cartId){
-                  
+
               }
               else {
                   temp.push(cart);
@@ -456,16 +456,16 @@ export function getPendingOrders(callback) {
     getPendingOrdersDAO(callback);
 }
 
-export function getApprovedOrders(callback) {
-    getApprovedOrdersDAO(callback);
+export function getProcessedOrders(callback) {
+    getProcessedOrdersDAO(callback);
 }
 
 export function getCanceledOrders(callback) {
     getCanceledOrdersDAO(callback);
 }
 
-export function getApprovedOrdersByCompany(company, callback) {
-    getApprovedOrdersByCompanyDAO(company, callback);
+export function getProcessedOrdersByCompany(company, callback) {
+    getProcessedOrdersByCompanyDAO(company, callback);
 }
 
 export function getPendingOrderByCompany(company, callback) {

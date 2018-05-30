@@ -112,7 +112,7 @@ class AddSubInventory extends Component {
 
     handleSKU(e){
         const { dispatch } = this.props;
-        dispatch(inputSKU(e.target.value));
+        dispatch(inputSKU(e.target.value.trim()));
     }
 
     handleDesc(e){
@@ -130,6 +130,9 @@ class AddSubInventory extends Component {
         }
         if (!sku || (sku + "").trim() === ""){
             this.setState({errorInput: "SKU cannot be empty"});
+        }
+        if (sku === generatedSKU){
+            this.setState({errorInput: "This SKU has been used in the main inventory"});
         }
         else {
             this.setState({errorInput: null});

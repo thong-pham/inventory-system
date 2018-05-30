@@ -8,12 +8,15 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-//import { getInventories, deleteInventory, rejectEdit, getSubInventories, addToCart, trackNumber } from "./../../actions/InventoryActions";
 import { getPendingOrders, getPendingOrderByCompany, approveOrder, changePopUp, closePopUp,
-        changeOrder, deleteItem, trackNumber, deleteOrder, cancelOrder, errorInput } from "./../../actions/OrderActions";
+        changeOrder, deleteItem, trackNumber, deleteOrder, cancelOrder, errorInput, sortOrder, reverseOrder } from "./../../actions/OrderActions";
 
 class ViewOrders extends Component {
-    state = { activeIndex: 0 };
+    state = {
+        activeIndex: 0,
+        column: null,
+        direction: null,
+    };
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
@@ -117,6 +120,7 @@ class ViewOrders extends Component {
 
         this.setState({ activeIndex: newIndex })
     }
+
     checkOrderError = (id) => {
         const { cartErrors, orderError } = this.props.order;
         var check = false;
@@ -133,11 +137,31 @@ class ViewOrders extends Component {
         }
         return data;
     }
+
+    handleSort = clickedColumn => () => {
+        const { dispatch } = this.props;
+        const { column, direction } = this.state;
+
+        if (column !== clickedColumn){
+            this.setState({
+              column: clickedColumn,
+              direction: 'ascending',
+            });
+            dispatch(sortOrder(clickedColumn));
+        }
+        else {
+            this.setState({
+               direction: direction === 'ascending' ? 'descending' : 'ascending',
+            });
+            dispatch(reverseOrder());
+        }
+    }
     render() {
-        const { activeIndex } = this.state;
+        const { activeIndex, column, direction } = this.state;
         const { user } = this.props.auth;
         const { pendingOrders, fetchingPendingOrdersError, approvingOrderError,
                 change, quantity, cartErrors, orderError, errorInput } = this.props.order;
+
         let error = null;
         let approveError = null;
         if (fetchingPendingOrdersError) {
@@ -227,8 +251,11 @@ class ViewOrders extends Component {
                       </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>
                     <Table.Cell >{order.createdBy}</Table.Cell>
-                    <Table.Cell >{order.createdAt.slice(11,19)}</Table.Cell>
-                    <Table.Cell >{order.createdAt.slice(0,10)}</Table.Cell>
+                    <Table.Cell >
+                        {order.createdAt.slice(5,7)}/{order.createdAt.slice(8,10)}/{order.createdAt.slice(0,4)}
+                         <hr />
+                        {order.createdAt.slice(11,19)} PST
+                    </Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
                     <Table.Cell >
                         { (user.company !== 'ISRA') ? <Button size='tiny' color='red' onClick={() => this.onPressDelete(order)}><Icon name='trash outline' />Delete</Button> : null }
@@ -241,15 +268,14 @@ class ViewOrders extends Component {
         let tableView = <h4>No Orders Found. Please Add Some </h4>
         if (pendingOrders.length > 0) {
             tableView = (
-                <Table celled fixed color='blue'>
+                <Table celled fixed color='blue' sortable>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>Order Number</Table.HeaderCell>
                             <Table.HeaderCell width={3}>Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Time</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Date</Table.HeaderCell>
+                            <Table.HeaderCell width={1} sorted={column === 'time' ? direction : null} onClick={this.handleSort('time')}>Created At</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Company</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>

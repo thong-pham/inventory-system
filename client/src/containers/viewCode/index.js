@@ -45,7 +45,7 @@ class ViewCode extends Component {
 
     handleInput(e){
         const { dispatch } = this.props;
-        dispatch(trackInput(e.target.value));
+        dispatch(trackInput(e.target.value.trim()));
     }
 
     onPressConfirm(code){
@@ -191,7 +191,7 @@ class ViewCode extends Component {
                 </Table.Row>
             )
         }, this);
-        
+
         const skuView = codes.map(function (code, index) {
            const codeView = code.keys.map(function(keyCode, index){
               return (
@@ -237,7 +237,7 @@ class ViewCode extends Component {
                             </Grid> : null}
                     </Table.Cell>
                     <Table.Cell>
-                        <Button onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
+                        <Button primary onClick={this.onPressAdd.bind(this, code.sku)}>Add Code</Button>
                     </Table.Cell>
                 </Table.Row>
             )

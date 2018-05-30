@@ -24,7 +24,7 @@ export function createUser(data, callback) {
         },
         function (user, waterfallCallback) {
             if (user) {
-                var err = new Error("Email Already Exists");
+                var err = new Error("Username Already Exists");
                 waterfallCallback(err);
             }
             else {

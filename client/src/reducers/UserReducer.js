@@ -49,14 +49,14 @@ export default function (state = initialState, action) {
         case ADD_USER_FULFILLED: {
             const data = action.payload;
             const newUser = state.users.concat([data]);
-            return { ...state, isAddingUser: false, users: newUser };
+            return { ...state, isAddingUser: false, users: newUser, addingUserError: null };
         }
         case ADD_USER_REJECTED: {
             const error = action.payload.data;
             return { ...state, isAddingUser: false, addingUserError: error };
         }
         case GET_USERS_STARTED: {
-            return { ...state, isFetchingUsers: true };
+            return { ...state, isFetchingUsers: true, addingUserError: null };
         }
         case GET_USERS_FULFILLED: {
             const data = action.payload;
