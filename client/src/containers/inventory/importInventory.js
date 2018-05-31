@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
 import { Header, Segment, Input, Label, Form, Button, Message, Container } from "semantic-ui-react";
-import './../../../node_modules/react-redux-toastr/lib/css/react-redux-toastr.min.css';
+import '/home/ec2-user/inventory-system/client/node_modules/react-redux-toastr/lib/css/react-redux-toastr.min.css';
 
 import { push } from 'react-router-redux';
 
