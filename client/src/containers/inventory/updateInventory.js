@@ -30,7 +30,7 @@ function validate(values) {
         errors.price = "Price is Required";
     }
     else if (isNaN(Number(price))) {
-        errors.price = "Price must be an integer";
+        errors.price = "Price must be a number";
     }
     else if (price < 0){
         errors.price = "Price must be larger than or equal to 0";

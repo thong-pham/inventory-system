@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
 import { Header, Segment, Input, Label, Form, Button, Message, Container } from "semantic-ui-react";
+import './../../../node_modules/react-redux-toastr/lib/css/react-redux-toastr.min.css';
+
 import { push } from 'react-router-redux';
+
+import { toastr } from 'react-redux-toastr';
 
 import BaseLayout from "./../baseLayout";
 
@@ -59,12 +63,12 @@ class ImportInventory extends Component {
            code: values.code,
            quantity: values.count * values.capacity,
            capacity: values.capacity,
-           count: values.count
+           count: values.count,
+           token: token
         }
-        data.token = token;
         //console.log(data);
         return dispatch(importInventory(data)).then(function (data) {
-            alert("Import Successfully");
+            toastr.success('Message', 'Import Successfully');
         });
     }
     render() {
@@ -72,12 +76,13 @@ class ImportInventory extends Component {
         const { isImportingInventory, importingInventoryError } = this.props.import;
         let error = null;
         if (importingInventoryError) {
-            error = (
-                <Message negative>
-                    <Message.Header>Error while Importing Inventory</Message.Header>
-                    <p>{importingInventoryError}</p>
-                </Message>
-            )
+            // error = (
+            //     <Message negative>
+            //         <Message.Header>Error while Importing Inventory</Message.Header>
+            //         <p>{importingInventoryError}</p>
+            //     </Message>
+            // )
+            toastr.error(importingInventoryError);
         }
         return (
             <BaseLayout>

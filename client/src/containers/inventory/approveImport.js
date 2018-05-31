@@ -7,7 +7,8 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getPendingImports, deleteImport, inputCapacity, inputCount, updateImport } from "./../../actions/ImportActions";
+import { getPendingImports, deleteImport, inputCapacity, inputCount,
+        updateImport, importInventory, sortImport, reverseImport, putNextImport, modifyImport } from "./../../actions/ImportActions";
 
 import { approveInventory } from "./../../actions/InventoryActions";
 
@@ -15,7 +16,9 @@ class ApproveImport extends Component {
     state = {
         capacity: null,
         count: null,
-        errorInput: null
+        errorInput: null,
+        column: null,
+        direction: null
     }
     componentWillMount() {
         const { token, dispatch } = this.props;
@@ -46,7 +49,7 @@ class ApproveImport extends Component {
             }
             //console.log(data);
             dispatch(updateImport(data)).then(function(data){
-                  dispatch(getPendingImports({ token: token }));
+                  //dispatch(getPendingImports({ token: token }));
             });
             this.setState({capacity: null, count: null, errorInput: null})
         }
@@ -55,8 +58,23 @@ class ApproveImport extends Component {
     onPressDelete = (importData) => {
           const { dispatch, token } = this.props;
           dispatch(deleteImport({token: token, importData: importData})).then(function(data){
-              dispatch(getPendingImports({ token: token }));
+              //dispatch(getPendingImports({ token: token }));
           });
+    }
+
+    onDuplicate = (importData) => {
+        const { dispatch, token } = this.props;
+        const data = {
+           code: importData.code,
+           quantity: importData.quantity,
+           capacity: importData.capacity,
+           count: importData.count,
+           token: token
+        }
+        dispatch(importInventory(data)).then(function (response) {
+              dispatch(putNextImport({importData,response}));
+        });
+        this.setState({capacity: null, count: null });
     }
 
     triggerChange = (importData) => {
@@ -76,8 +94,26 @@ class ApproveImport extends Component {
         dispatch(inputCount(e.target.value));
     }
 
+    handleSort = clickedColumn => () => {
+        const { dispatch } = this.props;
+        const { column, direction } = this.state;
+        if (column !== clickedColumn){
+            this.setState({
+              column: clickedColumn,
+              direction: 'ascending',
+            });
+            dispatch(sortImport(clickedColumn));
+        }
+        else {
+            this.setState({
+               direction: direction === 'ascending' ? 'descending' : 'ascending',
+            });
+            dispatch(reverseImport());
+        }
+    }
+
     render() {
-        const { capacity, count, errorInput } = this.state;
+        const { capacity, count, errorInput, column, direction } = this.state;
         const { user } = this.props.auth;
         const isWorker = user.roles.indexOf("worker") >= 0;
         const isStoreManager = user.roles.indexOf("storeManager") >= 0;
@@ -126,6 +162,7 @@ class ApproveImport extends Component {
                     <Table.Cell >
                           { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='teal'  onClick={() => this.triggerChange(importData)}><Icon name='pencil' /></Button> : null }
                           { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' /></Button> : null }
+                          { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='blue'  onClick={() => this.onDuplicate(importData)}>X2</Button> : null }
                           { (capacity !== importData.id) ? <Button size='tiny' color='red' onClick={() => this.onPressDelete(importData)}><Icon name='trash outline' /></Button> : null }
                           { (capacity === importData.id) ? <Button size='tiny' color='blue' onClick={() => this.onPressEdit(importData)}>Save</Button> : null }
                           { (capacity === importData.id) ? <Button size='tiny' color='black' onClick={() => this.setState({capacity: null, count: null, errorInput: null})}>Close</Button> : null }
@@ -136,17 +173,17 @@ class ApproveImport extends Component {
         let tableView = <h4>No Imports Found. Please Add Some </h4>
         if (pendingImports.length > 0) {
             tableView = (
-                <Table celled fixed>
+                <Table celled fixed sortable>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell width={2}>SKU</Table.HeaderCell>
+                            <Table.HeaderCell width={2} sorted={column === 'sku' ? direction : null} onClick={this.handleSort('sku')}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Code</Table.HeaderCell>
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
-                            <Table.HeaderCell>Count</Table.HeaderCell>
+                            <Table.HeaderCell>Box Count</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Date</Table.HeaderCell>
                             <Table.HeaderCell>Imported By</Table.HeaderCell>
-                            <Table.HeaderCell width={3}>Options</Table.HeaderCell>
+                            <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>

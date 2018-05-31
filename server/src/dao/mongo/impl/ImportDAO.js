@@ -15,7 +15,7 @@ export function getImportById(id, callback) {
 }
 
 export function getImportBySku(sku, callback) {
-    Import.findOne({ "sku": sku }, function (err, importData) {
+    Import.find({ "sku": sku }, function (err, importData) {
         callback(err, importData)
     });
 }

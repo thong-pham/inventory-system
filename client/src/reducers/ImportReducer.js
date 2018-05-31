@@ -4,12 +4,14 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          CHANGE_IMPORT_STARTED, CHANGE_IMPORT_FULFILLED, CHANGE_IMPORT_REJECTED,
          DELETE_IMPORT_STARTED, DELETE_IMPORT_FULFILLED, DELETE_IMPORT_REJECTED,
          CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, FILL_CODE, CLEAR_IMPORT, INPUT_CAPACITY, INPUT_COUNT,
-         IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED,
+         IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED, SORT_IMPORT,
+         REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT
          } from "./../actions/ImportActions";
 
 const initialState = {
     pendingImports: [],
     approvedImports: [],
+    nextImport: null,
     isImportingInventory: false,
     importingInventoryError: null,
     isFetchingPendingImports: false,
@@ -43,7 +45,7 @@ export default function (state = initialState, action) {
         }
         case IMPORT_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isImportingInventory: false, importingInventoryError: null };
+            return { ...state, isImportingInventory: false, importingInventoryError: null, nextImport: data };
         }
         case IMPORT_INVENTORY_REJECTED: {
             const error = action.payload.data;
@@ -54,6 +56,7 @@ export default function (state = initialState, action) {
         }
         case GET_PENDING_IMPORTS_FULFILLED: {
             const data = action.payload;
+            //data.sort(compareSku);
             return { ...state, isFetchingPendingImports: false, pendingImports: data };
         }
         case GET_PENDING_IMPORTS_REJECTED: {
@@ -95,6 +98,13 @@ export default function (state = initialState, action) {
         }
         case CHANGE_IMPORT_FULFILLED: {
             const data = action.payload;
+            state.pendingImports.forEach(function(item){
+                if (item.id === data.id) {
+                    item.quantity = data.quantity;
+                    item.capacity = data.capacity;
+                    item.count = data.count;
+                }
+            });
             return {...state, isChangingImport: false  };
         }
         case CHANGE_IMPORT_REJECTED: {
@@ -106,6 +116,13 @@ export default function (state = initialState, action) {
         }
         case DELETE_IMPORT_FULFILLED: {
             const data = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.pendingImports.length; i++){
+                if (state.pendingImports[i].id === data.id ){
+                    index = i;
+                }
+            }
+            state.pendingImports.splice(index,1);
             return {...state, isDeletingImport: false, deletingImportError: null };
         }
         case DELETE_IMPORT_REJECTED: {
@@ -139,8 +156,39 @@ export default function (state = initialState, action) {
             const data = action.payload;
             return { ...state, count: data };
         }
+        case SORT_IMPORT:{
+            const data = action.payload;
+            if (data === 'sku') state.pendingImports.sort(compareSku);
+            else if (data === 'quantity') state.inventories.sort(compareQuantity);
+            else if (data === 'data') state.inventories.sort(compareDate);
+            return { ...state };
+        }
+        case REV_IMPORT:{
+            state.pendingImports.reverse();
+            return { ...state };
+        }
+        case NEXT_IMPORT:{
+            const { importData, response } = action.payload;
+            var index = state.pendingImports.indexOf(importData);
+            state.pendingImports.splice(index, 0, response);
+            return { ...state};
+        }
         default: {
             return state;
         }
     }
+}
+
+function compareSku(a,b){
+    const idA = a.sku;
+    const idB = b.sku;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
 }

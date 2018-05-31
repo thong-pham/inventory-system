@@ -739,7 +739,11 @@ export function getInventories(callback) {
                         callback(err);
                      }
                      else if(importData){
-                         inventory.pending = importData.quantity;
+                          inventory.pending = 0;
+                          importData.forEach(function(item){
+                              inventory.pending = inventory.pending + item.quantity;
+                          });
+                         
                          count += 1;
                          if (count === inventories.length){
                              //console.log(newInv);

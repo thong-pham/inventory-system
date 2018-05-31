@@ -206,7 +206,17 @@ export default function (state = initialState, action) {
         case FILTER_INVENTORY: {
             const data = action.payload;
             state.inventories = state.backUpInv;
-            const newInv = state.inventories.filter((element) => element.productName.en.toLowerCase().includes(data));
+            var list = data.split(' ');
+            
+            const newInv = state.inventories.filter((element) => {
+                  var count = 0;
+                  for (var i = 0; i < list.length; i++){
+                      if (element.productName.en.toLowerCase().includes(list[i])){
+                          count += 1;
+                      }
+                  }
+                  if (count === list.length) return element;
+            });
             return { ...state, inventories: newInv };
         }
         case SORT_INVENTORY:{

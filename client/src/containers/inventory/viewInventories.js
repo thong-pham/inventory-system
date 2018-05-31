@@ -215,7 +215,10 @@ class ViewInventories extends Component {
                     <Table.Cell>{inventory.unit}</Table.Cell>
                     <Table.Cell>{inventory.capacity}</Table.Cell>
                     <Table.Cell>
-                        {inventory.stock}
+                        {(inventory.stock === 0) ? <div className="emtpyStock">{inventory.stock}</div> : null }
+                        {(inventory.stock <= 10 && inventory.stock > 0) ? <div className="lessThan10">{inventory.stock}</div> : null }
+                        {(inventory.stock > 10 && inventory.stock <= 50 ) ? <div className="lessThan50">{inventory.stock}</div> : null }
+                        {(inventory.stock > 50 ) ? <div>{inventory.stock}</div> : null }
                         <hr />
                         { (openPlus === inventory.id) ?
                             <Grid columns={2} divided>
@@ -297,7 +300,7 @@ class ViewInventories extends Component {
                   <Container>
                         <Header as="h2">Inventory List</Header>
                         <div style={{textAlign: 'right'}}>
-                          <Input onChange={this.handleSearch} placeholder='Search...' />
+                          <Input onChange={this.handleSearch} placeholder='Search by description...' />
                         </div>
                       {error}
                       {tableView}

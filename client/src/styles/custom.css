@@ -79,6 +79,21 @@
     height: 75 !important;
 }
 
+.emtpyStock {
+    background-color: red;
+    color: white
+}
+
+.lessThan10 {
+    background-color: #8A2BE2;
+    color: white
+}
+
+.lessThan50 {
+    background-color: blue;
+    color: white
+}
+
 @media only screen and (max-width: 1280px) {
     .side-right {
         width: 79.5%;

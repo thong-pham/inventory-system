@@ -32,7 +32,7 @@ const router = Router();
     });
 });*/
 
-router.post('/createUser', function (req, res, next) {
+router.post('/createUser', verifyAuthMiddleware, function (req, res, next) {
     validateCreateMember(req.body, function (err) {
         if (err) {
             console.log(err);

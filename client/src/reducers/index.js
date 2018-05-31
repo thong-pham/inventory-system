@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 
 import { routerReducer } from 'react-router-redux';
 import { reducer as formReducer } from "redux-form";
+import { reducer as toastrReducer } from "react-redux-toastr";
 
 import authReducer from "./../reducers/AuthReducer";
 import inventoryReducer from "./../reducers/InventoryReducer";
@@ -24,5 +25,6 @@ export default combineReducers({
     order: orderReducer,
     code: codeReducer,
     importData: importReducer,
-    feature: featureReducer
+    feature: featureReducer,
+    toastr: toastrReducer
 });

@@ -30,6 +30,11 @@ export const CLEAR_IMPORT = "CLEAR_IMPORT";
 export const INPUT_CAPACITY = "INPUT_CAPACITY";
 export const INPUT_COUNT = "INPUT_COUNT";
 
+export const SORT_IMPORT = "SORT_IMPORT";
+export const REV_IMPORT = "REV_IMPORT";
+export const NEXT_IMPORT = "NEXT_IMPORT";
+export const MODIRY_IMPORT = "MODIRY_IMPORT";
+
 const WS_URL = URL + "/inventories/";
 
 export function getPendingImports(data) {
@@ -79,7 +84,7 @@ export function deleteImport(data) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: DELETE_IMPORT_FULFILLED, payload: data });
+                dispatch({ type: DELETE_IMPORT_FULFILLED, payload: importData });
                 return data;
             })
             .catch(function (error) {
@@ -98,7 +103,7 @@ export function updateImport(importData) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: CHANGE_IMPORT_FULFILLED, payload: data });
+                dispatch({ type: CHANGE_IMPORT_FULFILLED, payload: importData });
                 return data;
             })
             .catch(function (error) {
@@ -130,5 +135,29 @@ export function inputCapacity(data){
 export function inputCount(data){
    return function (dispatch){
        dispatch({ type : INPUT_COUNT, payload: data })
+   }
+}
+
+export function sortImport(data){
+   return function (dispatch){
+       dispatch({ type : SORT_IMPORT, payload: data})
+   }
+}
+
+export function reverseImport(){
+   return function (dispatch){
+       dispatch({ type : REV_IMPORT })
+   }
+}
+
+export function putNextImport(data){
+   return function (dispatch){
+       dispatch({ type : NEXT_IMPORT, payload: data })
+   }
+}
+
+export function modifyImport(data){
+   return function (dispatch){
+       dispatch({ type : MODIRY_IMPORT, payload: data })
    }
 }
