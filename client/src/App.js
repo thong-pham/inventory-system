@@ -8,7 +8,6 @@ import { createLogger } from "redux-logger";
 import thunk from "redux-thunk";
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import ReduxToastr from 'react-redux-toastr'
 
 import { ConnectedRouter, routerMiddleware, push } from 'react-router-redux';
 
@@ -109,14 +108,6 @@ class App extends Component {
                             <Route exact path="/feature" component={ViewFeatures} />
                             <Route exact path="/inventoriesInTrash" component={ViewInventoriesTrash} />
                             <Route exact path="/subInventoriesInTrash" component={ViewSubInventoriesTrash} />
-                            <ReduxToastr
-                              timeOut={4000}
-                              newestOnTop={false}
-                              preventDuplicates
-                              position="top-left"
-                              transitionIn="fadeIn"
-                              transitionOut="fadeOut"
-                              progressBar/>
                         </div>
                     </ConnectedRouter>
                 </Provider>

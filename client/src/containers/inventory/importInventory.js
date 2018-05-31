@@ -5,7 +5,7 @@ import { Header, Segment, Input, Label, Form, Button, Message, Container } from 
 
 import { push } from 'react-router-redux';
 
-import { toastr } from 'react-redux-toastr';
+//import { toastr } from 'react-redux-toastr';
 
 import BaseLayout from "./../baseLayout";
 
@@ -68,7 +68,8 @@ class ImportInventory extends Component {
         }
         //console.log(data);
         return dispatch(importInventory(data)).then(function (data) {
-            toastr.success('Message', 'Import Successfully');
+            //toastr.success('Message', 'Import Successfully');
+            alert("Import Successfully");
         });
     }
     render() {
@@ -76,13 +77,13 @@ class ImportInventory extends Component {
         const { isImportingInventory, importingInventoryError } = this.props.import;
         let error = null;
         if (importingInventoryError) {
-            // error = (
-            //     <Message negative>
-            //         <Message.Header>Error while Importing Inventory</Message.Header>
-            //         <p>{importingInventoryError}</p>
-            //     </Message>
-            // )
-            toastr.error(importingInventoryError);
+            error = (
+                <Message negative>
+                    <Message.Header>Error while Importing Inventory</Message.Header>
+                    <p>{importingInventoryError}</p>
+                </Message>
+            )
+            //toastr.error(importingInventoryError);
         }
         return (
             <BaseLayout>
