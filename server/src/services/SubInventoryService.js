@@ -407,6 +407,9 @@ export function removeSubInventoryInTrash(data, callback) {
                 type: "subInventory"
             }
             createInventoryInTrashDAO(data, waterfallCallback);
+        },
+        function(trash, waterfallCallback){
+             removeCodeBySkuDAO(trash.data.sku, waterfallCallback);
         }
     ], callback);
 }

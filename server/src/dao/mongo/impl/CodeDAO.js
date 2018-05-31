@@ -39,8 +39,14 @@ export function removeCodeById(id, callback) {
     });
 }
 
-export function removeCodeBySku(sku, callback) {
+export function removeCodeByMainSku(sku, callback) {
     Code.remove({ "mainSku": sku }, function (err, codes) {
+        callback(err, codes);
+    });
+}
+
+export function removeCodeBySku(sku, callback) {
+    Code.remove({ "sku": sku }, function (err, codes) {
         callback(err, codes);
     });
 }

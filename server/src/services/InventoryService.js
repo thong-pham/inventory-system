@@ -27,7 +27,8 @@ import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/Com
 import {
       createCode as createCodeDAO,
       getCodeByKey as getCodeByKeyDAO,
-      removeCodeBySku as removeCodeBySkuDAO
+      removeCodeBySku as removeCodeBySkuDAO,
+      removeCodeByMainSku as removeCodeByMainSkuDAO
       } from "./../dao/mongo/impl/CodeDAO";
 
 export function createInventory(data, callback) {
@@ -551,7 +552,7 @@ export function removeInventoryInTrash(data, callback) {
             createInventoryInTrashDAO(data, waterfallCallback);
         },
         function(trash, waterfallCallback){
-             removeCodeBySkuDAO(trash.data.sku, waterfallCallback);
+             removeCodeByMainSkuDAO(trash.data.sku, waterfallCallback);
         }
     ], callback);
 }
