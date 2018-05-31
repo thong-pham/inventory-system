@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
 import { Header, Segment, Input, Label, Form, Button, Message, Container } from "semantic-ui-react";
-import '/home/ec2-user/inventory-system/client/node_modules/react-redux-toastr/lib/css/react-redux-toastr.min.css';
 
 import { push } from 'react-router-redux';
 
@@ -11,6 +10,7 @@ import { toastr } from 'react-redux-toastr';
 import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
+import './../../styles/react-redux-toastr.min.css';
 
 import { importInventory, clearImport } from "./../../actions/ImportActions";
 
