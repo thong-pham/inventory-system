@@ -68,7 +68,7 @@ class AddInventory extends Component {
             </div>
         )
     }
-    handleChange(e, data){
+    handleChange = (e, data) => {
           const { dispatch } = this.props;
           if (data.placeholder == "Choose an quality"){
               dispatch(chooseQuality(data.value));
@@ -376,7 +376,7 @@ class AddInventory extends Component {
                         <Grid.Row>
                           <Grid.Column>
                             <Dropdown
-                              onChange={this.handleChange.bind(this)}
+                              onChange={this.handleChange}
                               options={qualityList}
                               placeholder='Choose an quality'
                               selection
@@ -385,7 +385,7 @@ class AddInventory extends Component {
                           </Grid.Column>
                           <Grid.Column>
                             <Dropdown
-                              onChange={this.handleChange.bind(this)}
+                              onChange={this.handleChange}
                               options={typeList}
                               placeholder='Choose an type'
                               selection
@@ -394,7 +394,7 @@ class AddInventory extends Component {
                           </Grid.Column>
                           <Grid.Column>
                             <Dropdown
-                              onChange={this.handleChange.bind(this)}
+                              onChange={this.handleChange}
                               options={patternList}
                               placeholder='Choose an pattern'
                               selection
@@ -407,7 +407,7 @@ class AddInventory extends Component {
                             <Dropdown
                               fluid
                               multiple
-                              onChange={this.handleChange.bind(this)}
+                              onChange={this.handleChange}
                               options={colorList}
                               placeholder='Choose an color'
                               selection
@@ -416,7 +416,7 @@ class AddInventory extends Component {
                           </Grid.Column>
                           <Grid.Column>
                             <Dropdown
-                              onChange={this.handleChange.bind(this)}
+                              onChange={this.handleChange}
                               options={sizeList}
                               placeholder='Choose an size'
                               selection
@@ -425,7 +425,7 @@ class AddInventory extends Component {
                           </Grid.Column>
                           <Grid.Column>
                             <Dropdown
-                              onChange={this.handleChange.bind(this)}
+                              onChange={this.handleChange}
                               options={unitList}
                               placeholder='Choose an unit'
                               selection

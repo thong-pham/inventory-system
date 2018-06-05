@@ -20,9 +20,17 @@ import { createImport as createImportDAO,
         updateImportById as updateImportByIdDAO
     } from "./../dao/mongo/impl/ImportDAO";
 
+import { createExport as createExportDAO,
+        getPendingExports as getPendingExportsDAO,
+        getExportById as getExportByIdDAO,
+        getExportBySku as getExportBySkuDAO,
+        removeExportById as removeExportByIdDAO,
+        updateExportById as updateExportByIdDAO
+    } from "./../dao/mongo/impl/ExportDAO";
+
 import { createInventoryInTrash as createInventoryInTrashDAO } from "./../dao/mongo/impl/TrashDAO";
 
-import { getNextInventoryId, getNextSubInventoryId, getNextTrashId, getNextImportId, getNextCodeId } from "./CounterService";
+import { getNextInventoryId, getNextSubInventoryId, getNextTrashId, getNextImportId, getNextExportId, getNextCodeId } from "./CounterService";
 import { getCompanyByName as getCompanyByNameDAO } from "./../dao/mongo/impl/CompanyDAO";
 import {
       createCode as createCodeDAO,
@@ -253,68 +261,92 @@ export function approveInventory(data, callback) {
                         }
                     }
                     updateInventoryByIdDAO(inventory.id, update, waterfallCallback);
-                }
+                 }
             });
         },
         function(inventory, waterfallCallback){
             const id = data.id;
             removeImportByIdDAO(id, waterfallCallback);
         }
-        /*function (inventory, waterfallCallback) {
-            const latestHistory = getLatestHistory(inventory);
-            if (latestHistory.action === "created") {
-                const update = {
-                    status: "approved",
-                    $push: {
-                        history: {
-                            action: "approvedIn",
-                            userId: data.userSession.userId,
-                            timestamp: new Date()
-                        }
-                    }
-                }
-                const id = data.id;
-                updateInventoryByIdDAO(id, update, waterfallCallback);
+    ], callback);
+}
+
+export function approveInventoryOut(data, callback) {
+    async.waterfall([
+        function (waterfallCallback) {
+            const { roles, company } = data.userSession;
+            const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+            if (company !== 'ISRA') {
+                const err = new Error("Only ISRA can approve Inventory");
+                waterfallCallback(err)
             }
-            else if (latestHistory.action === "removed") {
-                const update = {
-                    status: "approved",
-                    isRemoved: true,
-                    $push: {
-                        history: {
-                            action: "approvedIn",
-                            userId: data.userSession.userId,
-                            timestamp: new Date()
-                        }
-                    }
-                }
-                const id = data.id;
-                updateInventoryByIdDAO(id, update, waterfallCallback);
-            }
-            else if (latestHistory.action === "updated") {
-                const payload = latestHistory.payload;
-                const update = {
-                    status: "approved",
-                    sku: payload.sku,
-                    productName: payload.productName,
-                    price: payload.price,
-                    stock: payload.stock,
-                    $push: {
-                        history: {
-                            action: "approvedIn",
-                            userId: data.userSession.userId,
-                            timestamp: new Date()
-                        }
-                    }
-                }
-                const id = data.id;
-                updateInventoryByIdDAO(id, update, waterfallCallback);
+            else if (isStoreManager || isAdmin) {
+                waterfallCallback();
             }
             else {
-                const err = new Error("Weird Flow in Inventory Approval");
+                const err = new Error("Not Enough Permission to approve Inventory");
                 waterfallCallback(err);
             }
-        }*/
+        },
+        function (waterfallCallback) {
+            const id = data.id;
+            getExportByIdDAO(id, function (err, exportData) {
+                if (err) {
+                    waterfallCallback(err);
+                }
+                else if (exportData) {
+                    if (exportData.status == "pending") {
+                        waterfallCallback(null, exportData);
+                    }
+                    else {
+                        const err = new Error("Only Pending Inventories can be approved");
+                        waterfallCallback(err);
+                    }
+                }
+                else {
+                    const err = new Error("Import Not Found");
+                    waterfallCallback(err);
+                }
+            })
+        },
+        function(exportData, waterfallCallback){
+            getInventoryBySkuDAO(exportData.sku, function(err, inventory){
+                if (err){
+                    waterfallCallback(err);
+                }
+                else {
+                    if (exportData.quantity > inventory.stock){
+                        const err = new Error("Export is larger than the current stock");
+                        waterfallCallback(err);
+                    }
+                    else {
+                        const newStock = inventory.stock - exportData.quantity;
+                        const update = {
+                            status: "approved",
+                            stock: newStock,
+                            $push: {
+                                history: {
+                                    action: "updated",
+                                    userId: data.userSession.userId,
+                                    timestamp: new Date((new Date()).getTime() + (3600000*(-7))),
+                                    payload: {
+                                        sku: inventory.sku,
+                                        productName: inventory.productName,
+                                        price: inventory.price,
+                                        stock: newStock,
+                                    }
+                                }
+                            }
+                        }
+                        updateInventoryByIdDAO(inventory.id, update, waterfallCallback);
+                    }
+                 }
+            });
+        },
+        function(inventory, waterfallCallback){
+            const id = data.id;
+            removeExportByIdDAO(id, waterfallCallback);
+        }
     ], callback);
 }
 
@@ -644,6 +676,59 @@ export function importInventory(data, callback){
     ],callback)
 }
 
+export function exportInventory(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+          const { roles, company, username } = data.userSession;
+          const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+          const key = data.code;
+          if (company === 'ISRA'){
+              if (isStoreManager || isAdmin) {
+                  const key = data.code
+                  getNextExportId(function (err, counterDoc) {
+                        if (err){
+                            waterfallCallback(err);
+                        }
+                        else{
+                            getCodeByKeyDAO(key, function(err, code){
+                                 if (err){
+                                    waterfallCallback(err);
+                                 }
+                                 else if (code){
+                                     const exportData = {
+                                        id: counterDoc.counter,
+                                        code: data.code,
+                                        sku: code.mainSku,
+                                        quantity: data.quantity,
+                                        capacity: data.capacity,
+                                        count: data.count,
+                                        username: username,
+                                        status: "pending"
+                                     }
+                                     createExportDAO(exportData, waterfallCallback);
+                                 }
+                                 else {
+                                     const err = new Error("This code does not exists");
+                                     waterfallCallback(err);
+                                 }
+                            });
+                        }
+                  });
+              }
+              else {
+                  const err = new Error("Not Enough Permission to import Inventory");
+                  waterfallCallback(err);
+              }
+          }
+          else {
+              const err = new Error("Not Enough Permission to import Inventory");
+              waterfallCallback(err);
+          }
+
+      }
+    ],callback)
+}
+
 export function removeImport(data, callback){
     async.waterfall([
       function(waterfallCallback){
@@ -670,6 +755,43 @@ export function removeImport(data, callback){
                   }
                   else{
                       removeImportByIdDAO(id, waterfallCallback);
+                  }
+              }
+              else {
+                  const err = new Error("Import Not Found");
+                  waterfallCallback(err);
+              }
+          });
+      }
+    ],callback)
+}
+
+export function removeExport(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+         const { roles, company } = data.userSession;
+         const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+         if (isWorker || isStoreManager || isAdmin){
+            waterfallCallback()
+         }
+         else{
+           const err = new Error("Not Enough Permission to remove Import");
+           waterfallCallback(err);
+         }
+      },
+      function(waterfallCallback){
+          const id = data.id;
+          getExportByIdDAO(id, function(err, exportData){
+              if (err){
+                waterfallCallback(err);
+              }
+              else if (exportData){
+                  if (exportData.status !== "pending"){
+                      const err = new Error("Only pending import can be removed");
+                      waterfallCallback(err);
+                  }
+                  else{
+                      removeExportByIdDAO(id, waterfallCallback);
                   }
               }
               else {
@@ -722,8 +844,124 @@ export function updateImport(data, callback){
     ],callback)
 }
 
+export function updateExport(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+         const { roles, company } = data.userSession;
+         const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+         if (company !== 'ISRA') {
+             const err = new Error("Only ISRA can change Import");
+             waterfallCallback(err)
+         }
+         if (isStoreManager || isAdmin){
+            waterfallCallback()
+         }
+         else{
+           const err = new Error("Not Enough Permission to change Import");
+           waterfallCallback(err);
+         }
+      },
+      function(waterfallCallback){
+          const id = data.id;
+          getExportByIdDAO(id, function(err, exportData){
+              if (err){
+                waterfallCallback(err);
+              }
+              else if (exportData){
+                  if (exportData.status !== "pending"){
+                      const err = new Error("Only pending import can be removed");
+                      waterfallCallback(err);
+                  }
+                  else {
+                      updateExportByIdDAO(id, data, waterfallCallback);
+                  }
+              }
+              else {
+                  const err = new Error("Import Not Found");
+                  waterfallCallback(err);
+              }
+          });
+      }
+    ],callback)
+}
+
+export function duplicateImport(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+         const { roles, company } = data.userSession;
+         const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+         if (company !== 'ISRA') {
+             const err = new Error("Only ISRA can duplicate Import");
+             waterfallCallback(err)
+         }
+         if (isStoreManager || isAdmin){
+            waterfallCallback()
+         }
+         else{
+           const err = new Error("Not Enough Permission to duplicate Import");
+           waterfallCallback(err);
+         }
+      },
+      function(waterfallCallback){
+          const id = data.id;
+          getImportByIdDAO(id, function(err, importData){
+              if (err){
+                waterfallCallback(err);
+              }
+              else if (importData){
+                  if (importData.status !== "pending"){
+                      const err = new Error("Only pending import can be duplicate");
+                      waterfallCallback(err);
+                  }
+                  else {
+
+                      const newCount = importData.count - data.count;
+                      const newQuantity = newCount * importData.capacity;
+                      const update = {
+                          count: newCount,
+                          quantity: newQuantity
+                      }
+                      updateImportByIdDAO(id, update, waterfallCallback);
+                  }
+              }
+              else {
+                  const err = new Error("Import Not Found");
+                  waterfallCallback(err);
+              }
+          });
+      },
+      function(importData, waterfallCallback){
+          const { username } = data.userSession;
+          getNextImportId(function (err, counterDoc) {
+                if (err){
+                    waterfallCallback(err);
+                }
+                else {
+                     const count = data.count;
+                     const quantity = count * importData.capacity;
+                     const submit = {
+                        id: counterDoc.counter,
+                        code: importData.code,
+                        sku: importData.sku,
+                        quantity: quantity,
+                        capacity: importData.capacity,
+                        count: count,
+                        username: username,
+                        status: "pending"
+                     }
+                     createImportDAO(submit, waterfallCallback);
+                }
+          });
+      }
+    ],callback)
+}
+
 export function getPendingImports(callback){
     getPendingImportsDAO(callback);
+}
+
+export function getPendingExports(callback){
+    getPendingExportsDAO(callback);
 }
 
 export function getInventories(callback) {
@@ -743,7 +981,7 @@ export function getInventories(callback) {
                           importData.forEach(function(item){
                               inventory.pending = inventory.pending + item.quantity;
                           });
-                         
+
                          count += 1;
                          if (count === inventories.length){
                              //console.log(newInv);

@@ -23,8 +23,10 @@ import ViewAccount from "./containers/viewAccount";
 import AddInventory from "./containers/inventory/addInventory";
 import ViewInventories from "./containers/inventory/viewInventories";
 import ImportInventory from "./containers/inventory/importInventory";
+import ExportInventory from "./containers/inventory/exportInventory";
 import UpdateInventory from "./containers/inventory/updateInventory";
 import ApproveImport from "./containers/inventory/approveImport";
+import ApproveExport from "./containers/inventory/approveExport";
 
 import ImportInventoryByCamera from "./containers/importInventoryByCamera";
 
@@ -42,6 +44,7 @@ import ViewFeatures from "./containers/viewFeatures";
 import ViewCode from "./containers/viewCode";
 
 import ViewOrders from "./containers/viewOrders/pendingOrders";
+import ViewOrder from "./containers/viewOrders/orderDetails";
 import ViewProcessedOrders from "./containers/viewOrders/processedOrders";
 
 const history = createHistory();
@@ -93,15 +96,18 @@ class App extends Component {
                             <Route exact path="/addInventory" component={AddInventory} />
                             <Route exact path="/addSubInventory" component={AddSubInventory} />
                             <Route exact path="/importInventory" component={ImportInventory} />
+                            <Route exact path="/exportInventory" component={ExportInventory} />
                             <Route exact path="/importByCamera" component={ImportInventoryByCamera} />
                             <Route exact path="/addcompany" component={AddCompany} />
                             <Route exact path="/companies" component={ViewCompanies} />
                             <Route exact path="/imports" component={ApproveImport} />
+                            <Route exact path="/exports" component={ApproveExport} />
                             <Route path="/inventory/:id" component={UpdateInventory} />
                             <Route path="/subInventory/:id" component={UpdateSubInventory} />
                             <Route exact path="/inventory" component={ViewInventories} />
                             <Route exact path="/subInventory" component={ViewSubInventories} />
                             <Route exact path="/orders" component={ViewOrders} />
+                            <Route path="/order/:id" component={ViewOrder} />
                             <Route exact path="/processedOrders" component={ViewProcessedOrders} />
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />

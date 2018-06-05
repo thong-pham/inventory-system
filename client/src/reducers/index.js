@@ -12,6 +12,7 @@ import subInventoryReducer from "./../reducers/SubInventoryReducer";
 import orderReducer from "./../reducers/OrderReducer";
 import codeReducer from "./../reducers/CodeReducer";
 import importReducer from "./../reducers/ImportReducer";
+import exportReducer from "./../reducers/ExportReducer";
 import featureReducer from "./../reducers/FeatureReducer";
 
 export default combineReducers({
@@ -25,5 +26,6 @@ export default combineReducers({
     order: orderReducer,
     code: codeReducer,
     importData: importReducer,
+    exportData: exportReducer,
     feature: featureReducer
 });

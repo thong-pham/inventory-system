@@ -5,7 +5,7 @@ import { APPROVE_ORDER_STARTED, APPROVE_ORDER_FULFILLED, APPROVE_ORDER_REJECTED,
          DELETE_ORDER_STARTED, DELETE_ORDER_FULFILLED, DELETE_ORDER_REJECTED,
          CANCEL_ORDER_STARTED, CANCEL_ORDER_FULFILLED, CANCEL_ORDER_REJECTED,
          CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT_ORDER,
-         SORT_ORDER, REV_ORDER
+         SORT_ORDER, REV_ORDER, FILTER_STATUS, FILTER_COMPANY
          } from "./../actions/OrderActions";
 
 const initialState = {
@@ -30,7 +30,12 @@ const initialState = {
     add: false,
     cartErrors: null,
     orderError: null,
-    errorInput: null
+    errorInput: null,
+    checkApproved: false,
+    checkCanceled: false,
+    checkCompany: null,
+    backUpOrders: null,
+    loader: false
 }
 
 export default function (state = initialState, action) {
@@ -51,42 +56,59 @@ export default function (state = initialState, action) {
         }
         case GET_PROCESSED_ORDERS_FULFILLED: {
             const data = action.payload;
-            return { ...state, isFetchingProcessedOrders: false, processedOrders: data };
+            return { ...state, isFetchingProcessedOrders: false, processedOrders: data, backUpOrders: data };
         }
         case GET_PROCESSED_ORDERS_REJECTED: {
             const error = action.payload.data;
             return { ...state, isFetchingProcessedOrders: false, fetchingProcessedOrdersError: error };
         }
         case APPROVE_ORDER_STARTED: {
-            return { ...state, isApprovingOrder: true };
+            return { ...state, isApprovingOrder: true, loader: true };
         }
         case APPROVE_ORDER_FULFILLED: {
-            const id = action.payload;
-            var index = 0;
-            for (var i = 0; i < state.pendingOrders.length; i++){
-                if (state.pendingOrders[i].id === id ){
-                    index = i;
-                }
-            }
-            state.pendingOrders.splice(index,1);
-            return { ...state, isApprovingOrder: false, approvingOrderError: null  };
+            const data = action.payload;
+            // var index = 0;
+            // for (var i = 0; i < state.pendingOrders.length; i++){
+            //     if (state.pendingOrders[i].id === id ){
+            //         index = i;
+            //     }
+            // }
+            // state.pendingOrders.splice(index,1);
+            return { ...state, isApprovingOrder: false, approvingOrderError: null, loader: false  };
         }
         case APPROVE_ORDER_REJECTED: {
             //console.log(action.payload.data);
             const error = action.payload.data.message;
             const { denies, id } = action.payload.data;
-            return { ...state, isApprovingOrder: false, approvingOrderError: error, cartErrors: denies, orderError: id };
+            return { ...state, isApprovingOrder: false, approvingOrderError: error, cartErrors: denies, orderError: id, loader: false };
         }
         case CHANGE_ORDER_STARTED: {
             return {...state, isChangingOrder: true };
         }
         case CHANGE_ORDER_FULFILLED: {
-            const data = action.payload;
-            return {...state, isChangingOrder: false, change: false, quantity: null, changingOrderError: null, cartError: null, approvingOrderError: null };
+            if (action.payload.type === "Change"){
+                const { cartId, quantity } = action.payload.change;
+                state.order.details.forEach(function(cart){
+                    if (cart.id === cartId){
+                        cart.accept = quantity;
+                    }
+                });
+            }
+            if (action.payload.type === "Delete"){
+                const { cartId } = action.payload.item;
+                var index = 0;
+                for (var i = 0; i < state.order.details.length; i++){
+                    if (state.order.details[i].id === cartId ){
+                        index = i;
+                    }
+                }
+                state.order.details.splice(index,1);
+            }
+            return {...state, isChangingOrder: false, quantity: null, changingOrderError: null, cartError: null, approvingOrderError: null };
         }
         case CHANGE_ORDER_REJECTED: {
-            const data = action.payload.data;
-            return {...state, isChangingOrder: false, changingOrderError: data };
+            const error = action.payload.data;
+            return {...state, isChangingOrder: false, changingOrderError: error };
         }
         case DELETE_ORDER_STARTED: {
             return {...state, isDeletingOrder: true };
@@ -155,6 +177,50 @@ export default function (state = initialState, action) {
         case REV_ORDER:{
             state.pendingOrders.reverse();
             return { ...state };
+        }
+        case FILTER_STATUS:{
+            const data = action.payload;
+            var orders = [];
+            if (data === "Approved"){
+                if (state.checkApproved === true){
+                    state.checkApproved = false;
+                    orders = state.backUpOrders;
+                }
+                else {
+                    state.checkApproved = true;
+                    state.checkCanceled = false;
+                    orders = state.backUpOrders.filter(element => element.status === data.toLowerCase());
+                    state.checkCompany = 'All';
+                }
+            }
+            if (data === "Canceled"){
+                if (state.checkCanceled === true){
+                    state.checkCanceled = false;
+                    orders = state.backUpOrders;
+                }
+                else {
+                    state.checkApproved = false;
+                    state.checkCanceled = true;
+                    orders = state.backUpOrders.filter(element => element.status === data.toLowerCase());
+                    state.checkCompany = 'All';
+                }
+            }
+            return { ...state, processedOrders: orders};
+        }
+        case FILTER_COMPANY:{
+              const data = action.payload;
+              var orders = [];
+              if (data !== "All"){
+                  orders = state.backUpOrders.filter(element => element.company === data);
+                  state.checkApproved = false;
+                  state.checkCanceled = false;
+              }
+              else {
+                  orders = state.backUpOrders;
+                  state.checkApproved = false;
+                  state.checkCanceled = false;
+              }
+              return { ...state, checkCompany: data, processedOrders: orders};
         }
         default: {
             return state;

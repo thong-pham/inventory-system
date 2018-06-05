@@ -7,11 +7,11 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getPendingImports, deleteImport, inputCapacity, inputCount,
-        updateImport, importInventory, sortImport, reverseImport, putNextImport, approveImport,
-        modifyImport, duplicateImport } from "./../../actions/ImportActions";
+import { getPendingExports, deleteExport, inputCapacity, inputCount,
+        updateExport, exportInventory, sortExport, reverseExport, putNextExport, approveExport,
+        modifyExport, duplicateExport } from "./../../actions/ExportActions";
 
-class ApproveImport extends Component {
+class ApproveExport extends Component {
     state = {
         capacity: null,
         count: null,
@@ -25,19 +25,19 @@ class ApproveImport extends Component {
     }
     componentWillMount() {
         const { token, dispatch } = this.props;
-        dispatch(getPendingImports({ token: token }));
+        dispatch(getPendingExports({ token: token }));
     }
-    onPressApprove = (importData) => {
+    onPressApprove = (exportData) => {
         const { dispatch, token } = this.props;
-        dispatch(approveImport({token: token, importData: importData})).then(function(data){
-            //dispatch(getPendingImports({ token: token }));
+        dispatch(approveExport({token: token, exportData: exportData})).then(function(data){
+            //dispatch(getPendingExports({ token: token }));
         });
         //this.setState({column: null});
     }
 
-    onPressEdit = (importData) => {
+    onPressEdit = (exportData) => {
         const { dispatch, token } = this.props;
-        const { capacity, count } = this.props.import;
+        const { capacity, count } = this.props.export;
         if (isNaN(capacity) || !Number.isInteger(Number(capacity)) || capacity === null || capacity <= 0 ||
             isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0){
             this.setState({errorInput: "Invalid Input"});
@@ -45,24 +45,24 @@ class ApproveImport extends Component {
         else {
             const data = {
                 token,
-                id: importData.id,
-                code: importData.code,
+                id: exportData.id,
+                code: exportData.code,
                 capacity,
                 count,
                 quantity: capacity * count
             }
             //console.log(data);
-            dispatch(updateImport(data)).then(function(data){
-                  //dispatch(getPendingImports({ token: token }));
+            dispatch(updateExport(data)).then(function(data){
+                  //dispatch(getPendingExports({ token: token }));
             });
             this.setState({capacity: null, count: null, errorInput: null})
         }
     }
 
-    onPressDelete = (importData) => {
+    onPressDelete = (exportData) => {
           const { dispatch, token } = this.props;
-          dispatch(deleteImport({token: token, importData: importData})).then(function(data){
-              //dispatch(getPendingImports({ token: token }));
+          dispatch(deleteExport({token: token, exportData: exportData})).then(function(data){
+              //dispatch(getPendingExports({ token: token }));
           });
           //this.setState({column: null});
     }
@@ -84,10 +84,10 @@ class ApproveImport extends Component {
                token: token
             }
             //console.log(data);
-            dispatch(duplicateImport(data)).then(function (response) {
-                  dispatch(putNextImport({importData: modalCart,response}));
+            dispatch(duplicateExport(data)).then(function (response) {
+                  dispatch(putNextExport({exportData: modalCart,response}));
             });
-            this.setState({openModal: null, boxCount: null, successInput:"A new import has been created"});
+            this.setState({openModal: null, boxCount: null, successInput:"A new export has been created"});
         }
     }
 
@@ -96,11 +96,11 @@ class ApproveImport extends Component {
         //console.log(this.state.boxCount);
     }
 
-    triggerChange = (importData) => {
+    triggerChange = (exportData) => {
         const { dispatch } = this.props;
-        this.setState({capacity: importData.id, count: importData.id});
-        dispatch(inputCapacity(importData.capacity));
-        dispatch(inputCount(importData.count));
+        this.setState({capacity: exportData.id, count: exportData.id});
+        dispatch(inputCapacity(exportData.capacity));
+        dispatch(inputCount(exportData.count));
     }
 
     handleCapacity = (e) => {
@@ -121,19 +121,19 @@ class ApproveImport extends Component {
               column: clickedColumn,
               direction: 'ascending',
             });
-            dispatch(sortImport(clickedColumn));
+            dispatch(sortExport(clickedColumn));
         }
         else {
             this.setState({
                direction: direction === 'ascending' ? 'descending' : 'ascending',
             });
-            dispatch(reverseImport());
+            dispatch(reverseExport());
         }
     }
 
-    openModal = (importData) => {
+    openModal = (exportData) => {
           const { dispatch } = this.props;
-          this.setState({openModal: true, modalCart: importData, errorInput: null, successInput: null});
+          this.setState({openModal: true, modalCart: exportData, errorInput: null, successInput: null});
     }
 
     closeModal = () => {
@@ -154,15 +154,23 @@ class ApproveImport extends Component {
         const isWorker = user.roles.indexOf("worker") >= 0;
         const isStoreManager = user.roles.indexOf("storeManager") >= 0;
         const isAdmin = user.roles.indexOf("admin") >= 0;
-        const { pendingImports, isFetchingImports, fetchingImportsError, deletingsImportsError } = this.props.import;
+        const { pendingExports, isFetchingExports, fetchingExportsError, deletingsExportsError, approvingExportError } = this.props.export;
         let error = null;
         let success = null;
-        if (fetchingImportsError || deletingsImportsError) {
+        if (fetchingExportsError || deletingsExportsError) {
             error = (
                 <Message negative>
-                    <Message.Header>Error while Fetching Import</Message.Header>
-                    <p>{fetchingImportsError}</p>
-                    <p>{deletingsImportsError}</p>
+                    <Message.Header>Error while Fetching Export</Message.Header>
+                    <p>{fetchingExportsError}</p>
+                    <p>{deletingsExportsError}</p>
+                </Message>
+            )
+        }
+        else if (approvingExportError) {
+            error = (
+                <Message negative>
+                    <Message.Header>Error while Approving Export</Message.Header>
+                    <p>{approvingExportError}</p>
                 </Message>
             )
         }
@@ -182,41 +190,41 @@ class ApproveImport extends Component {
                 </Message>
             )
         }
-        const importsView = pendingImports.map(function (importData) {
+        const exportsView = pendingExports.map(function (exportData) {
             return (
-                <Table.Row key={importData.id}>
-                    <Table.Cell>{importData.sku}</Table.Cell>
-                    <Table.Cell>{importData.code}</Table.Cell>
+                <Table.Row key={exportData.id}>
+                    <Table.Cell>{exportData.sku}</Table.Cell>
+                    <Table.Cell>{exportData.code}</Table.Cell>
                     <Table.Cell>
-                          {(capacity !== importData.id) ? <div>{importData.capacity}</div> : null}
-                          {(capacity === importData.id) ?
+                          {(capacity !== exportData.id) ? <div>{exportData.capacity}</div> : null}
+                          {(capacity === exportData.id) ?
                             <div>
-                              <Input defaultValue={importData.capacity} onChange={this.handleCapacity} className="mainContainer" />
+                              <Input defaultValue={exportData.capacity} onChange={this.handleCapacity} className="mainContainer" />
                             </div> : null }
                     </Table.Cell>
                     <Table.Cell>
-                          {(count !== importData.id) ? <div>{importData.count}</div> : null}
-                          {(count === importData.id) ?
+                          {(count !== exportData.id) ? <div>{exportData.count}</div> : null}
+                          {(count === exportData.id) ?
                             <div>
-                              <Input defaultValue={importData.count} onChange={this.handleCount} className="mainContainer" />
+                              <Input defaultValue={exportData.count} onChange={this.handleCount} className="mainContainer" />
                             </div> : null }
                     </Table.Cell>
-                    <Table.Cell>{importData.quantity}</Table.Cell>
-                    <Table.Cell>{importData.createdAt.slice(0,10)}</Table.Cell>
-                    <Table.Cell>{importData.username}</Table.Cell>
+                    <Table.Cell>{exportData.quantity}</Table.Cell>
+                    <Table.Cell>{exportData.createdAt.slice(0,10)}</Table.Cell>
+                    <Table.Cell>{exportData.username}</Table.Cell>
                     <Table.Cell >
-                          { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='teal'  onClick={() => this.triggerChange(importData)}><Icon name='pencil' /></Button> : null }
-                          { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' /></Button> : null }
-                          { (isStoreManager || isAdmin) && (capacity !== importData.id) ? <Button size='tiny' color='blue'  onClick={() => this.openModal(importData)}>X2</Button> : null }
-                          { (capacity !== importData.id) ? <Button size='tiny' color='red' onClick={() => this.onPressDelete(importData)}><Icon name='trash outline' /></Button> : null }
-                          { (capacity === importData.id) ? <Button size='tiny' color='blue' onClick={() => this.onPressEdit(importData)}>Save</Button> : null }
-                          { (capacity === importData.id) ? <Button size='tiny' color='black' onClick={() => this.setState({capacity: null, count: null, errorInput: null})}>Close</Button> : null }
+                          { (isStoreManager || isAdmin) && (capacity !== exportData.id) ? <Button size='tiny' color='teal'  onClick={() => this.triggerChange(exportData)}><Icon name='pencil' /></Button> : null }
+                          { (isStoreManager || isAdmin) && (capacity !== exportData.id) ? <Button size='tiny' color='green'  onClick={() => this.onPressApprove(exportData)}><Icon name='checkmark' /></Button> : null }
+                          
+                          { (capacity !== exportData.id) ? <Button size='tiny' color='red' onClick={() => this.onPressDelete(exportData)}><Icon name='trash outline' /></Button> : null }
+                          { (capacity === exportData.id) ? <Button size='tiny' color='blue' onClick={() => this.onPressEdit(exportData)}>Save</Button> : null }
+                          { (capacity === exportData.id) ? <Button size='tiny' color='black' onClick={() => this.setState({capacity: null, count: null, errorInput: null})}>Close</Button> : null }
                     </Table.Cell>
                 </Table.Row>
             )
         }, this);
-        let tableView = <h4>No Imports Found. Please Add Some </h4>
-        if (pendingImports.length > 0) {
+        let tableView = <h4>No Exports Found. Please Add Some </h4>
+        if (pendingExports.length > 0) {
             tableView = (
                 <Table celled fixed sortable>
                     <Table.Header>
@@ -227,28 +235,28 @@ class ApproveImport extends Component {
                             <Table.HeaderCell>Box Count</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
                             <Table.HeaderCell>Date</Table.HeaderCell>
-                            <Table.HeaderCell>Imported By</Table.HeaderCell>
+                            <Table.HeaderCell>Exported By</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {importsView}
+                        {exportsView}
                     </Table.Body>
                 </Table>
             )
         }
-        const importsPhoneView = pendingImports.map(function (importData) {
+        const exportsPhoneView = pendingExports.map(function (exportData) {
             return (
-                <div key={importData.id}>
-                    <p>SKU: {importData.sku}</p>
-                    <p>Code: {importData.code}</p>
-                    <p>Box Capacity: {importData.capacity}</p>
-                    <p>Box Count: {importData.count}</p>
-                    <p>Quantity: {importData.quantity}</p>
-                    <p>Status: {importData.status}</p>
-                    <p>Imported By: {importData.username}</p>
-                    { (isStoreManager) ? <Button color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' />Approve</Button> : null }
-                    <Button color='red' onClick={() => this.onPressDelete(importData)}><Icon name='trash outline' />Delete</Button>
+                <div key={exportData.id}>
+                    <p>SKU: {exportData.sku}</p>
+                    <p>Code: {exportData.code}</p>
+                    <p>Box Capacity: {exportData.capacity}</p>
+                    <p>Box Count: {exportData.count}</p>
+                    <p>Quantity: {exportData.quantity}</p>
+                    <p>Status: {exportData.status}</p>
+                    <p>Exported By: {exportData.username}</p>
+                    { (isStoreManager) ? <Button color='green'  onClick={() => this.onPressApprove(exportData)}><Icon name='checkmark' />Approve</Button> : null }
+                    <Button color='red' onClick={() => this.onPressDelete(exportData)}><Icon name='trash outline' />Delete</Button>
                     <hr />
                 </div>
             )
@@ -270,16 +278,16 @@ class ApproveImport extends Component {
                 </Modal>
             )
         }
-        let phoneView = <h4>No Imports Found. Please Add Some </h4>
-        if (pendingImports.length > 0){
+        let phoneView = <h4>No Exports Found. Please Add Some </h4>
+        if (pendingExports.length > 0){
             phoneView = (
-                <div>{importsPhoneView}</div>
+                <div>{exportsPhoneView}</div>
             )
         }
         return (
             <BaseLayout>
                 <Segment textAlign='center' >
-                    <Header as="h2">Pending Import List</Header>
+                    <Header as="h2">Pending Export List</Header>
                     {error}
                     {success}
                     <Container>
@@ -300,10 +308,10 @@ class ApproveImport extends Component {
 function mapStatesToProps(state) {
     return {
         token: state.auth.token,
-        import: state.importData,
+        export: state.exportData,
         auth: state.auth,
         inventory: state.inventory
     }
 }
 
-export default connect(mapStatesToProps)(ApproveImport);
+export default connect(mapStatesToProps)(ApproveExport);

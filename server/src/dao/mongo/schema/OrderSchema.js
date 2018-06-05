@@ -12,6 +12,8 @@ const OrderSchema = mongoose.Schema({
         quantity: { type: Number, required: true },
         desc: { type: String, required: true },
         accept: { type: Number, required: true },
+        capacity: { type: Number, required: true },
+        mainStock: { type: String, required: false },
         status: { type: String, required: true, enum: ["added", "pending"] }
     }],
 

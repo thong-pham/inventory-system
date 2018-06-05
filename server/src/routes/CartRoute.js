@@ -13,10 +13,10 @@ router.post('/createCart', verifyAuthMiddleware, function (req, res, next) {
         }
         else {
             const userSession = req.session;
-            const { sku, mainSku, desc, quantity } = req.body;
+            const { sku, mainSku, desc, quantity, capacity } = req.body;
             //const quantity = req.body.stock;
             const status = "pending";
-            const data = { sku, quantity, status, desc, mainSku, userSession };
+            const data = { sku, quantity, status, desc, mainSku, capacity, userSession };
             createCart(data, function (err, cart) {
                 if (err) {
                     if (err.message === "SKU Already Exists") {

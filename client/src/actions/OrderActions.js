@@ -32,6 +32,8 @@ export const SET_VIEWING_ORDER = "SET_VIEWING_ORDER";
 export const ERROR_INPUT_ORDER = "ERROR_INPUT_ORDER";
 export const SORT_ORDER = "SORT_ORDER";
 export const REV_ORDER = "REV_ORDER";
+export const FILTER_STATUS = "FILTER_STATUS";
+export const FILTER_COMPANY = "FILTER_COMPANY";
 
 const WS_URL = URL + "/orders/";
 
@@ -112,15 +114,15 @@ export function getProcessedOrdersByCompany(data) {
 }
 
 export function approveOrder(data) {
-    const order = data.order;
+    const id = data.orderId;
     return function (dispatch) {
         dispatch({ type: APPROVE_ORDER_STARTED });
-        return axios.put(WS_URL + order.id + "/approveOrder", null, { headers: { Authorization: data.token } })
+        return axios.put(WS_URL + id + "/approveOrder", null, { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: APPROVE_ORDER_FULFILLED, payload: order.id });
+                dispatch({ type: APPROVE_ORDER_FULFILLED, payload: data });
                 return data;
             })
             .catch(function (error) {
@@ -132,7 +134,7 @@ export function approveOrder(data) {
 }
 
 export function changeOrder(data) {
-    //const id = data.orderId;
+    const change = data.change;
     return function (dispatch) {
         dispatch({ type: CHANGE_ORDER_STARTED });
         return axios.put(WS_URL + "changeOrder", data.change, { headers: { Authorization: data.token } })
@@ -140,7 +142,7 @@ export function changeOrder(data) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: CHANGE_ORDER_FULFILLED, payload: data });
+                dispatch({ type: CHANGE_ORDER_FULFILLED, payload: {type: "Change" , change: change} });
                 return data;
             })
             .catch(function (error) {
@@ -152,7 +154,7 @@ export function changeOrder(data) {
 }
 
 export function deleteItem(data) {
-    //const id = data.orderId;
+    const item = data.item;
     return function (dispatch) {
         dispatch({ type: CHANGE_ORDER_STARTED });
         return axios.put(WS_URL + "deleteItem", data.item, { headers: { Authorization: data.token } })
@@ -160,7 +162,7 @@ export function deleteItem(data) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: CHANGE_ORDER_FULFILLED, payload: data });
+                dispatch({ type: CHANGE_ORDER_FULFILLED, payload: {type: "Delete", item: item} });
                 return data;
             })
             .catch(function (error) {
@@ -172,15 +174,15 @@ export function deleteItem(data) {
 }
 
 export function cancelOrder(data) {
-    const order = data.order;
+    const id = data.orderId;
     return function (dispatch) {
         dispatch({ type: CANCEL_ORDER_STARTED });
-        return axios.put(WS_URL + order.id + "/cancelOrder", null, { headers: { Authorization: data.token } })
+        return axios.put(WS_URL + id + "/cancelOrder", null, { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: CANCEL_ORDER_FULFILLED, payload: order.id });
+                dispatch({ type: CANCEL_ORDER_FULFILLED, payload: id });
                 return data;
             })
             .catch(function (error) {
@@ -249,5 +251,17 @@ export function sortOrder(data){
 export function reverseOrder(){
    return function (dispatch){
        dispatch({ type : REV_ORDER })
+   }
+}
+
+export function filterStatus(data){
+   return function (dispatch){
+       dispatch({ type : FILTER_STATUS, payload: data })
+   }
+}
+
+export function filterCompany(data){
+   return function (dispatch){
+       dispatch({ type : FILTER_COMPANY, payload: data })
    }
 }

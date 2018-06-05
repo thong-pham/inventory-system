@@ -1,16 +1,18 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Segment, Header, Message, Table, Icon, Container, Button,
-          Input, Item, Grid, Accordion, Divider } from "semantic-ui-react";
+          Input, Item, Grid, Accordion, Divider, Checkbox, Dropdown } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getProcessedOrders, getProcessedOrdersByCompany } from "./../../actions/OrderActions";
+import { getProcessedOrders, getProcessedOrdersByCompany, filterStatus, filterCompany } from "./../../actions/OrderActions";
 
-class ViewApprovedOrders extends Component {
+import { getCompanies } from "./../../actions/CompanyActions";
+
+class ViewProcessedOrders extends Component {
     state = { activeIndex: 0 };
     componentWillMount() {
         const { token, dispatch } = this.props;
@@ -21,6 +23,7 @@ class ViewApprovedOrders extends Component {
         else {
             dispatch(getProcessedOrdersByCompany({ token: token}));
         }
+        dispatch(getCompanies({token: token}));
     }
 
     handleClick = (e, titleProps) => {
@@ -31,10 +34,34 @@ class ViewApprovedOrders extends Component {
         this.setState({ activeIndex: newIndex })
     }
 
+    handleFilter = (e, data) => {
+        const { dispatch } = this.props;
+        dispatch(filterStatus(data.label));
+    }
+
+    handleChange = (e, data) => {
+        const { dispatch } = this.props;
+        dispatch(filterCompany(data.value));
+    }
+
     render() {
         const { activeIndex } = this.state;
         const { user } = this.props.auth;
-        const { processedOrders, fetchingApprovedOrdersError } = this.props.order;
+        const { processedOrders, fetchingApprovedOrdersError, checkApproved, checkCanceled, checkCompany } = this.props.order;
+        const { companies } = this.props.company;
+        var companyList = [{key:1, text:'All', value:'All'}];
+        var companyKey = 2;
+        if (companies.length > 0){
+            companies.forEach(function(company){
+                const data = {
+                    key: companyKey,
+                    text: company.name.en,
+                    value: company.name.en
+                }
+                companyList.push(data);
+                companyKey += 1;
+            });
+        }
         let error = null;
         if (fetchingApprovedOrdersError) {
             error = (
@@ -109,6 +136,18 @@ class ViewApprovedOrders extends Component {
           <BaseLayout>
               <Segment textAlign='center' >
                   { (user.company === 'ISRA') ? <Header as="h2">Processed Order List</Header> : <Header as="h2">{user.company} - Processed Order List</Header> }
+                  <div>
+                      <Checkbox className="checkBoxOrder" label="Approved" toggle checked={checkApproved} onChange={this.handleFilter}/>
+                      <Checkbox className="checkBoxOrder" label="Canceled" toggle checked={checkCanceled} onChange={this.handleFilter}/>
+                      { (user.company === 'ISRA') ? <Dropdown
+                        onChange={this.handleChange}
+                        options={companyList}
+                        placeholder='Filter by Company'
+                        selection
+                        value={checkCompany}
+                      /> : null }
+                  </div>
+                  <hr />
                   {error}
                   <Container>
                       {tableView}
@@ -123,8 +162,9 @@ function mapStatesToProps(state) {
     return {
         token: state.auth.token,
         order: state.order,
-        auth: state.auth
+        auth: state.auth,
+        company: state.company
     }
 }
 
-export default connect(mapStatesToProps)(ViewApprovedOrders);
+export default connect(mapStatesToProps)(ViewProcessedOrders);

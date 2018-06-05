@@ -59,7 +59,7 @@ class ViewOrders extends Component {
     onPressCancel = (order) => {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
-        dispatch(cancelOrder({token: token, order: order}));
+        dispatch(cancelOrder({token: token, orderId: order.id}));
     }
 
     onPressChange(orderId, cartId){
@@ -103,7 +103,7 @@ class ViewOrders extends Component {
     onPressApprove = (order) => {
           const { token, dispatch } = this.props;
           const { pendingOrders } = this.props.order;
-          dispatch(approveOrder({token: token, order: order })).then(function(data){
+          dispatch(approveOrder({token: token, orderId: order.id })).then(function(data){
               //dispatch(push("/inventory"));
           });
     }
@@ -156,6 +156,12 @@ class ViewOrders extends Component {
             dispatch(reverseOrder());
         }
     }
+
+    onDetails = (id) => {
+        const { dispatch } = this.props;
+        dispatch(push("/order/" + id))
+    }
+
     render() {
         const { activeIndex, column, direction } = this.state;
         const { user } = this.props.auth;
@@ -237,7 +243,7 @@ class ViewOrders extends Component {
                 <Table.Row key={order.id}>
                     <Table.Cell>{order.id}</Table.Cell>
                     <Table.Cell>
-                       <Item.Group>
+                       {/*<Item.Group>
                           <Accordion fluid styled>
                             <Accordion.Title active={activeIndex === order.id} index={order.id} onClick={this.handleClick}>
                               <Icon name='dropdown' />
@@ -247,7 +253,8 @@ class ViewOrders extends Component {
                               {detailsView}
                             </Accordion.Content>
                           </Accordion>
-                        </Item.Group>
+                        </Item.Group>*/}
+                        <Button onClick={() => this.onDetails(order.id)}>See Details</Button>
                       </Table.Cell>
                     <Table.Cell >{order.status}</Table.Cell>
                     <Table.Cell >{order.createdBy}</Table.Cell>
@@ -257,11 +264,11 @@ class ViewOrders extends Component {
                         {order.createdAt.slice(11,19)} PST
                     </Table.Cell>
                     <Table.Cell >{order.company}</Table.Cell>
-                    <Table.Cell >
+                    {/*<Table.Cell >
                         { (user.company !== 'ISRA') ? <Button size='tiny' color='red' onClick={() => this.onPressDelete(order)}><Icon name='trash outline' />Delete</Button> : null }
                         { (user.company === 'ISRA') ? <Button size='tiny' color='green' onClick={() => this.onPressApprove(order)}><Icon name='checkmark' /></Button> : null }
                         { (user.company === 'ISRA') ? <Button size='tiny' color='black' onClick={() => this.onPressCancel(order)}><Icon name='cancel' /></Button> : null }
-                    </Table.Cell>
+                    </Table.Cell>*/}
                 </Table.Row>
             )
         }, this);
@@ -272,12 +279,12 @@ class ViewOrders extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell width={1}>Order Number</Table.HeaderCell>
-                            <Table.HeaderCell width={3}>Description</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Description</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
                             <Table.HeaderCell width={1} sorted={column === 'time' ? direction : null} onClick={this.handleSort('time')}>Created At</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Company</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Options</Table.HeaderCell>
+                            {/*<Table.HeaderCell width={1}>Options</Table.HeaderCell>*/}
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>

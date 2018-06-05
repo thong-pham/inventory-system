@@ -72,7 +72,7 @@
 }
 
 .inventoryDropdown {
-    height: 145 !important;
+    height: 220 !important;
 }
 
 .orderDropdown {
@@ -92,6 +92,10 @@
 .lessThan50 {
     background-color: blue;
     color: white
+}
+
+.checkBoxOrder {
+    padding-right: 25px
 }
 
 @media only screen and (max-width: 1280px) {

@@ -17,6 +17,10 @@ export const CHANGE_IMPORT_STARTED = "CHANGE_IMPORT_STARTED";
 export const CHANGE_IMPORT_FULFILLED = "CHANGE_IMPORT_FULFILLED";
 export const CHANGE_IMPORT_REJECTED = "CHANGE_IMPORT_REJECTED";
 
+export const DUPLICATE_IMPORT_STARTED = "DUPLICATE_IMPORT_STARTED";
+export const DUPLICATE_IMPORT_FULFILLED = "DUPLICATE_IMPORT_FULFILLED";
+export const DUPLICATE_IMPORT_REJECTED = "DUPLICATE_IMPORT_REJECTED";
+
 export const DELETE_IMPORT_STARTED = "DELETE_IMPORT_STARTED";
 export const DELETE_IMPORT_FULFILLED = "DELETE_IMPORT_FULFILLED";
 export const DELETE_IMPORT_REJECTED = "DELETE_IMPORT_REJECTED";
@@ -75,6 +79,25 @@ export function importInventory(data) {
     }
 }
 
+export function duplicateImport(data) {
+    return function (dispatch) {
+        dispatch({ type: DUPLICATE_IMPORT_STARTED });
+        return axios.post(WS_URL + "duplicateImport", data)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: DUPLICATE_IMPORT_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: DUPLICATE_IMPORT_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
 export function deleteImport(data) {
     const importData = data.importData;
     return function (dispatch) {
@@ -109,6 +132,26 @@ export function updateImport(importData) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: CHANGE_IMPORT_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function approveImport(data) {
+    const importData = data.importData;
+    return function (dispatch) {
+        dispatch({ type: APPROVE_IMPORT_STARTED });
+        return axios.put(WS_URL + importData.id + "/approve", null, { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: APPROVE_IMPORT_FULFILLED, payload: importData });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: APPROVE_IMPORT_REJECTED, payload: response });
                 throw response;
             })
     }

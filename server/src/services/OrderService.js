@@ -130,12 +130,13 @@ export function approveOrder(data, callback) {
 
                                               count += 1;
                                               if (count === order.details.length){
-                                                  const err = new Error("This Order exceeds the current stock");
+                                                  const err = new Error("Current stock");
                                                   const data = {
                                                       err: err,
                                                       denies: denies,
                                                       id: order.id
                                                   }
+                                                  //console.log(data);
                                                   waterfallCallback(data);
                                               }
                                           }
@@ -153,6 +154,7 @@ export function approveOrder(data, callback) {
         },
         function (inventories, carts, order, waterfallCallback) {
             //console.log(carts);
+            var count = 0;
             inventories.forEach(function(inventory){
                 const latestHistory = getLatestHistory(inventory);
                 //const id = data.id;
@@ -179,6 +181,10 @@ export function approveOrder(data, callback) {
                               //console.log(err);
                               waterfallCallback(err);
                           }
+                          count += 1;
+                          if (count === inventories.length){
+                               waterfallCallback(null, carts, order);
+                          }
                       });
                   }
                   else {
@@ -187,12 +193,11 @@ export function approveOrder(data, callback) {
                       waterfallCallback(err);
                   }
             });
-            waterfallCallback(null, carts, order);
-
         },
         function (carts, order, waterfallCallback){
              const id = data.id;
              const { company } = data.userSession;
+             var count = 0;
              carts.forEach(function(cart){
                  getSubInventoryBySkuDAO(cart.sku, function (err, subInv){
                        if (subInv) {
@@ -218,6 +223,10 @@ export function approveOrder(data, callback) {
                                     //console.log(err);
                                     waterfallCallback(err);
                                 }
+                                count += 1;
+                                if (count === carts.length){
+                                    waterfallCallback(null, order);
+                                }
                            });
                        }
                        else {
@@ -226,7 +235,6 @@ export function approveOrder(data, callback) {
                        }
                   });
             });
-            waterfallCallback(null, order);
         },
         function (order, waterfallCallback){
               const id = data.id;

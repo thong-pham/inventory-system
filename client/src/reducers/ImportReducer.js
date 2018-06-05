@@ -3,6 +3,7 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          GET_APPROVED_IMPORTS_STARTED, GET_APPROVED_IMPORTS_FULFILLED, GET_APPROVED_IMPORTS_REJECTED,
          CHANGE_IMPORT_STARTED, CHANGE_IMPORT_FULFILLED, CHANGE_IMPORT_REJECTED,
          DELETE_IMPORT_STARTED, DELETE_IMPORT_FULFILLED, DELETE_IMPORT_REJECTED,
+         DUPLICATE_IMPORT_STARTED, DUPLICATE_IMPORT_FULFILLED, DUPLICATE_IMPORT_REJECTED,
          CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, FILL_CODE, CLEAR_IMPORT, INPUT_CAPACITY, INPUT_COUNT,
          IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED, SORT_IMPORT,
          REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT
@@ -24,6 +25,8 @@ const initialState = {
     changingImportError: null,
     isDeletingImport: false,
     deletingImportError: null,
+    isDuplicatingImport: false,
+    duplicatingImportError: null,
     import: null,
     response: null,
     change: null,
@@ -85,9 +88,8 @@ export default function (state = initialState, action) {
                     index = i;
                 }
             }
-            var newImports = state.pendingImports;
-            newImports.splice(index,1);
-            return { ...state, isApprovingImport: false, pendingImports: newImports, approvingImportError: null  };
+            state.pendingImports.splice(index,1);
+            return { ...state, isApprovingImport: false, approvingImportError: null  };
         }
         case APPROVE_IMPORT_REJECTED: {
             const error = action.payload.data;
@@ -128,6 +130,17 @@ export default function (state = initialState, action) {
         case DELETE_IMPORT_REJECTED: {
             const data = action.payload.data;
             return {...state, isDeletingImport: false, deletingImportError: data};
+        }
+        case DUPLICATE_IMPORT_STARTED:{
+            return { ...state, isDuplicatingImport: true };
+        }
+        case DUPLICATE_IMPORT_FULFILLED:{
+            const data = action.payload;
+            return { ...state, isDuplicatingImport: false };
+        }
+        case DUPLICATE_IMPORT_REJECTED:{
+            const error = action.payload;
+            return { ...state, isDuplicatingImport: false, duplicatingImportError: error };
         }
         case CHANGE_POPUP: {
             const data = action.payload;
@@ -170,7 +183,9 @@ export default function (state = initialState, action) {
         case NEXT_IMPORT:{
             const { importData, response } = action.payload;
             var index = state.pendingImports.indexOf(importData);
-            state.pendingImports.splice(index, 0, response);
+            state.pendingImports[index].count = state.pendingImports[index].count - response.count;
+            state.pendingImports[index].quantity = state.pendingImports[index].count * state.pendingImports[index].capacity;
+            state.pendingImports.splice(index + 1, 0, response);
             return { ...state};
         }
         default: {

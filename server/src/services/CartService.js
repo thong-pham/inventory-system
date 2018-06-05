@@ -106,33 +106,5 @@ export function removeCart(data, callback){
 }
 
 export function getPendingCarts(username, callback) {
-    getPendingCartsDAO(username, function(err, carts){
-        if (err){
-            callback(err);
-        }
-        else {
-            var newCarts = [];
-            var count = 0;
-            carts.forEach(function(cart){
-                getInventoryBySkuDAO(cart.mainSku, function(err, inventory){
-                    if (err){
-                        callback(err);
-                    }
-                    else if (inventory) {
-                        cart.mainStock = inventory.stock;
-                        newCarts.push(cart);
-                        count += 1;
-                          if (count === carts.length){
-                              //console.log(newInv);
-                              callback(null, newCarts);
-                          }
-                    }
-                    else{
-                        const err = new Error("Inventory Not Found")
-                        callback(err);
-                    }
-                });
-            });
-        }
-    });
+    getPendingCartsDAO(username, callback);
 }

@@ -152,7 +152,7 @@ export default function (state = initialState, action) {
             return { ...state, modal: true, modalCart: data };
         }
         case CLOSE_MODAL: {
-            return { ...state, modal: false, modalCart: null, quantity : null };
+            return { ...state, modal: false, modalCart: null, quantity : null, openAdd: null };
         }
         case OPEN_ADD: {
           const data = action.payload;

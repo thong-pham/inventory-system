@@ -1,24 +1,24 @@
 import mongoose from "mongoose";
 
-const CartSchema = mongoose.Schema({
+const ExportSchema = mongoose.Schema({
     id: { type: Number, required: true },
 
+    code: { type: String, required: true },
+
     sku: { type: String, required: true },
-
-    mainSku: { type: String, required: true },
-
-    desc:  { type: String, required: true },
 
     quantity: { type: Number, required: true },
 
     capacity: { type: Number, required: true },
 
+    count: { type: Number, required: true },
+
     username: { type: String, required: true },
 
-    status: { type: String, required: true, enum: ["added", "pending"] },
+    status: { type: String, required: true, enum: ["approved", "pending"] },
 
     createdAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
     lastModifiedAt: { type: Date, default: new Date((new Date()).getTime() + (3600000*(-7))) },
 });
 
-export default mongoose.model("Cart", CartSchema);
+export default mongoose.model("Export", ExportSchema);

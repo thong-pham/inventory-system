@@ -165,14 +165,14 @@ router.put('/:id/approveOrder', verifyAuthMiddleware, function (req, res, next) 
         approveOrder(data, function (err, order) {
             if (err) {
                 //console.log(err.err.message);
-                if (err.err.message === "This Order exceeds the current stock") {
-                    res.status(400).send({message: err.err.message, denies: err.denies, id: err.id});
+                if (err.err.message === "Current stock"){
+                     res.status(401).send({message: err.err.message, denies: err.denies, id: err.id});
                 }
                 else if (err.message === "Not Enough Permission to approve Order") {
-                    res.status(401).send(err.message);
+                    res.status(402).send(err.message);
                 }
                 else if (err.message === "One product does not exist anymore") {
-                    res.status(402).send(err.message);
+                    res.status(403).send(err.message);
                 }
                 else {
                     console.log(err);

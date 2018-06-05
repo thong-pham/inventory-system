@@ -11,7 +11,7 @@ import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { importInventory, clearImport } from "./../../actions/ImportActions";
+import { exportInventory, clearExport } from "./../../actions/ExportActions";
 
 function validate(values) {
     var errors = {
@@ -42,7 +42,7 @@ function validate(values) {
     return errors;
 }
 
-class ImportInventory extends Component {
+class ExportInventory extends Component {
     componentWillMount() {
         const { dispatch } = this.props;
     }
@@ -66,31 +66,31 @@ class ImportInventory extends Component {
            token: token
         }
         //console.log(data);
-        return dispatch(importInventory(data)).then(function (data) {
-            //toastr.success('Message', 'Import Successfully');
-            alert("Import Successfully");
+        return dispatch(exportInventory(data)).then(function (data) {
+            //toastr.success('Message', 'Export Successfully');
+            alert("Export Successfully");
         });
     }
     render() {
         const { handleSubmit, pristine, errors, submitting } = this.props;
-        const { isImportingInventory, importingInventoryError } = this.props.import;
+        const { isExportingInventory, exportingInventoryError } = this.props.export;
         let error = null;
-        if (importingInventoryError) {
+        if (exportingInventoryError) {
             error = (
                 <Message negative>
-                    <Message.Header>Error while Importing Inventory</Message.Header>
-                    <p>{importingInventoryError}</p>
+                    <Message.Header>Error while Exporting Inventory</Message.Header>
+                    <p>{exportingInventoryError}</p>
                 </Message>
             )
-            //toastr.error(importingInventoryError);
+            //toastr.error(exportingInventoryError);
         }
         return (
             <BaseLayout>
                 <Segment textAlign='center'>
                   <Container>
-                    <Header as="h2">Import Inventory</Header>
+                    <Header as="h2">Export Inventory</Header>
                     {error}
-                    <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isImportingInventory}>
+                    <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isExportingInventory}>
                         <Form.Field inline>
                             <Label>Scanning Code</Label>
                             <Field name="code" placeholder="Scanning Code" component={this.renderField}></Field>
@@ -114,16 +114,16 @@ class ImportInventory extends Component {
 
 function mapStatesToProps(state) {
 
-    const initialValues = state.importData.defaultImport;
+    const initialValues = state.exportData.defaultExport;
 
     return {
         initialValues: initialValues,
         auth: state.auth,
-        import: state.importData
+        export: state.exportData
     }
 }
 
 export default connect(mapStatesToProps)(reduxForm({
-    form: "ImportInventory",
+    form: "ExportInventory",
     validate
-})(ImportInventory));
+})(ExportInventory));

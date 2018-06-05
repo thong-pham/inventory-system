@@ -51,6 +51,8 @@ export const CHANGE_INVENTORY = "CHANGE_INVENTORY";
 
 export const CLEAR_FAIL = "CLEAR_FAIL";
 export const CLEAR_COMPLETE = "CLEAR_COMPLETE";
+export const RENDER_PAGE = "RENDER_PAGE";
+export const RECOVER_PAGE = "RECOVER_PAGE";
 
 const WS_URL = URL + "/inventories/";
 
@@ -305,5 +307,17 @@ export function clearFailedProducts(){
 export function clearCompletedProducts(){
    return function (dispatch){
        dispatch({ type : CLEAR_COMPLETE })
+   }
+}
+
+export function renderPage(data){
+   return function (dispatch){
+       dispatch({ type : RENDER_PAGE, payload: data })
+   }
+}
+
+export function recoverPage(){
+   return function (dispatch){
+       dispatch({ type : RECOVER_PAGE })
    }
 }

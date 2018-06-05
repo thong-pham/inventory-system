@@ -71,3 +71,19 @@ export function validateImportInventory(data, callback) {
         callback(errors);
     }
 }
+
+export function validateDuplicateImport(data, callback) {
+    var errors = {};
+    if (!data.id) {
+        errors["id"] = "Id is Required";
+    }
+    if (data.count === null) {
+        errors["count"] = "Count is Required";
+    }
+    if (Object.keys(errors).length === 0) {
+        callback();
+    }
+    else {
+        callback(errors);
+    }
+}

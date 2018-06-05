@@ -29,6 +29,9 @@ class BaseLayout extends Component {
         else if (menuItem === "importInventory") {
             dispatch(push('/importInventory'));
         }
+        else if (menuItem === "exportInventory") {
+            dispatch(push('/exportInventory'));
+        }
         else if (menuItem === "importByCamera") {
             dispatch(push('/importByCamera'));
         }
@@ -46,6 +49,9 @@ class BaseLayout extends Component {
         }
         else if (menuItem === "approveImport") {
             dispatch(push('/imports'));
+        }
+        else if (menuItem === "approveExport") {
+            dispatch(push('/exports'));
         }
         else if (menuItem === "viewOrders") {
             dispatch(push('/orders'));
@@ -202,7 +208,9 @@ class BaseLayout extends Component {
                       <Dropdown.Item onClick={this.handleClick.bind(this, "viewInventories")}><Icon name='cube' />ISRA Inventories</Dropdown.Item>
                       <Dropdown.Item onClick={this.handleClick.bind(this, "addInventory")}><Icon name='add' />Add Product</Dropdown.Item>
                       <Dropdown.Item onClick={this.handleClick.bind(this, "importInventory")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "exportInventory")}><Icon name='add' />Export Inventory</Dropdown.Item>
                       <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='unordered list' />Pending Imports</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "approveExport")}><Icon name='unordered list' />Pending Exports</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </Menu.Item>

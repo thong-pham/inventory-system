@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search, Pagination } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -8,7 +8,7 @@ import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
 import { getInventories, deleteInventory, rejectEdit, updateInventory, sortInventory, reverseInventory, changeInventory,
-         trackNumber, openPlus, closePlus, openMinus, closeMinus, filterInventory } from "./../../actions/InventoryActions";
+         trackNumber, openPlus, closePlus, openMinus, closeMinus, filterInventory, renderPage, recoverPage } from "./../../actions/InventoryActions";
 
 class ViewInventories extends Component {
 
@@ -27,7 +27,7 @@ class ViewInventories extends Component {
         dispatch(getInventories({ token: token }));
     }
 
-    onPressEdit(inventory) {
+    onPressEdit = (inventory) => {
         const { user } = this.props.auth;
         const { dispatch } = this.props;
         if (user.company !== 'ISRA'){
@@ -39,31 +39,31 @@ class ViewInventories extends Component {
 
     }
 
-    onOpenPlus(inventory){
+    onOpenPlus = (inventory) => {
         const { dispatch } = this.props;
         dispatch(openPlus(inventory.id));
         this.setState({errorInput: null});
     }
 
-    onClosePlus () {
+    onClosePlus = () => {
         const { dispatch } = this.props;
         dispatch(closePlus());
         this.setState({errorInput: null});
     }
 
-    onOpenMinus(inventory){
+    onOpenMinus = (inventory) => {
         const { dispatch } = this.props;
         dispatch(openMinus(inventory.id));
         this.setState({errorInput: null});
     }
 
-    onCloseMinus () {
+    onCloseMinus = () => {
         const { dispatch } = this.props;
         dispatch(closeMinus());
         this.setState({errorInput: null});
     }
 
-    onAddInv(inventory){
+    onAddInv = (inventory) => {
         const { dispatch, token } = this.props;
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
@@ -96,7 +96,7 @@ class ViewInventories extends Component {
         }
     }
 
-    onMinusInv(inventory){
+    onMinusInv = (inventory) => {
         const { dispatch, token } = this.props;
         const { quantity } = this.props.inventory;
         const { user } = this.props.auth;
@@ -132,19 +132,20 @@ class ViewInventories extends Component {
         }
     }
 
-    onPressDelete(inventory) {
+    onPressDelete = (inventory) => {
         const { token, dispatch } = this.props;
         dispatch(deleteInventory({ token: token, inventory: inventory }));
     }
 
-    handleInput(e){
+    handleInput = (e) => {
         const { token, dispatch } = this.props;
         dispatch(trackNumber(e.target.value));
     }
 
     handleSearch = (e) => {
         const { dispatch } = this.props;
-        dispatch(filterInventory(e.target.value));
+        if (e.target.value !== "") dispatch(filterInventory(e.target.value));
+        else dispatch(recoverPage());
     }
 
     handleSort = clickedColumn => () => {
@@ -166,12 +167,19 @@ class ViewInventories extends Component {
         }
     }
 
+    handlePaginationChange = (e, data) => {
+        const { dispatch } = this.props;
+        //console.log(data.activePage);
+        this.setState({column: null});
+        dispatch(renderPage(data.activePage));
+    }
+
     render() {
         const { column, direction, errorInput } = this.state;
         const { user } = this.props.auth;
         const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
                 deletingInventoryError, isUpdatingInventory, updatingInventoryError } = this.props.inventory;
-        const { quantity, openPlus, openMinus } = this.props.inventory;
+        const { quantity, openPlus, openMinus, activePage, allPages } = this.props.inventory;
 
         let error = null;
         if (fetchingInventoriesError) {
@@ -206,6 +214,8 @@ class ViewInventories extends Component {
               </Message>
           )
         }
+        const page = Math.ceil(inventories.length/3);
+
         const inventoriesView = inventories.map(function (inventory) {
             return (
                 <Table.Row key={inventory.id}>
@@ -215,25 +225,22 @@ class ViewInventories extends Component {
                     <Table.Cell>{inventory.unit}</Table.Cell>
                     <Table.Cell>{inventory.capacity}</Table.Cell>
                     <Table.Cell>
-                        {(inventory.stock === 0) ? <div className="emtpyStock">{inventory.stock}</div> : null }
-                        {(inventory.stock <= 10 && inventory.stock > 0) ? <div className="lessThan10">{inventory.stock}</div> : null }
-                        {(inventory.stock > 10 && inventory.stock <= 50 ) ? <div className="lessThan50">{inventory.stock}</div> : null }
-                        {(inventory.stock > 50 ) ? <div>{inventory.stock}</div> : null }
+                        <div>{inventory.stock}</div>
                         <hr />
                         { (openPlus === inventory.id) ?
                             <Grid columns={2} divided>
                               <Grid.Row>
                                 <Grid.Column className="columnForInput" textAlign='center'>
-                                    <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput.bind(this)} />
+                                    <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput} />
                                 </Grid.Column>
                                     <Grid.Column className="columnForButton" textAlign='center'>
                                         <Grid columns={2}>
                                             <Grid.Row>
                                                 <Grid.Column textAlign='center'>
-                                                    <Icon name='add' size='large' onClick={this.onAddInv.bind(this, inventory)} />
+                                                    <Icon name='add' size='large' onClick={() => this.onAddInv(inventory)} />
                                                 </Grid.Column>
                                                 <Grid.Column textAlign='center'>
-                                                    <Icon name='close' size='large' onClick={this.onClosePlus.bind(this)} />
+                                                    <Icon name='close' size='large' onClick={this.onClosePlus} />
                                                 </Grid.Column>
                                             </Grid.Row>
                                         </Grid>
@@ -244,16 +251,16 @@ class ViewInventories extends Component {
                                   <Grid columns={2} divided>
                                     <Grid.Row>
                                       <Grid.Column className="columnForInput" textAlign='center'>
-                                          <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput.bind(this)} />
+                                          <Input placeholder='Quantity' className="inputBox" size='mini' defaultValue={quantity} onChange={this.handleInput} />
                                       </Grid.Column>
                                           <Grid.Column className="columnForButton" textAlign='center'>
                                               <Grid columns={2}>
                                                   <Grid.Row>
                                                       <Grid.Column textAlign='center'>
-                                                          <Icon name='minus' size='large' onClick={this.onMinusInv.bind(this, inventory)} />
+                                                          <Icon name='minus' size='large' onClick={() => this.onMinusInv(inventory)} />
                                                       </Grid.Column>
                                                       <Grid.Column textAlign='center'>
-                                                          <Icon name='close' size='large' onClick={this.onCloseMinus.bind(this)} />
+                                                          <Icon name='close' size='large' onClick={this.onCloseMinus} />
                                                       </Grid.Column>
                                                   </Grid.Row>
                                               </Grid>
@@ -263,10 +270,10 @@ class ViewInventories extends Component {
                     </Table.Cell>
                     <Table.Cell>{inventory.pending}</Table.Cell>
                     <Table.Cell>
-                        <Icon name='pencil' size='large' onClick={this.onPressEdit.bind(this, inventory)} />
-                        <Icon name='add' size='large' onClick={this.onOpenPlus.bind(this, inventory)} />
-                        <Icon name='minus' size='large' onClick={this.onOpenMinus.bind(this, inventory)} />
-                        <Icon name='trash outline' size='large' onClick={this.onPressDelete.bind(this, inventory)} />
+                        <Icon name='pencil' size='large' onClick={() => this.onPressEdit(inventory)} />
+                        <Icon name='add' size='large' onClick={() => this.onOpenPlus(inventory)} />
+                        <Icon name='minus' size='large' onClick={() => this.onOpenMinus(inventory)} />
+                        <Icon name='trash outline' size='large' onClick={() => this.onPressDelete(inventory)} />
                     </Table.Cell>
                 </Table.Row>
             )
@@ -283,13 +290,20 @@ class ViewInventories extends Component {
                             <Table.HeaderCell width={1}>Unit</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell width={2} sorted={column === 'stock' ? direction : null} onClick={this.handleSort('stock')}>Stock</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Pending</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Pending Import</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
                         {inventoriesView}
                     </Table.Body>
+                    <Table.Footer>
+                      <Table.Row>
+                        <Table.HeaderCell colSpan='8' textAlign='right'>
+                            <Pagination pointing activePage={activePage} onPageChange={this.handlePaginationChange} totalPages={allPages.length} />
+                        </Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Footer>
                 </Table>
             )
         }

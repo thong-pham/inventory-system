@@ -36,6 +36,10 @@ export function getNextImportId(callback) {
     incrementCounter("import", callback);
 }
 
+export function getNextExportId(callback) {
+    incrementCounter("export", callback);
+}
+
 export function getNextQualityId(callback) {
     incrementCounter("quality", callback);
 }

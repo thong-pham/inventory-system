@@ -66,6 +66,7 @@ class ViewSubInventory extends Component {
                 mainSku: inventory.mainSku,
                 desc: inventory.productName.en,
                 quantity: quantity,
+                capacity: inventory.capacity,
                 username: user.username
             }
             dispatch(showModal(data));
@@ -109,6 +110,7 @@ class ViewSubInventory extends Component {
                 quantity: cart.quantity,
                 accept: cart.quantity,
                 mainSku: cart.mainSku,
+                capacity: cart.capacity,
                 desc: cart.desc,
                 status: "added"
             });
@@ -196,8 +198,8 @@ class ViewSubInventory extends Component {
                                 </Grid.Row>
                               </Grid>  : null }
                     </Table.Cell>
+                    <Table.Cell>{inventory.capacity}</Table.Cell>
                     <Table.Cell>{inventory.unit}</Table.Cell>
-                    <Table.Cell>{inventory.stock}</Table.Cell>
                     <Table.Cell >
                         { (openAdd !== inventory.id) ? <Button color='blue' onClick={this.onOpenAdd.bind(this, inventory)}><Icon name='plus square' /></Button> : null }
                         <Button color='teal' onClick={this.onPressEdit.bind(this, inventory)}><Icon name='pencil' /></Button>
@@ -211,7 +213,8 @@ class ViewSubInventory extends Component {
               <Table.Row key={cart.id}>
                   <Table.Cell>{cart.sku}</Table.Cell>
                   <Table.Cell>{cart.desc}</Table.Cell>
-                  <Table.Cell >{cart.quantity}</Table.Cell>
+                  <Table.Cell>{cart.capacity}</Table.Cell>
+                  <Table.Cell>{cart.quantity}</Table.Cell>
                   <Table.Cell>{cart.status}</Table.Cell>
                   <Table.Cell >
                       <Button onClick={this.onRemoveCart.bind(this, cart)}>Remove</Button>
@@ -228,8 +231,8 @@ class ViewSubInventory extends Component {
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={3}>Product Description</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Main Stock</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Unit</Table.HeaderCell>
-                            <Table.HeaderCell width={1}>Your Stock</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -247,6 +250,7 @@ class ViewSubInventory extends Component {
                         <Table.Row>
                             <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Description</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Box Capcity</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Quantity</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Options</Table.HeaderCell>
@@ -267,6 +271,7 @@ class ViewSubInventory extends Component {
                       <Header>Description</Header>
                       <p>SKU : {modalCart.sku}</p>
                       <p>Product Description : {modalCart.desc}</p>
+                      <p>Box Capacity : {modalCart.capacity}</p>
                       <p>Quantity : {modalCart.quantity}</p>
                   </Modal.Content>
                   <Modal.Actions>

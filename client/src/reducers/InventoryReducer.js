@@ -9,7 +9,7 @@ import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
          FILTER_INVENTORY, SORT_INVENTORY, REV_INVENTORY, CHANGE_INVENTORY,
          RECOVER_INVENTORY_STARTED, RECOVER_INVENTORY_FULFILLED, RECOVER_INVENTORY_REJECTED,
          DELETE_INVENTORY_TRASH_STARTED, DELETE_INVENTORY_TRASH_FULFILLED, DELETE_INVENTORY_TRASH_REJECTED,
-         CLEAR_FAIL, CLEAR_COMPLETE
+         CLEAR_FAIL, CLEAR_COMPLETE, RENDER_PAGE, RECOVER_PAGE
          } from "./../actions/InventoryActions";
 
 const initialState = {
@@ -45,7 +45,9 @@ const initialState = {
         price: "0"
     },
     completedProducts: null,
-    failedProducts: null
+    failedProducts: null,
+    allPages: [],
+    activePage: 1
 }
 
 export default function (state = initialState, action) {
@@ -68,11 +70,45 @@ export default function (state = initialState, action) {
         }
         case GET_INVENTORIES_FULFILLED: {
             const data = action.payload;
-            return { ...state, isFetchingInventories: false, inventories: data, backUpInv: data };
+            const page = Math.ceil(data.length/10);
+            const max = 10;
+            var newInv = [];
+
+            for (var i = 0; i < page; i++){
+                var temp = [];
+                for (var j = i*max; j < (i+1)*max; j++){
+                    if (j < data.length) {
+                        temp.push(data[j]);
+                    }
+                }
+                newInv.push(temp);
+            }
+            return { ...state, isFetchingInventories: false, inventories: newInv[0], allPages: newInv, backUpInv: data };
         }
         case GET_INVENTORIES_REJECTED: {
             const error = action.payload.data;
             return { ...state, isFetchingInventories: false, fetchingInventoriesError: error };
+        }
+        case RENDER_PAGE:{
+            const data = action.payload;
+            return { ...state, inventories: state.allPages[data-1], activePage: data};
+        }
+        case RECOVER_PAGE: {
+            const data = state.backUpInv;
+            const page = Math.ceil(data.length/10);
+            const max = 10;
+            var newInv = [];
+
+            for (var i = 0; i < page; i++){
+                var temp = [];
+                for (var j = i*max; j < (i+1)*max; j++){
+                    if (j < data.length) {
+                        temp.push(data[j]);
+                    }
+                }
+                newInv.push(temp);
+            }
+            return { ...state, inventories: newInv[0], allPages: newInv };
         }
         case DELETE_INVENTORY_STARTED: {
             return { ...state, isDeletingInventory: true };
@@ -207,7 +243,7 @@ export default function (state = initialState, action) {
             const data = action.payload;
             state.inventories = state.backUpInv;
             var list = data.split(' ');
-            
+
             const newInv = state.inventories.filter((element) => {
                   var count = 0;
                   for (var i = 0; i < list.length; i++){
@@ -217,6 +253,7 @@ export default function (state = initialState, action) {
                   }
                   if (count === list.length) return element;
             });
+
             return { ...state, inventories: newInv };
         }
         case SORT_INVENTORY:{
