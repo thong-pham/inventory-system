@@ -22,11 +22,12 @@ class ViewProcessedOrders extends Component {
         const { user } = this.props.auth;
         if (user.company === 'ISRA'){
             dispatch(getProcessedOrders({ token: token }));
+            dispatch(getCompanies({token: token}));
         }
         else {
             dispatch(getProcessedOrdersByCompany({ token: token}));
+            dispatch(getCompanies({token: token}));
         }
-        dispatch(getCompanies({token: token}));
     }
 
     handleClick = (e, titleProps) => {
@@ -83,50 +84,53 @@ class ViewProcessedOrders extends Component {
                 </Message>
             )
         }
-        const ordersView = processedOrders.map(function (order) {
-            const detailsView = order.details.map(function(cart){
+        if (processedOrders !== undefined){
+            const ordersView = processedOrders.map(function (order) {
+                const detailsView = order.details.map(function(cart){
+                    return (
+                        <Item key={cart.id}>
+                          <Item.Content>
+                            {/*<Item.Header as='a'>ID {cart.id}</Item.Header>*/}
+                            <Item.Description>
+                              { (user.company !== 'ISRA') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
+                              { (user.company === 'ISRA') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
+                              <p>Description : {cart.desc}</p>
+                              <p>Request : {cart.quantity}</p>
+                              <p>Accept : {cart.accept}</p>
+                            </Item.Description>
+                          </Item.Content>
+                          <Divider horizontal></Divider>
+                        </Item>
+                    )
+                }, this);
                 return (
-                    <Item key={cart.id}>
-                      <Item.Content>
-                        {/*<Item.Header as='a'>ID {cart.id}</Item.Header>*/}
-                        <Item.Description>
-                          { (user.company !== 'ISRA') ? <p>SKU : <strong>{cart.sku}</strong></p> : null }
-                          { (user.company === 'ISRA') ? <p>SKU : <strong>{cart.mainSku}</strong></p> : null }
-                          <p>Description : {cart.desc}</p>
-                          <p>Request : {cart.quantity}</p>
-                          <p>Accept : {cart.accept}</p>
-                        </Item.Description>
-                      </Item.Content>
-                      <Divider horizontal></Divider>
-                    </Item>
+                    <Table.Row key={order.id}>
+                        <Table.Cell>{order.id}</Table.Cell>
+                        <Table.Cell>
+                            <Item.Group>
+                              <Accordion fluid styled>
+                                <Accordion.Title active={activeIndex === order.id} index={order.id} onClick={this.handleClick}>
+                                  <Icon name='dropdown' />
+                                   See Details
+                                </Accordion.Title>
+                                <Accordion.Content active={activeIndex === order.id}>
+                                  {detailsView}
+                                </Accordion.Content>
+                              </Accordion>
+                            </Item.Group>
+                        </Table.Cell>
+                        <Table.Cell>{order.status}</Table.Cell>
+                        <Table.Cell>{order.createdBy}</Table.Cell>
+                        <Table.Cell>{order.processedBy}</Table.Cell>
+                        <Table.Cell>{order.createdAt.slice(5,7)}/{order.createdAt.slice(8,10)}/{order.createdAt.slice(0,4)}</Table.Cell>
+                        { (user.company === 'ISRA') ? <Table.Cell >{order.company}</Table.Cell> : null }
+                    </Table.Row>
                 )
             }, this);
-            return (
-                <Table.Row key={order.id}>
-                    <Table.Cell>{order.id}</Table.Cell>
-                    <Table.Cell>
-                        <Item.Group>
-                          <Accordion fluid styled>
-                            <Accordion.Title active={activeIndex === order.id} index={order.id} onClick={this.handleClick}>
-                              <Icon name='dropdown' />
-                               See Details
-                            </Accordion.Title>
-                            <Accordion.Content active={activeIndex === order.id}>
-                              {detailsView}
-                            </Accordion.Content>
-                          </Accordion>
-                        </Item.Group>
-                    </Table.Cell>
-                    <Table.Cell>{order.status}</Table.Cell>
-                    <Table.Cell>{order.createdBy}</Table.Cell>
-                    <Table.Cell>{order.processedBy}</Table.Cell>
-                    <Table.Cell>{order.createdAt.slice(5,7)}/{order.createdAt.slice(8,10)}/{order.createdAt.slice(0,4)}</Table.Cell>
-                    { (user.company === 'ISRA') ? <Table.Cell >{order.company}</Table.Cell> : null }
-                </Table.Row>
-            )
-        }, this);
+        }
+
         let tableView = <h4>No Approved Orders Found.</h4>
-        if (processedOrders.length > 0) {
+        if (processedOrders !== undefined && processedOrders.length > 0) {
             tableView = (
                 <Table celled fixed color='blue'>
                     <Table.Header>
