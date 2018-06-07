@@ -215,7 +215,7 @@ class ApproveExport extends Component {
                     <Table.Cell >
                           { (isStoreManager || isAdmin) && (capacity !== exportData.id) ? <Button size='tiny' color='teal'  onClick={() => this.triggerChange(exportData)}><Icon name='pencil' /></Button> : null }
                           { (isStoreManager || isAdmin) && (capacity !== exportData.id) ? <Button size='tiny' color='green'  onClick={() => this.onPressApprove(exportData)}><Icon name='checkmark' /></Button> : null }
-                          
+                          { (isStoreManager || isAdmin) && (capacity !== exportData.id) ? <Button size='tiny' color='blue'  onClick={() => this.openModal(exportData)}>X2</Button> : null }
                           { (capacity !== exportData.id) ? <Button size='tiny' color='red' onClick={() => this.onPressDelete(exportData)}><Icon name='trash outline' /></Button> : null }
                           { (capacity === exportData.id) ? <Button size='tiny' color='blue' onClick={() => this.onPressEdit(exportData)}>Save</Button> : null }
                           { (capacity === exportData.id) ? <Button size='tiny' color='black' onClick={() => this.setState({capacity: null, count: null, errorInput: null})}>Close</Button> : null }

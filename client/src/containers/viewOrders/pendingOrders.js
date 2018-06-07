@@ -11,6 +11,8 @@ import './../../styles/custom.css';
 import { getPendingOrders, getPendingOrderByCompany, approveOrder, changePopUp, closePopUp,
         changeOrder, deleteItem, trackNumber, deleteOrder, cancelOrder, errorInput, sortOrder, reverseOrder } from "./../../actions/OrderActions";
 
+import { getInventories } from "./../../actions/InventoryActions";
+
 class ViewOrders extends Component {
     state = {
         activeIndex: 0,
@@ -22,6 +24,7 @@ class ViewOrders extends Component {
         const { user } = this.props.auth;
         if (user.company === 'ISRA'){
             dispatch(getPendingOrders({ token: token }));
+            dispatch(getInventories({token: token}));
         }
         else {
             dispatch(getPendingOrderByCompany({ token: token }));
@@ -311,7 +314,8 @@ function mapStatesToProps(state) {
     return {
         token: state.auth.token,
         order: state.order,
-        auth: state.auth
+        auth: state.auth,
+        inventory: state.inventory
     }
 }
 

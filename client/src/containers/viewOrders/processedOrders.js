@@ -1,19 +1,22 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Segment, Header, Message, Table, Icon, Container, Button,
-          Input, Item, Grid, Accordion, Divider, Checkbox, Dropdown } from "semantic-ui-react";
+          Input, Item, Grid, Accordion, Divider, Checkbox, Dropdown, Pagination } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
 
 import './../../styles/custom.css';
 
-import { getProcessedOrders, getProcessedOrdersByCompany, filterStatus, filterCompany } from "./../../actions/OrderActions";
+import { getProcessedOrders, getProcessedOrdersByCompany, filterStatus, filterCompany, renderPage } from "./../../actions/OrderActions";
 
 import { getCompanies } from "./../../actions/CompanyActions";
 
 class ViewProcessedOrders extends Component {
-    state = { activeIndex: 0 };
+    state = {
+        activeIndex: 0,
+        column: null
+      };
     componentWillMount() {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
@@ -44,22 +47,31 @@ class ViewProcessedOrders extends Component {
         dispatch(filterCompany(data.value));
     }
 
+    handlePaginationChange = (e, data) => {
+        const { dispatch } = this.props;
+        //console.log(data.activePage);
+        this.setState({column: null});
+        dispatch(renderPage(data.activePage));
+    }
+
     render() {
-        const { activeIndex } = this.state;
+        const { activeIndex, column } = this.state;
         const { user } = this.props.auth;
-        const { processedOrders, fetchingApprovedOrdersError, checkApproved, checkCanceled, checkCompany } = this.props.order;
+        const { processedOrders, fetchingApprovedOrdersError, checkApproved, checkCanceled, checkCompany, allPages, activePage } = this.props.order;
         const { companies } = this.props.company;
         var companyList = [{key:1, text:'All', value:'All'}];
         var companyKey = 2;
         if (companies.length > 0){
             companies.forEach(function(company){
-                const data = {
-                    key: companyKey,
-                    text: company.name.en,
-                    value: company.name.en
+                if (company.name.en !== 'ISRA'){
+                    const data = {
+                        key: companyKey,
+                        text: company.name.en,
+                        value: company.name.en
+                    }
+                    companyList.push(data);
+                    companyKey += 1;
                 }
-                companyList.push(data);
-                companyKey += 1;
             });
         }
         let error = null;
@@ -105,9 +117,10 @@ class ViewProcessedOrders extends Component {
                           </Accordion>
                         </Item.Group>
                     </Table.Cell>
-                    <Table.Cell >{order.status}</Table.Cell>
-                    <Table.Cell >{order.createdBy}</Table.Cell>
-                    <Table.Cell >{order.processedBy}</Table.Cell>
+                    <Table.Cell>{order.status}</Table.Cell>
+                    <Table.Cell>{order.createdBy}</Table.Cell>
+                    <Table.Cell>{order.processedBy}</Table.Cell>
+                    <Table.Cell>{order.createdAt.slice(5,7)}/{order.createdAt.slice(8,10)}/{order.createdAt.slice(0,4)}</Table.Cell>
                     { (user.company === 'ISRA') ? <Table.Cell >{order.company}</Table.Cell> : null }
                 </Table.Row>
             )
@@ -123,12 +136,23 @@ class ViewProcessedOrders extends Component {
                             <Table.HeaderCell width={1}>Status</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Created By</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Proccessed By</Table.HeaderCell>
+                            <Table.HeaderCell width={1}>Date</Table.HeaderCell>
                             { (user.company === 'ISRA') ? <Table.HeaderCell width={1}>Company</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
                         {ordersView}
                     </Table.Body>
+                    <Table.Footer>
+                      <Table.Row>
+                        {(user.company === 'ISRA') ? <Table.HeaderCell colSpan='7' textAlign='right'>
+                            <Pagination pointing activePage={activePage} onPageChange={this.handlePaginationChange} totalPages={allPages.length} />
+                        </Table.HeaderCell> : null }
+                        {(user.company !== 'ISRA') ? <Table.HeaderCell colSpan='6' textAlign='right'>
+                            <Pagination pointing activePage={activePage} onPageChange={this.handlePaginationChange} totalPages={allPages.length} />
+                        </Table.HeaderCell> : null }
+                      </Table.Row>
+                    </Table.Footer>
                 </Table>
             )
         }

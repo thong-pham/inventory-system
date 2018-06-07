@@ -8,12 +8,14 @@ import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
 import { getPendingOrders, setViewingOrder, changePopUp, trackNumber, changeOrder,
-        deleteItem, approveOrder, cancelOrder } from "./../../actions/OrderActions";
+        deleteItem, approveOrder, cancelOrder, deleteOrder } from "./../../actions/OrderActions";
 
 class ViewOrder extends Component {
     state = {
         accept: null,
-        errorInput: null
+        errorInput: null,
+        cartErrors: [],
+        approvingOrderError: null
     }
     componentWillMount() {
         const { token, dispatch } = this.props;
@@ -36,6 +38,7 @@ class ViewOrder extends Component {
     onPressChange = (cart) => {
         const { token, dispatch } = this.props;
         const { quantity } = this.props.order;
+        const { cartErrors } = this.state;
         const orderId = this.props.location.pathname.split("/")[2];
         if (isNaN(quantity) || quantity === null || quantity <= 0 || !Number.isInteger(Number(quantity))){
             this.setState({errorInput: "Invalid Input"})
@@ -50,26 +53,61 @@ class ViewOrder extends Component {
                 quantity
             }
             dispatch(changeOrder({token: token, change: change}));
+            var index = 0;
+            for (var i = 0; i < cartErrors.length; i++){
+                if (cartErrors[i].id === cart.id ){
+                    index = i;
+                }
+            }
+            cartErrors.splice(index,1)
             this.setState({accept: null});
         }
     }
 
     onPressDeleteCart = (cartId) => {
         const { token, dispatch } = this.props;
+        const { cartErrors } = this.state;
         const orderId = this.props.location.pathname.split("/")[2];
         const item = {
             orderId,
             cartId
         }
         dispatch(deleteItem({token: token, item: item}));
+        var index = 0;
+        for (var i = 0; i < cartErrors.length; i++){
+            if (cartErrors[i].id === cartId ){
+                index = i;
+            }
+        }
+        cartErrors.splice(index,1)
+        this.setState({})
     }
 
     onPressApprove = () => {
           const { token, dispatch } = this.props;
           const orderId = this.props.location.pathname.split("/")[2];
-          dispatch(approveOrder({token: token, orderId: orderId })).then(function(data){
-              dispatch(push("/orders"));
+          const { backUpInv } = this.props.inventory;
+          const { order } = this.props.order;
+          var error = [];
+          order.details.forEach(function(cart){
+               backUpInv.forEach(function(inv){
+                    if (cart.mainSku === inv.sku && cart.accept > inv.stock){
+                        const data = {
+                            cartId: cart.id,
+                            mainStock: inv.stock
+                        }
+                        error.push(data);
+                    }
+               });
           });
+          if (error.length > 0){
+              this.setState({approvingOrderError: "Current stock", cartErrors: error});
+          }
+          else {
+              dispatch(approveOrder({token: token, orderId: orderId })).then(function(data){
+                  dispatch(push("/orders"));
+              });
+          }
     }
 
     onPressCancel = () => {
@@ -80,8 +118,16 @@ class ViewOrder extends Component {
         });;
     }
 
+    onPressDelete = () => {
+        const { token, dispatch } = this.props;
+        const orderId = this.props.location.pathname.split("/")[2];
+        dispatch(deleteOrder({token: token, orderId: orderId})).then(function(data){
+            dispatch(push("/orders"));
+        });
+    }
+
     checkOrderError = (id) => {
-        const { cartErrors, orderError } = this.props.order;
+        const { cartErrors } = this.state;
         var check = false;
         var stock = null;
         cartErrors.forEach(function(data){
@@ -97,9 +143,36 @@ class ViewOrder extends Component {
         return data;
     }
 
+    onAll = (quantity, cartId) => {
+        const { dispatch, token } = this.props;
+        const orderId = this.props.location.pathname.split("/")[2];
+        const { cartErrors } = this.state;
+        const change = {
+            orderId,
+            cartId,
+            quantity
+        }
+        //console.log(change);
+        if (quantity === 0){
+            this.setState({errorInput:"This product is empty"});
+        }
+        else {
+            dispatch(changeOrder({token: token, change: change}));
+            var index = 0;
+            for (var i = 0; i < cartErrors.length; i++){
+                if (cartErrors[i].id === cartId ){
+                    index = i;
+                }
+            }
+            cartErrors.splice(index,1)
+            this.setState({});
+        }
+    }
+
     render() {
-        const { accept, errorInput } = this.state;
-        const { order, fetchingPendingOrdersError, approvingOrderError, cartErrors, orderError, loader } = this.props.order;
+        const { user } = this.props.auth;
+        const { accept, errorInput, cartErrors, approvingOrderError } = this.state;
+        const { order, fetchingPendingOrdersError, orderError, loader } = this.props.order;
         let error = null;
         if (fetchingPendingOrdersError) {
             error = (
@@ -125,22 +198,23 @@ class ViewOrder extends Component {
                         <Table.Cell>{cart.desc}</Table.Cell>
                         <Table.Cell>{cart.quantity}</Table.Cell>
                         <Table.Cell>
-                            {(accept !== cart.id) ? <div>{cart.accept}</div> : null}
+                            {(accept !== cart.id) ? <div>{cart.accept} </div> : null}
                             {(accept === cart.id) ?
                               <div>
                                 <Input defaultValue={cart.accept} onChange={this.handleAccept} className="mainContainer" />
                               </div> : null }
                               { (approvingOrderError && this.checkOrderError(cart.id).check) ? <Message negative>
                                                             <p>{approvingOrderError} {this.checkOrderError(cart.id).stock}</p>
+                                                            {(this.checkOrderError(cart.id).stock !== 0) ? <Button onClick={() => this.onAll(this.checkOrderError(cart.id).stock, cart.id)}>All</Button> : null }
                                                         </Message> : null }
                         </Table.Cell>
                         <Table.Cell>{cart.capacity}</Table.Cell>
-                        <Table.Cell>
+                        { (user.company === 'ISRA') ? <Table.Cell>
                             { (accept !== cart.id) ? <Button size='tiny' color='teal'  onClick={() => this.triggerChange(cart)}>Edit</Button> : null}
                             { (accept !== cart.id) ? <Button size='tiny' color='red' onClick={() => this.onPressDeleteCart(cart.id)}>Delete</Button> : null}
                             { (accept === cart.id) ? <Button size='tiny' color='blue' onClick={() => this.onPressChange(cart)}>Save</Button> : null }
                             { (accept === cart.id) ? <Button size='tiny' color='black' onClick={() => this.setState({accept: null, errorInput: null})}>Close</Button> : null }
-                        </Table.Cell>
+                        </Table.Cell> : null }
                     </Table.Row>
                 )
             }, this);
@@ -157,7 +231,7 @@ class ViewOrder extends Component {
                             <Table.HeaderCell>Request</Table.HeaderCell>
                             <Table.HeaderCell>Accept</Table.HeaderCell>
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
-                            <Table.HeaderCell>Option</Table.HeaderCell>
+                            { (user.company === 'ISRA') ? <Table.HeaderCell>Option</Table.HeaderCell> : null }
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -166,12 +240,15 @@ class ViewOrder extends Component {
                     <Table.Footer>
                       <Table.Row>
                         <Table.HeaderCell colSpan='8' textAlign='right'>
-                            <Button floated='right' icon labelPosition='left' secondary size='small' onClick={() => this.onPressCancel()}>
+                            { (user.company === 'ISRA') ? <Button floated='right' icon labelPosition='left' secondary size='small' onClick={() => this.onPressCancel()}>
                               <Icon name='close' /> Cancel
-                            </Button>
-                            <Button floated='right' icon labelPosition='left' primary size='small' onClick={() => this.onPressApprove()}>
+                            </Button> : null }
+                            { (user.company === 'ISRA') ? <Button floated='right' icon labelPosition='left' primary size='small' onClick={() => this.onPressApprove()}>
                               <Icon name='checkmark' /> Approve
-                            </Button>
+                            </Button> : null }
+                            { (user.company !== 'ISRA') ? <Button floated='right' icon labelPosition='left' color='red' size='small' onClick={() => this.onPressDelete()}>
+                              <Icon name='trash outline' /> Delete
+                            </Button> : null }
                         </Table.HeaderCell>
                       </Table.Row>
                     </Table.Footer>
@@ -185,7 +262,7 @@ class ViewOrder extends Component {
                     {error}
                     {(!loader) ? <Container>
                         {tableView}
-                    </Container> : null }              
+                    </Container> : null }
                 </Segment>
                 {(loader) ? <Dimmer active inverted>
                     <Loader inverted>Loading</Loader>
@@ -200,7 +277,8 @@ function mapStatesToProps(state) {
         token: state.auth.token,
         order: state.order,
         auth: state.auth,
-        location: state.router.location
+        location: state.router.location,
+        inventory: state.inventory
     }
 }
 

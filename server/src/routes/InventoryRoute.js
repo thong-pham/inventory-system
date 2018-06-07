@@ -3,7 +3,7 @@ import { createInventory, approveInventory, approveInventoryOut, removeInventory
         getInventories, getInventoriesInTrash, recoverInventory,
         updateInventory, createRequest, removeInventoryInTrash,
         importInventory, getPendingImports, removeImport, updateImport, duplicateImport,
-        exportInventory, getPendingExports, updateExport, removeExport
+        exportInventory, getPendingExports, updateExport, removeExport, duplicateExport
        } from "./../services/InventoryService";
 import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
 import { validateCreateInventory, validateUpdateInventory, validateImportInventory, validateDuplicateImport } from "./../validators/InventoryValidator"
@@ -488,6 +488,44 @@ router.post('/duplicateImport', verifyAuthMiddleware, function (req, res, next) 
                 else {
                     //const message = quantity + " items have been added";
                     res.status(201).send(importData);
+                }
+            });
+        }
+    });
+});
+
+router.post('/duplicateExport', verifyAuthMiddleware, function (req, res, next) {
+    validateDuplicateImport(req.body, function (err) {
+        if (err) {
+            console.log(err);
+            res.status(400).send("Data missing");
+        }
+        else {
+            const userSession = req.session;
+            const { id, count } = req.body;
+            const data = { id, count, userSession };
+            duplicateExport(data, function (err, exportData) {
+                if (err) {
+                    if (err.message === "Only ISRA can duplicate Import") {
+                        res.status(400).send(err.message);
+                    }
+                    else if (err.message === "Not Enough Permission to duplicate Import"){
+                        res.status(401).send(err.message);
+                    }
+                    else if (err.message === "Only pending import can be duplicate"){
+                        res.status(401).send(err.message);
+                    }
+                    else if (err.message === "Import Not Found"){
+                        res.status(401).send(err.message);
+                    }
+                    else {
+                        console.log(err);
+                        res.status(500).send("An error happens in the backend");
+                    }
+                }
+                else {
+                    //const message = quantity + " items have been added";
+                    res.status(201).send(exportData);
                 }
             });
         }

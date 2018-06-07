@@ -102,7 +102,9 @@ class BaseLayout extends Component {
                           <Dropdown.Item onClick={this.handleClick.bind(this, "viewInventories")}><Icon name='cube' />ISRA Inventories</Dropdown.Item>
                           <Dropdown.Item onClick={this.handleClick.bind(this, "addInventory")}><Icon name='add' />Add Product</Dropdown.Item>
                           <Dropdown.Item onClick={this.handleClick.bind(this, "importInventory")}><Icon name='add' />Import Inventory</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "exportInventory")}><Icon name='add' />Export Inventory</Dropdown.Item>
                           <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='unordered list' />Pending Imports</Dropdown.Item>
+                          <Dropdown.Item onClick={this.handleClick.bind(this, "approveExport")}><Icon name='unordered list' />Pending Exports</Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     </Menu.Item>
@@ -158,6 +160,10 @@ class BaseLayout extends Component {
                   <Icon name='add' />
                     Import Inventory
                 </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "exportInventory")} >
+                  <Icon name='add' />
+                    Export Inventory
+                </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "importByCamera")} >
                   <Icon name='add' />
                     Import By Camera
@@ -165,6 +171,10 @@ class BaseLayout extends Component {
                 <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
                   <Icon name='list ul' />
                     Pending Import
+                </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "approveExport")} >
+                  <Icon name='list ul' />
+                    Pending Export
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
                   <Icon name='user' />

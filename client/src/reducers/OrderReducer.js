@@ -5,7 +5,7 @@ import { APPROVE_ORDER_STARTED, APPROVE_ORDER_FULFILLED, APPROVE_ORDER_REJECTED,
          DELETE_ORDER_STARTED, DELETE_ORDER_FULFILLED, DELETE_ORDER_REJECTED,
          CANCEL_ORDER_STARTED, CANCEL_ORDER_FULFILLED, CANCEL_ORDER_REJECTED,
          CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT_ORDER,
-         SORT_ORDER, REV_ORDER, FILTER_STATUS, FILTER_COMPANY
+         SORT_ORDER, REV_ORDER, FILTER_STATUS, FILTER_COMPANY, RENDER_PAGE, RECOVER_PAGE
          } from "./../actions/OrderActions";
 
 const initialState = {
@@ -35,7 +35,9 @@ const initialState = {
     checkCanceled: false,
     checkCompany: null,
     backUpOrders: null,
-    loader: false
+    loader: false,
+    allPages: [],
+    activePage: 1
 }
 
 export default function (state = initialState, action) {
@@ -51,12 +53,46 @@ export default function (state = initialState, action) {
             const error = action.payload.data;
             return { ...state, isFetchingPendingOrders: false, fetchingPendingOrdersError: error };
         }
+        case RENDER_PAGE:{
+            const data = action.payload;
+            return { ...state, processedOrders: state.allPages[data-1], activePage: data};
+        }
+        case RECOVER_PAGE: {
+            const data = state.backUpOrders;
+            const page = Math.ceil(data.length/10);
+            const max = 10;
+            var newOrder = [];
+
+            for (var i = 0; i < page; i++){
+                var temp = [];
+                for (var j = i*max; j < (i+1)*max; j++){
+                    if (j < data.length) {
+                        temp.push(data[j]);
+                    }
+                }
+                newOrder.push(temp);
+            }
+            return { ...state, processedOrders: newOrder[0], allPages: newOrder, activePage: 1 };
+        }
         case GET_PROCESSED_ORDERS_STARTED: {
             return { ...state, isFetchingProcessedOrders: true };
         }
         case GET_PROCESSED_ORDERS_FULFILLED: {
             const data = action.payload;
-            return { ...state, isFetchingProcessedOrders: false, processedOrders: data, backUpOrders: data };
+            const page = Math.ceil(data.length/10);
+            const max = 10;
+            var newOrder = [];
+
+            for (var i = 0; i < page; i++){
+                var temp = [];
+                for (var j = i*max; j < (i+1)*max; j++){
+                    if (j < data.length) {
+                        temp.push(data[j]);
+                    }
+                }
+                newOrder.push(temp);
+            }
+            return { ...state, isFetchingProcessedOrders: false, processedOrders: newOrder[0], allPages: newOrder, backUpOrders: data };
         }
         case GET_PROCESSED_ORDERS_REJECTED: {
             const error = action.payload.data;
@@ -205,7 +241,20 @@ export default function (state = initialState, action) {
                     state.checkCompany = 'All';
                 }
             }
-            return { ...state, processedOrders: orders};
+            const page = Math.ceil(orders.length/10);
+            const max = 10;
+            var newOrder = [];
+
+            for (var i = 0; i < page; i++){
+                var temp = [];
+                for (var j = i*max; j < (i+1)*max; j++){
+                    if (j < orders.length) {
+                        temp.push(orders[j]);
+                    }
+                }
+                newOrder.push(temp);
+            }
+            return { ...state, processedOrders: newOrder[0], allPages: newOrder, activePage: 1 };
         }
         case FILTER_COMPANY:{
               const data = action.payload;
@@ -220,7 +269,20 @@ export default function (state = initialState, action) {
                   state.checkApproved = false;
                   state.checkCanceled = false;
               }
-              return { ...state, checkCompany: data, processedOrders: orders};
+              const page = Math.ceil(orders.length/10);
+              const max = 10;
+              var newOrder = [];
+
+              for (var i = 0; i < page; i++){
+                  var temp = [];
+                  for (var j = i*max; j < (i+1)*max; j++){
+                      if (j < orders.length) {
+                          temp.push(orders[j]);
+                      }
+                  }
+                  newOrder.push(temp);
+              }
+              return { ...state, checkCompany: data, processedOrders: newOrder[0], allPages: newOrder, activePage: 1 };
         }
         default: {
             return state;

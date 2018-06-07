@@ -683,7 +683,7 @@ export function exportInventory(data, callback){
           const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
           const key = data.code;
           if (company === 'ISRA'){
-              if (isStoreManager || isAdmin) {
+              if (isStoreManager || isAdmin || isWorker) {
                   const key = data.code
                   getNextExportId(function (err, counterDoc) {
                         if (err){
@@ -950,6 +950,77 @@ export function duplicateImport(data, callback){
                         status: "pending"
                      }
                      createImportDAO(submit, waterfallCallback);
+                }
+          });
+      }
+    ],callback)
+}
+
+export function duplicateExport(data, callback){
+    async.waterfall([
+      function(waterfallCallback){
+         const { roles, company } = data.userSession;
+         const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
+         if (company !== 'ISRA') {
+             const err = new Error("Only ISRA can duplicate Import");
+             waterfallCallback(err)
+         }
+         if (isStoreManager || isAdmin){
+            waterfallCallback()
+         }
+         else{
+           const err = new Error("Not Enough Permission to duplicate Import");
+           waterfallCallback(err);
+         }
+      },
+      function(waterfallCallback){
+          const id = data.id;
+          getExportByIdDAO(id, function(err, exportData){
+              if (err){
+                waterfallCallback(err);
+              }
+              else if (exportData){
+                  if (exportData.status !== "pending"){
+                      const err = new Error("Only pending import can be duplicate");
+                      waterfallCallback(err);
+                  }
+                  else {
+
+                      const newCount = exportData.count - data.count;
+                      const newQuantity = newCount * exportData.capacity;
+                      const update = {
+                          count: newCount,
+                          quantity: newQuantity
+                      }
+                      updateExportByIdDAO(id, update, waterfallCallback);
+                  }
+              }
+              else {
+                  const err = new Error("Import Not Found");
+                  waterfallCallback(err);
+              }
+          });
+      },
+      function(exportData, waterfallCallback){
+          const { username } = data.userSession;
+          getNextExportId(function (err, counterDoc) {
+                if (err){
+                    waterfallCallback(err);
+                }
+                else {
+                     const count = data.count;
+                     const quantity = count * exportData.capacity;
+                     const submit = {
+                        id: counterDoc.counter,
+                        code: exportData.code,
+                        sku: exportData.sku,
+                        quantity: quantity,
+                        capacity: exportData.capacity,
+                        count: count,
+                        username: username,
+                        status: "pending"
+                     }
+                     createExportDAO(submit, waterfallCallback);
                 }
           });
       }

@@ -90,7 +90,7 @@ export default function (state = initialState, action) {
                 }
             }
             state.pendingExports.splice(index,1);
-            return { ...state, isApprovingExport: false, approvingExportError: null  };
+            return { ...state, isApprovingExport: false, approvingExportError: null };
         }
         case APPROVE_EXPORT_REJECTED: {
             const error = action.payload.data;
@@ -108,7 +108,7 @@ export default function (state = initialState, action) {
                     item.count = data.count;
                 }
             });
-            return {...state, isChangingExport: false  };
+            return {...state, isChangingExport: false, approvingExportError: null  };
         }
         case CHANGE_EXPORT_REJECTED: {
             const error = action.payload.data;

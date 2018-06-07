@@ -34,6 +34,8 @@ export const SORT_ORDER = "SORT_ORDER";
 export const REV_ORDER = "REV_ORDER";
 export const FILTER_STATUS = "FILTER_STATUS";
 export const FILTER_COMPANY = "FILTER_COMPANY";
+export const RENDER_PAGE = "RENDER_PAGE";
+export const RECOVER_PAGE = "RECOVER_PAGE";
 
 const WS_URL = URL + "/orders/";
 
@@ -194,15 +196,15 @@ export function cancelOrder(data) {
 }
 
 export function deleteOrder(data) {
-    const order = data.order;
+    const id = data.orderId;
     return function (dispatch) {
         dispatch({ type: DELETE_ORDER_STARTED });
-        return axios.delete(WS_URL + order.id, { headers: { Authorization: data.token } })
+        return axios.delete(WS_URL + id, { headers: { Authorization: data.token } })
             .then(function (response) {
                 return response.data;
             })
             .then(function (data) {
-                dispatch({ type: DELETE_ORDER_FULFILLED, payload: order.id });
+                dispatch({ type: DELETE_ORDER_FULFILLED, payload: id });
                 return data;
             })
             .catch(function (error) {
@@ -263,5 +265,17 @@ export function filterStatus(data){
 export function filterCompany(data){
    return function (dispatch){
        dispatch({ type : FILTER_COMPANY, payload: data })
+   }
+}
+
+export function renderPage(data){
+   return function (dispatch){
+       dispatch({ type : RENDER_PAGE, payload: data })
+   }
+}
+
+export function recoverPage(){
+   return function (dispatch){
+       dispatch({ type : RECOVER_PAGE })
    }
 }
