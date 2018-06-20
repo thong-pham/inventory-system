@@ -47,6 +47,8 @@ import ViewOrders from "./containers/viewOrders/pendingOrders";
 import ViewOrder from "./containers/viewOrders/orderDetails";
 import ViewProcessedOrders from "./containers/viewOrders/processedOrders";
 
+import Barcode from "./containers/barcode";
+
 const history = createHistory();
 const logger = createLogger();
 
@@ -112,6 +114,7 @@ class App extends Component {
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />
                             <Route exact path="/feature" component={ViewFeatures} />
+                            <Route exact path="/barcode" component={Barcode} />
                             <Route exact path="/inventoriesInTrash" component={ViewInventoriesTrash} />
                             <Route exact path="/subInventoriesInTrash" component={ViewSubInventoriesTrash} />
                         </div>

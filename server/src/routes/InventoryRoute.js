@@ -312,14 +312,14 @@ router.get('/pendingImports', verifyAuthMiddleware, function (req, res, next) {
 });
 
 router.get('/pendingExports', verifyAuthMiddleware, function (req, res, next) {
-    getPendingExports(function (err, imports) {
+    getPendingExports(function (err, exportData) {
         if (err) {
             console.log(err);
             res.status(500).send("An error happens in the backend");
 
         }
         else {
-            res.status(200).send(imports);
+            res.status(200).send(exportData);
         }
     });
 });
@@ -365,16 +365,16 @@ router.delete('/:id/export', verifyAuthMiddleware, function (req, res, next) {
         const data = { id, userSession };
         removeExport(data, function (err, inventory) {
             if (err) {
-                if (err.message === "Only ISRA can remove Import"){
+                if (err.message === "Only ISRA can remove export"){
                    res.status(401).send(err.message);
                 }
-                else if (err.message === "Not Enough Permission to remove Import") {
+                else if (err.message === "Not Enough Permission to remove export") {
                     res.status(402).send(err.message);
                 }
-                else if (err.message === "Only pending import can be removed") {
+                else if (err.message === "Only pending export can be removed") {
                     res.status(403).send(err.message);
                 }
-                else if (err.message === "Import Not Found") {
+                else if (err.message === "Export Not Found") {
                     res.status(404).send(err.message);
                 }
                 else {
@@ -436,7 +436,7 @@ router.post('/exportInventory', verifyAuthMiddleware, function (req, res, next) 
             const data = { code, quantity, capacity, count, userSession };
             exportInventory(data, function (err, exportData) {
                 if (err) {
-                    if (err.message === "Not Enough Permission to import Inventory") {
+                    if (err.message === "Not Enough Permission to export Inventory") {
                         res.status(400).send(err.message);
                     }
                     else if (err.message === "This code does not exists"){
@@ -506,16 +506,16 @@ router.post('/duplicateExport', verifyAuthMiddleware, function (req, res, next) 
             const data = { id, count, userSession };
             duplicateExport(data, function (err, exportData) {
                 if (err) {
-                    if (err.message === "Only ISRA can duplicate Import") {
+                    if (err.message === "Only ISRA can duplicate export") {
                         res.status(400).send(err.message);
                     }
-                    else if (err.message === "Not Enough Permission to duplicate Import"){
+                    else if (err.message === "Not Enough Permission to duplicate export"){
                         res.status(401).send(err.message);
                     }
-                    else if (err.message === "Only pending import can be duplicate"){
+                    else if (err.message === "Only pending export can be duplicate"){
                         res.status(401).send(err.message);
                     }
-                    else if (err.message === "Import Not Found"){
+                    else if (err.message === "Export Not Found"){
                         res.status(401).send(err.message);
                     }
                     else {
@@ -589,16 +589,16 @@ router.put('/:id/export', verifyAuthMiddleware, function (req, res, next) {
               const data = { id, userSession, code, quantity, capacity, count };
               updateExport(data, function (err, exportData) {
                   if (err) {
-                      if (err.message === "Only ISRA can change Import"){
+                      if (err.message === "Only ISRA can change export"){
                          res.status(401).send(err.message);
                       }
-                      else if (err.message === "Not Enough Permission to change Import") {
+                      else if (err.message === "Not Enough Permission to change export") {
                           res.status(402).send(err.message);
                       }
-                      else if (err.message === "Only pending import can be changed") {
+                      else if (err.message === "Only pending export can be changed") {
                           res.status(403).send(err.message);
                       }
-                      else if (err.message === "Import Not Found") {
+                      else if (err.message === "Export Not Found") {
                           res.status(404).send(err.message);
                       }
                       else {

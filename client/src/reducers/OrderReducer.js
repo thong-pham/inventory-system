@@ -92,7 +92,7 @@ export default function (state = initialState, action) {
                 }
                 newOrder.push(temp);
             }
-            return { ...state, isFetchingProcessedOrders: false, processedOrders: newOrder[0], allPages: newOrder, backUpOrders: data };
+            return { ...state, isFetchingProcessedOrders: false, processedOrders: newOrder[0], allPages: newOrder, backUpOrders: data, activePage: 1 };
         }
         case GET_PROCESSED_ORDERS_REJECTED: {
             const error = action.payload.data;

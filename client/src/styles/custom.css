@@ -68,7 +68,7 @@
 
 .menuTop {
    margin-bottom: 0 !important;
-   height: 45px !important
+   height: 45px !important;
 }
 
 .inventoryDropdown {
@@ -96,6 +96,11 @@
 
 .checkBoxOrder {
     padding-right: 25px
+}
+
+.imageRender {
+    margin-left: auto;
+    margin-right: auto
 }
 
 @media only screen and (max-width: 1280px) {

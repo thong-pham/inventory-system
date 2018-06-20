@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { Container, Segment, Sidebar, Menu, Icon, Message, Header, Button, Popup, Dropdown } from 'semantic-ui-react';
+import { Container, Segment, Sidebar, Menu, Icon, Message, Header, Button, Popup, Dropdown, Responsive } from 'semantic-ui-react';
 import { push } from 'react-router-redux';
 
 import { logoutUser } from "./../../actions/AuthActions";
@@ -68,6 +68,9 @@ class BaseLayout extends Component {
         else if (menuItem === "viewFeatures") {
             dispatch(push('/feature'));
         }
+        else if (menuItem === "viewBarcode") {
+            dispatch(push('/barcode'));
+        }
         else if (menuItem === "viewInventoriesTrash") {
             dispatch(push('/inventoriesInTrash'));
         }
@@ -79,6 +82,9 @@ class BaseLayout extends Component {
             dispatch(push('/login'));
         }
     }
+
+    toggleVisibility = () => this.setState({ visible: !this.state.visible })
+
     render() {
         const { visible } = this.state;
         const { user } = this.props.auth;
@@ -91,6 +97,7 @@ class BaseLayout extends Component {
         let approveInventoryMenuItem = null;
         let addInventoryMenuItem = null;
         let dedicatedMenuItem = null;
+        let dedicatedMenuItemForPhone = null;
         let viewSubInventoriesMenuItem = null;
         if (company === 'ISRA'){
           if (isStoreManager) {
@@ -124,6 +131,10 @@ class BaseLayout extends Component {
                       <Icon name='file text' />
                         Features
                     </Menu.Item>
+                    <Menu.Item onClick={this.handleClick.bind(this, "viewBarcode")} >
+                      <Icon name='barcode' />
+                        Barcode Maker
+                    </Menu.Item>
                     <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
                       <Icon name='trash outline' />
                         Trash
@@ -152,6 +163,85 @@ class BaseLayout extends Component {
                     </Menu.Item>
                 </Menu>
               );
+
+              dedicatedMenuItemForPhone = (
+                <Sidebar as={Menu} animation='push' visible={visible} direction='left' vertical width='thin' inverted>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")}>
+                    <Icon name='cube' />
+                      ISRA Inventories
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "addInventory")}>
+                    <Icon name='add' />
+                      Add Product
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "importInventory")}>
+                    <Icon name='add' />
+                      Import Inventory
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "importByCamera")} >
+                    <Icon name='add' />
+                      Scan Barcode
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "exportInventory")}>
+                    <Icon name='add' />
+                      Export Inventory
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "approveImport")}>
+                    <Icon name='unordered list' />
+                      Pending Imports
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "approveExport")}>
+                    <Icon name='unordered list' />
+                      Pending Exports
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")}>
+                    <Icon name='list ul' />
+                      Pending Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewProcessedOrders")}>
+                    <Icon name='checkmark box' />
+                      Processed Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
+                    <Icon name='barcode' />
+                      Code
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
+                    <Icon name='file text' />
+                      Features
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewBarcode")} >
+                    <Icon name='barcode' />
+                      Barcode Maker
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
+                    <Icon name='trash outline' />
+                      Trash
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                    <Icon name='user' />
+                      User Account
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
+                   <Icon name='log out' />
+                      Logout
+                  </Menu.Item>
+                  <Menu.Item>
+                      <Popup
+                        trigger={<Icon name='info' />}
+                        flowing
+                        position='bottom right'
+                      >
+                        <Message.Header>Account Information</Message.Header>
+                          <Message.List>
+                            <Message.Item>Username: {user.username}</Message.Item>
+                            <Message.Item>Role: {user.roles[0]}</Message.Item>
+                            <Message.Item>Company: {user.company}</Message.Item>
+                          </Message.List>
+                      </Popup>
+                  </Menu.Item>
+                </Sidebar>
+              );
           }
           if (isWorker) {
               dedicatedMenuItem = (
@@ -166,7 +256,7 @@ class BaseLayout extends Component {
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "importByCamera")} >
                   <Icon name='add' />
-                    Import By Camera
+                    Scan Barcode
                 </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
                   <Icon name='list ul' />
@@ -199,6 +289,53 @@ class BaseLayout extends Component {
                     </Popup>
                 </Menu.Item>
               </Sidebar>
+              );
+
+              dedicatedMenuItemForPhone = (
+                <Sidebar as={Menu} animation='push' visible={visible} direction='left' width='thin' vertical inverted>
+                  <Menu.Item onClick={this.handleClick.bind(this, "importInventory")} >
+                    <Icon name='add' />
+                      Import Inventory
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "exportInventory")} >
+                    <Icon name='add' />
+                      Export Inventory
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "importByCamera")} >
+                    <Icon name='add' />
+                      Scan Barcode
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "approveImport")} >
+                    <Icon name='list ul' />
+                      Pending Import
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "approveExport")} >
+                    <Icon name='list ul' />
+                      Pending Export
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                    <Icon name='user' />
+                      User Account
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
+                    <Icon name='log out' />
+                      Logout
+                  </Menu.Item>
+                  <Menu.Item>
+                      <Popup
+                        trigger={<Icon name='info' />}
+                        flowing
+                        position='bottom right'
+                      >
+                        <Message.Header>Account Information</Message.Header>
+                          <Message.List>
+                            <Message.Item>Username: {user.username}</Message.Item>
+                            <Message.Item>Role: {user.roles[0]}</Message.Item>
+                            <Message.Item>Company: {user.company}</Message.Item>
+                          </Message.List>
+                      </Popup>
+                  </Menu.Item>
+                </Sidebar>
               );
           }
           if (isAdmin) {
@@ -240,6 +377,10 @@ class BaseLayout extends Component {
                   <Icon name='file text' />
                     Features
                 </Menu.Item>
+                <Menu.Item onClick={this.handleClick.bind(this, "viewBarcode")} >
+                  <Icon name='barcode' />
+                    Barcode Maker
+                </Menu.Item>
                 <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
                   <Icon name='trash outline' />
                     Trash
@@ -267,6 +408,93 @@ class BaseLayout extends Component {
                     </Popup>
                 </Menu.Item>
               </Menu>
+              );
+
+              dedicatedMenuItemForPhone = (
+                <Sidebar as={Menu} animation='push' visible={visible} direction='left' vertical width='thin' inverted>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewUsers")}>
+                    <Icon name='users' />
+                      Users
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewCompanies")}>
+                    <Icon name='building' />
+                      Companies
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewInventories")}>
+                    <Icon name='cube' />
+                      ISRA Inventories
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "addInventory")}>
+                    <Icon name='add' />
+                      Add Product
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "importInventory")}>
+                    <Icon name='add' />
+                      Import Inventory
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "importByCamera")} >
+                    <Icon name='add' />
+                      Scan Barcode
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "exportInventory")}>
+                    <Icon name='add' />
+                      Export Inventory
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "approveImport")}>
+                    <Icon name='unordered list' />
+                      Pending Imports
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "approveExport")}>
+                    <Icon name='unordered list' />
+                      Pending Exports
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")}>
+                    <Icon name='list ul' />
+                      Pending Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewProcessedOrders")}>
+                    <Icon name='checkmark box' />
+                      Processed Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
+                    <Icon name='barcode' />
+                      Code
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewFeatures")} >
+                    <Icon name='file text' />
+                      Features
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewBarcode")} >
+                    <Icon name='barcode' />
+                      Barcode Maker
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewInventoriesTrash")} >
+                    <Icon name='trash outline' />
+                      Trash
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                    <Icon name='user' />
+                      User Account
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
+                   <Icon name='log out' />
+                      Logout
+                  </Menu.Item>
+                  <Menu.Item>
+                      <Popup
+                        trigger={<Icon name='info' />}
+                        flowing
+                        position='bottom right'
+                      >
+                        <Message.Header>Account Information</Message.Header>
+                          <Message.List>
+                            <Message.Item>Username: {user.username}</Message.Item>
+                            <Message.Item>Role: {user.roles[0]}</Message.Item>
+                            <Message.Item>Company: {user.company}</Message.Item>
+                          </Message.List>
+                      </Popup>
+                  </Menu.Item>
+                </Sidebar>
               );
           }
         }
@@ -320,13 +548,70 @@ class BaseLayout extends Component {
                       </Popup>
                   </Menu.Item>
               </Sidebar>
-            )
+            );
+
+            dedicatedMenuItemForPhone = (
+              <Sidebar as={Menu} animation='push' visible={visible} direction='left' vertical width='thin' inverted>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
+                    <Icon name='cube' />
+                       {user.company} Inventory
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "addSubInventory")} >
+                    <Icon name='add' />
+                      Add Product
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewOrders")} >
+                    <Icon name='list ul' />
+                      Pending Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewProcessedOrders")} >
+                    <Icon name='checkmark box' />
+                      Processed Orders
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewCode")} >
+                    <Icon name='barcode' />
+                      Code
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventoriesTrash")} >
+                    <Icon name='trash outline' />
+                      Trash
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewAccount")} >
+                    <Icon name='user' />
+                      User Account
+                  </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "logout")} >
+                   <Icon name='log out' />
+                      Logout
+                  </Menu.Item>
+                  <Menu.Item>
+                      <Popup
+                        trigger={<Icon name='info' />}
+                        flowing
+                        position='bottom right'
+                      >
+                        <Message.Header>Account Information</Message.Header>
+                          <Message.List>
+                            <Message.Item>Username: {user.username}</Message.Item>
+                            <Message.Item>Role: {user.roles[0]}</Message.Item>
+                            <Message.Item>Company: {user.company}</Message.Item>
+                          </Message.List>
+                      </Popup>
+                  </Menu.Item>
+              </Sidebar>
+            );
         }
 
         return (
             <div style={{textAlign: 'center'}} className="mainContainer">
                 <Sidebar.Pushable as={Segment} className="mainContainer">
-                    {dedicatedMenuItem}
+                    <Responsive maxWidth={414}>
+                        <Button onClick={this.toggleVisibility}>Menu</Button>
+                        {dedicatedMenuItemForPhone}
+                    </Responsive>
+                    <Responsive minWidth={415}>
+                        {dedicatedMenuItem}
+                    </Responsive>
                     <Sidebar.Pusher>
                         {this.props.children}
                     </Sidebar.Pusher>

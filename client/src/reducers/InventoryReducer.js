@@ -83,7 +83,7 @@ export default function (state = initialState, action) {
                 }
                 newInv.push(temp);
             }
-            return { ...state, isFetchingInventories: false, inventories: newInv[0], allPages: newInv, backUpInv: data };
+            return { ...state, isFetchingInventories: false, inventories: newInv[0], allPages: newInv, backUpInv: data, activePage: 1 };
         }
         case GET_INVENTORIES_REJECTED: {
             const error = action.payload.data;
@@ -108,7 +108,7 @@ export default function (state = initialState, action) {
                 }
                 newInv.push(temp);
             }
-            return { ...state, inventories: newInv[0], allPages: newInv };
+            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1 };
         }
         case DELETE_INVENTORY_STARTED: {
             return { ...state, isDeletingInventory: true };

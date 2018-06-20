@@ -597,69 +597,37 @@ export function importInventory(data, callback){
           const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
           const key = data.code;
           if (company === 'ISRA'){
-              /*if(isStoreManager || isAdmin)
-              {
-                  getCodeByKeyDAO(key, function(err, code){
-                      if (err){
-                          waterfallCallback(err);
-                      }
-                      else if (code){
-                          getInventoryBySkuDAO(code.sku, function(err, inventory){
-                              if (err){
-                                  waterfallCallback(err);
-                              }
-                              else {
-                                  var add = 0;
-                                  if (isNaN(data.quantity)){
-                                      add = data.quantity;
-                                  }
-                                  else {
-                                      add = parseInt(data.quantity)
-                                  }
-                                  var newStock = inventory.stock + add;
-                                  const update = {
-                                      stock : newStock
-                                  }
-                                  updateInventoryBySkuDAO(code.sku, update, waterfallCallback);
-                              }
-                          });
-                      }
-                      else {
-                          const err = new Error("This code does not exists");
-                          waterfallCallback(err);
-                      }
-                  });
-              }*/
               if (isWorker || isStoreManager || isAdmin) {
-                  const key = data.code
-                  getNextImportId(function (err, counterDoc) {
-                        if (err){
-                            waterfallCallback(err);
-                        }
-                        else{
-                            getCodeByKeyDAO(key, function(err, code){
-                                 if (err){
-                                    waterfallCallback(err);
-                                 }
-                                 else if (code){
-                                     const importData = {
-                                        id: counterDoc.counter,
-                                        code: data.code,
-                                        sku: code.mainSku,
-                                        quantity: data.quantity,
-                                        capacity: data.capacity,
-                                        count: data.count,
-                                        username: username,
-                                        status: "pending"
-                                     }
-                                     createImportDAO(importData, waterfallCallback);
-                                 }
-                                 else {
-                                     const err = new Error("This code does not exists");
-                                     waterfallCallback(err);
-                                 }
-                            });
-                        }
+                  const key = data.code;
+                  getCodeByKeyDAO(key, function(err, code){
+                       if (err){
+                          waterfallCallback(err);
+                       }
+                       else if (code){
+                           getNextImportId(function(err, counterDoc){
+                               if (err){
+                                  waterfallCallback(err);
+                               }
+                               else {
+                                   const importData = {
+                                      id: counterDoc.counter,
+                                      code: data.code,
+                                      sku: code.mainSku,
+                                      quantity: data.quantity,
+                                      capacity: data.capacity,
+                                      count: data.count,
+                                      username: username,
+                                      status: "pending"
+                                   }
+                                   createImportDAO(importData, waterfallCallback);
+                               }
+                           });
+
+                       }
+                       else {
+                           const err = new Error("This code does not exists");
+                           waterfallCallback(err);
+                       }
                   });
               }
               else {
@@ -671,7 +639,6 @@ export function importInventory(data, callback){
               const err = new Error("Not Enough Permission to import Inventory");
               waterfallCallback(err);
           }
-
       }
     ],callback)
 }
@@ -685,43 +652,43 @@ export function exportInventory(data, callback){
           if (company === 'ISRA'){
               if (isStoreManager || isAdmin || isWorker) {
                   const key = data.code
-                  getNextExportId(function (err, counterDoc) {
-                        if (err){
-                            waterfallCallback(err);
-                        }
-                        else{
-                            getCodeByKeyDAO(key, function(err, code){
-                                 if (err){
+                  getCodeByKeyDAO(key, function(err, code){
+                       if (err){
+                          waterfallCallback(err);
+                       }
+                       else if (code){
+                            getNextExportId(function (err, counterDoc){
+                                if (err){
                                     waterfallCallback(err);
-                                 }
-                                 else if (code){
-                                     const exportData = {
-                                        id: counterDoc.counter,
-                                        code: data.code,
-                                        sku: code.mainSku,
-                                        quantity: data.quantity,
-                                        capacity: data.capacity,
-                                        count: data.count,
-                                        username: username,
-                                        status: "pending"
-                                     }
-                                     createExportDAO(exportData, waterfallCallback);
-                                 }
-                                 else {
-                                     const err = new Error("This code does not exists");
-                                     waterfallCallback(err);
-                                 }
+                                }
+                                else {
+                                    const exportData = {
+                                       id: counterDoc.counter,
+                                       code: data.code,
+                                       sku: code.mainSku,
+                                       quantity: data.quantity,
+                                       capacity: data.capacity,
+                                       count: data.count,
+                                       username: username,
+                                       status: "pending"
+                                    }
+                                    createExportDAO(exportData, waterfallCallback);
+                                }
                             });
-                        }
+                       }
+                       else {
+                           const err = new Error("This code does not exists");
+                           waterfallCallback(err);
+                       }
                   });
               }
               else {
-                  const err = new Error("Not Enough Permission to import Inventory");
+                  const err = new Error("Not Enough Permission to export Inventory");
                   waterfallCallback(err);
               }
           }
           else {
-              const err = new Error("Not Enough Permission to import Inventory");
+              const err = new Error("Not Enough Permission to export Inventory");
               waterfallCallback(err);
           }
 
@@ -775,7 +742,7 @@ export function removeExport(data, callback){
             waterfallCallback()
          }
          else{
-           const err = new Error("Not Enough Permission to remove Import");
+           const err = new Error("Not Enough Permission to remove export");
            waterfallCallback(err);
          }
       },
@@ -787,7 +754,7 @@ export function removeExport(data, callback){
               }
               else if (exportData){
                   if (exportData.status !== "pending"){
-                      const err = new Error("Only pending import can be removed");
+                      const err = new Error("Only pending export can be removed");
                       waterfallCallback(err);
                   }
                   else{
@@ -795,7 +762,7 @@ export function removeExport(data, callback){
                   }
               }
               else {
-                  const err = new Error("Import Not Found");
+                  const err = new Error("Export Not Found");
                   waterfallCallback(err);
               }
           });
@@ -850,14 +817,14 @@ export function updateExport(data, callback){
          const { roles, company } = data.userSession;
          const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
          if (company !== 'ISRA') {
-             const err = new Error("Only ISRA can change Import");
+             const err = new Error("Only ISRA can change export");
              waterfallCallback(err)
          }
          if (isStoreManager || isAdmin){
             waterfallCallback()
          }
          else{
-           const err = new Error("Not Enough Permission to change Import");
+           const err = new Error("Not Enough Permission to change export");
            waterfallCallback(err);
          }
       },
@@ -869,7 +836,7 @@ export function updateExport(data, callback){
               }
               else if (exportData){
                   if (exportData.status !== "pending"){
-                      const err = new Error("Only pending import can be removed");
+                      const err = new Error("Only pending export can be removed");
                       waterfallCallback(err);
                   }
                   else {
@@ -877,7 +844,7 @@ export function updateExport(data, callback){
                   }
               }
               else {
-                  const err = new Error("Import Not Found");
+                  const err = new Error("Export Not Found");
                   waterfallCallback(err);
               }
           });
@@ -962,14 +929,14 @@ export function duplicateExport(data, callback){
          const { roles, company } = data.userSession;
          const { isStoreManager, isWorker, isAdmin } = getUserRoles(roles);
          if (company !== 'ISRA') {
-             const err = new Error("Only ISRA can duplicate Import");
+             const err = new Error("Only ISRA can duplicate export");
              waterfallCallback(err)
          }
          if (isStoreManager || isAdmin){
             waterfallCallback()
          }
          else{
-           const err = new Error("Not Enough Permission to duplicate Import");
+           const err = new Error("Not Enough Permission to duplicate export");
            waterfallCallback(err);
          }
       },
@@ -981,7 +948,7 @@ export function duplicateExport(data, callback){
               }
               else if (exportData){
                   if (exportData.status !== "pending"){
-                      const err = new Error("Only pending import can be duplicate");
+                      const err = new Error("Only pending export can be duplicate");
                       waterfallCallback(err);
                   }
                   else {
@@ -996,7 +963,7 @@ export function duplicateExport(data, callback){
                   }
               }
               else {
-                  const err = new Error("Import Not Found");
+                  const err = new Error("Export Not Found");
                   waterfallCallback(err);
               }
           });
