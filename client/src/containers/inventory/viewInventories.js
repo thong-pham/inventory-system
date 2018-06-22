@@ -180,7 +180,7 @@ class ViewInventories extends Component {
 
     saveBarcode = (sku) => {
         const { dispatch } = this.props;
-        axios.get('http://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + sku, {responseType: 'blob'})
+        axios.get('https://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + sku, {responseType: 'blob'})
             .then(function (response) {
                 const data = response.data;
                 var reader = new window.FileReader();
@@ -338,7 +338,7 @@ class ViewInventories extends Component {
         return (
           <BaseLayout>
               <Segment textAlign='center'>
-                  <Header as="h2">Inventory List</Header>            
+                  <Header as="h2">Inventory List</Header>
                   {error}
                   <Container>
                       <div style={{textAlign: 'right'}}>

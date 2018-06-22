@@ -29,7 +29,7 @@ class BarcodeGenerator extends Component {
     saveBarcode = () => {
         const { dispatch } = this.props;
         const { input } = this.props.barcode;
-        axios.get('http://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + input, {responseType: 'blob'})
+        axios.get('https://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + input, {responseType: 'blob'})
             .then(function (response) {
                 const data = response.data;
                 var reader = new window.FileReader();
@@ -52,7 +52,7 @@ class BarcodeGenerator extends Component {
     render() {
         const { image } = this.state;
         const { barcode, input } = this.props.barcode;
-        const url = 'http://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + input;
+        const url = 'https://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + input;
         return (
           <BaseLayout>
               <Segment textAlign='center'>
