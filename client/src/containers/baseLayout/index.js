@@ -521,6 +521,10 @@ class BaseLayout extends Component {
                     <Icon name='barcode' />
                       Code
                   </Menu.Item>
+                  <Menu.Item onClick={this.handleClick.bind(this, "viewBarcode")} >
+                    <Icon name='barcode' />
+                      Barcode Maker
+                  </Menu.Item>
                   <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventoriesTrash")} >
                     <Icon name='trash outline' />
                       Trash
