@@ -29,6 +29,7 @@ export const CHANGE_POPUP = "CHANGE_POPUP";
 export const CLOSE_POPUP = "CLOSE_POPUP";
 export const TRACK_NUMBER = "TRACK_NUMBER";
 export const SET_VIEWING_ORDER = "SET_VIEWING_ORDER";
+export const SET_VIEWING_PROCESSED_ORDER = "SET_VIEWING_PROCESSED_ORDER";
 export const ERROR_INPUT_ORDER = "ERROR_INPUT_ORDER";
 export const SORT_ORDER = "SORT_ORDER";
 export const REV_ORDER = "REV_ORDER";
@@ -218,6 +219,12 @@ export function deleteOrder(data) {
 export function setViewingOrder(id) {
     return function (dispatch) {
         dispatch({ type: SET_VIEWING_ORDER, payload: id });
+    }
+}
+
+export function setViewingProcessedOrder(id) {
+    return function (dispatch) {
+        dispatch({ type: SET_VIEWING_PROCESSED_ORDER, payload: id });
     }
 }
 

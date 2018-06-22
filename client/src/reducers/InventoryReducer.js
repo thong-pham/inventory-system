@@ -57,7 +57,7 @@ export default function (state = initialState, action) {
         }
         case ADD_INVENTORY_FULFILLED: {
             const data = action.payload;
-            console.log(data);
+            //console.log(data);
             //state.inventories.concat([data]);
             return { ...state, isAddingInventory: false, addingInventoryError: null, completedProducts: data.completeMessage, failedProducts: data.errorMessage };
         }

@@ -55,6 +55,11 @@ class ViewProcessedOrders extends Component {
         dispatch(renderPage(data.activePage));
     }
 
+    onDetails = (id) => {
+        const { dispatch } = this.props;
+        dispatch(push("/processedOrder/" + id))
+    }
+
     render() {
         const { activeIndex, column } = this.state;
         const { user } = this.props.auth;
@@ -84,8 +89,9 @@ class ViewProcessedOrders extends Component {
                 </Message>
             )
         }
+        let ordersView = null;
         if (processedOrders !== undefined){
-            const ordersView = processedOrders.map(function (order) {
+            ordersView = processedOrders.map(function (order) {
                 const detailsView = order.details.map(function(cart){
                     return (
                         <Item key={cart.id}>
@@ -107,7 +113,7 @@ class ViewProcessedOrders extends Component {
                     <Table.Row key={order.id}>
                         <Table.Cell>{order.id}</Table.Cell>
                         <Table.Cell>
-                            <Item.Group>
+                            {/*<Item.Group>
                               <Accordion fluid styled>
                                 <Accordion.Title active={activeIndex === order.id} index={order.id} onClick={this.handleClick}>
                                   <Icon name='dropdown' />
@@ -117,12 +123,13 @@ class ViewProcessedOrders extends Component {
                                   {detailsView}
                                 </Accordion.Content>
                               </Accordion>
-                            </Item.Group>
+                            </Item.Group>*/}
+                            <Button onClick={() => this.onDetails(order.id)}>See Details</Button>
                         </Table.Cell>
                         <Table.Cell>{order.status}</Table.Cell>
                         <Table.Cell>{order.createdBy}</Table.Cell>
                         <Table.Cell>{order.processedBy}</Table.Cell>
-                        <Table.Cell>{order.createdAt.slice(5,7)}/{order.createdAt.slice(8,10)}/{order.createdAt.slice(0,4)}</Table.Cell>
+                        <Table.Cell>{order.lastModifiedAt.slice(5,7)}/{order.lastModifiedAt.slice(8,10)}/{order.lastModifiedAt.slice(0,4)}</Table.Cell>
                         { (user.company === 'ISRA') ? <Table.Cell >{order.company}</Table.Cell> : null }
                     </Table.Row>
                 )

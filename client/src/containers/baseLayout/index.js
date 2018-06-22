@@ -245,7 +245,7 @@ class BaseLayout extends Component {
           }
           if (isWorker) {
               dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
+              <Menu inverted className="menuTop">
                 <Menu.Item onClick={this.handleClick.bind(this, "importInventory")} >
                   <Icon name='add' />
                     Import Inventory
@@ -288,7 +288,7 @@ class BaseLayout extends Component {
                         </Message.List>
                     </Popup>
                 </Menu.Item>
-              </Sidebar>
+              </Menu>
               );
 
               dedicatedMenuItemForPhone = (
@@ -500,7 +500,7 @@ class BaseLayout extends Component {
         }
         else {
             dedicatedMenuItem = (
-              <Sidebar as={Menu} animation='push' visible={true} direction='top' inverted>
+              <Menu inverted className="menuTop">
                   <Menu.Item onClick={this.handleClick.bind(this, "viewSubInventories")} >
                     <Icon name='cube' />
                        {user.company} Inventory
@@ -547,7 +547,7 @@ class BaseLayout extends Component {
                           </Message.List>
                       </Popup>
                   </Menu.Item>
-              </Sidebar>
+              </Menu>
             );
 
             dedicatedMenuItemForPhone = (

@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search, Pagination } from "semantic-ui-react";
 import { push } from 'react-router-redux';
+import axios from 'axios';
+import jsPDF from 'jspdf';
 
 import BaseLayout from "./../baseLayout";
 
@@ -9,6 +11,8 @@ import './../../styles/custom.css';
 
 import { getInventories, deleteInventory, rejectEdit, updateInventory, sortInventory, reverseInventory, changeInventory,
          trackNumber, openPlus, closePlus, openMinus, closeMinus, filterInventory, renderPage, recoverPage } from "./../../actions/InventoryActions";
+
+import { generateBarcode } from "./../../actions/BarcodeActions";
 
 class ViewInventories extends Component {
 
@@ -174,6 +178,28 @@ class ViewInventories extends Component {
         dispatch(renderPage(data.activePage));
     }
 
+    saveBarcode = (sku) => {
+        const { dispatch } = this.props;
+        axios.get('http://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + sku, {responseType: 'blob'})
+            .then(function (response) {
+                const data = response.data;
+                var reader = new window.FileReader();
+                reader.readAsDataURL(data);
+                reader.onload = function () {
+                    var imageDataUrl = reader.result;
+                    var doc = new jsPDF('l', 'in', [1, 2.5]);
+                    doc.setFontSize(12);
+                    doc.addImage(imageDataUrl, 'PNG', 0.1, 0.05, 2.3, 0.7);
+                    doc.text(0.1,0.95,sku);
+                    doc.save(sku + ".pdf");
+                }
+            })
+            .catch(function(error){
+                const response = error.response;
+                throw response
+            })
+    }
+
     render() {
         const { column, direction, errorInput } = this.state;
         const { user } = this.props.auth;
@@ -274,6 +300,7 @@ class ViewInventories extends Component {
                         <Icon name='add' size='large' onClick={() => this.onOpenPlus(inventory)} />
                         <Icon name='minus' size='large' onClick={() => this.onOpenMinus(inventory)} />
                         <Icon name='trash outline' size='large' onClick={() => this.onPressDelete(inventory)} />
+                        <Icon name='barcode' size='large' onClick={() => this.saveBarcode(inventory.sku)} />
                     </Table.Cell>
                 </Table.Row>
             )
@@ -311,12 +338,12 @@ class ViewInventories extends Component {
         return (
           <BaseLayout>
               <Segment textAlign='center'>
+                  <Header as="h2">Inventory List</Header>            
+                  {error}
                   <Container>
-                        <Header as="h2">Inventory List</Header>
-                        <div style={{textAlign: 'right'}}>
-                          <Input onChange={this.handleSearch} placeholder='Search by description...' />
-                        </div>
-                      {error}
+                      <div style={{textAlign: 'right'}}>
+                        <Input onChange={this.handleSearch} placeholder='Search by description...' />
+                      </div>
                       {tableView}
                   </Container>
               </Segment>

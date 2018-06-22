@@ -6,7 +6,7 @@ export const GENERATE_CODE_REJECTED = "GENERATE_CODE_REJECTED";
 
 export const TRACK_INPUT = "TRACK_INPUT";
 
-const WS_URL = "http://bwipjs-api.metafloor.com/?bcid=code128&text=";
+const WS_URL = "http://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=";
 
 export function generateBarcode(data) {
     return function (dispatch) {

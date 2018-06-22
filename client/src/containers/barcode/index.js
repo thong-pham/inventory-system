@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
 import { Header, Segment, Input, Label, Form, Button, Message, Container, Grid, Image } from "semantic-ui-react";
 import { push } from 'react-router-redux';
+import axios from "axios";
+import jsPDF from 'jspdf';
 
 import BaseLayout from "./../baseLayout";
 
@@ -24,11 +26,27 @@ class BarcodeGenerator extends Component {
         this.setState({image: true});
     }
 
-    generate = () => {
+    saveBarcode = () => {
         const { dispatch } = this.props;
         const { input } = this.props.barcode;
-        //dispatch(generateBarcode(input));
-        this.setState({image: true});
+        axios.get('http://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + input, {responseType: 'blob'})
+            .then(function (response) {
+                const data = response.data;
+                var reader = new window.FileReader();
+                reader.readAsDataURL(data);
+                reader.onload = function () {
+                    var imageDataUrl = reader.result;
+                    var doc = new jsPDF('l', 'in', [1, 2.5]);
+                    doc.setFontSize(12);
+                    doc.addImage(imageDataUrl, 'PNG', 0.1, 0.05, 2.3, 0.7);
+                    doc.text(0.1,0.95,input);
+                    doc.save(input + ".pdf");
+                }
+            })
+            .catch(function(error){
+                const response = error.response;
+                throw response
+            })
     }
 
     render() {
@@ -41,9 +59,10 @@ class BarcodeGenerator extends Component {
                 <div>
                   <Header as="h2">Barcode Generator</Header>
                    <Input onChange={this.handleInput}/>
-                   {/*<Button primary onClick={() => this.generate()}>Generate</Button>*/}
                    <p></p>
                    {(input) ? <Image className="imageRender" src={url} /> : null}
+                   <p></p>
+                   <Button primary onClick={() => this.saveBarcode()}>Save as PDF</Button>
                 </div>
               </Segment>
           </BaseLayout>

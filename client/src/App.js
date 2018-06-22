@@ -46,6 +46,7 @@ import ViewCode from "./containers/viewCode";
 import ViewOrders from "./containers/viewOrders/pendingOrders";
 import ViewOrder from "./containers/viewOrders/orderDetails";
 import ViewProcessedOrders from "./containers/viewOrders/processedOrders";
+import ViewProcessedOrder from "./containers/viewOrders/processedOrderDetails";
 
 import Barcode from "./containers/barcode";
 
@@ -110,6 +111,7 @@ class App extends Component {
                             <Route exact path="/subInventory" component={ViewSubInventories} />
                             <Route exact path="/orders" component={ViewOrders} />
                             <Route path="/order/:id" component={ViewOrder} />
+                            <Route path="/processedOrder/:id" component={ViewProcessedOrder} />
                             <Route exact path="/processedOrders" component={ViewProcessedOrders} />
                             <Route exact path="/code" component={ViewCode} />
                             <Route exact path="/account" component={ViewAccount} />

@@ -285,10 +285,10 @@ class ViewSubInventory extends Component {
         }
         return (
             <BaseLayout>
-                <Segment textAlign='center' >
+                <Segment textAlign='center'>
                     <Header as="h2">Inventory List</Header>
                     {error}
-                    <Container>
+                    <Container>              
                         {tableView}
                         {modalView}
                     </Container>
