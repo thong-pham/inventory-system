@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nohup nodemon --exec babel-node ./bin/www > output2.txt &"
+    "start": "nohup nodemon --exec babel-node ./bin/www > output3.txt &"
   },
   "dependencies": {
     "async": "^2.6.0",

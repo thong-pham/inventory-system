@@ -5,11 +5,11 @@ import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
          UPDATE_INVENTORY_STARTED, UPDATE_INVENTORY_FULFILLED, UPDATE_INVENTORY_REJECTED,
          SET_UPDATING_INVENTORY_FULFILLED, CLEAR_INVENTORY_FULFILLED, REJECT_UPDATING_INVENTORY,
          APPROVE_INVENTORY_STARTED, APPROVE_INVENTORY_FULFILLED, APPROVE_INVENTORY_REJECTED,
-         TRACK_NUMBER, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT, FILL_DATA, OPEN_MINUS, CLOSE_MINUS,
+         TRACK_NUMBER_INV, OPEN_PLUS, CLOSE_PLUS, ERROR_INPUT_INV, FILL_DATA_INV, OPEN_MINUS, CLOSE_MINUS,
          FILTER_INVENTORY, SORT_INVENTORY, REV_INVENTORY, CHANGE_INVENTORY,
          RECOVER_INVENTORY_STARTED, RECOVER_INVENTORY_FULFILLED, RECOVER_INVENTORY_REJECTED,
          DELETE_INVENTORY_TRASH_STARTED, DELETE_INVENTORY_TRASH_FULFILLED, DELETE_INVENTORY_TRASH_REJECTED,
-         CLEAR_FAIL, CLEAR_COMPLETE, RENDER_PAGE, RECOVER_PAGE
+         CLEAR_FAIL, CLEAR_COMPLETE, RENDER_PAGE_INV, RECOVER_PAGE_INV
          } from "./../actions/InventoryActions";
 
 const initialState = {
@@ -89,11 +89,11 @@ export default function (state = initialState, action) {
             const error = action.payload.data;
             return { ...state, isFetchingInventories: false, fetchingInventoriesError: error };
         }
-        case RENDER_PAGE:{
+        case RENDER_PAGE_INV:{
             const data = action.payload;
             return { ...state, inventories: state.allPages[data-1], activePage: data};
         }
-        case RECOVER_PAGE: {
+        case RECOVER_PAGE_INV: {
             const data = state.backUpInv;
             const page = Math.ceil(data.length/10);
             const max = 10;
@@ -212,7 +212,7 @@ export default function (state = initialState, action) {
             return { ...state, updatingInventoryError: error, deletingInventoryError: null };
         }
 
-        case TRACK_NUMBER: {
+        case TRACK_NUMBER_INV: {
             var data = action.payload;
             //const number = parseInt(data);
             return { ...state, quantity : data};
@@ -231,11 +231,11 @@ export default function (state = initialState, action) {
         case CLOSE_MINUS: {
             return { ...state, openMinus : null, quantity: null };
         }
-        case ERROR_INPUT: {
+        case ERROR_INPUT_INV: {
             const error = action.payload;
             return {...state };
         }
-        case FILL_DATA:{
+        case FILL_DATA_INV:{
             const data = action.payload;
             return { ...state, generatedSKU: data.sku, generatedDesc: data.desc, unitCode: data.unitCode }
         }

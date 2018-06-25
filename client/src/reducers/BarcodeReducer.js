@@ -1,5 +1,5 @@
 import {
-    GENERATE_CODE_STARTED, GENERATE_CODE_FULFILLED, GENERATE_CODE_REJECTED, TRACK_INPUT
+    GENERATE_CODE_STARTED, GENERATE_CODE_FULFILLED, GENERATE_CODE_REJECTED, TRACK_INPUT_BARCODE
 } from "./../actions/BarcodeActions";
 
 const initialState = {
@@ -28,7 +28,7 @@ export default function (state = initialState, action) {
             const error = action.payload.data;
             return { ...state, isGeneratingBarcode: false, generatingBarcodeError: error };
         }
-        case TRACK_INPUT: {
+        case TRACK_INPUT_BARCODE: {
             const data = action.payload;
             return { ...state, input: data}
         }

@@ -35,6 +35,9 @@ class BaseLayout extends Component {
         else if (menuItem === "importByCamera") {
             dispatch(push('/importByCamera'));
         }
+        else if (menuItem === "importMultiInventory") {
+            dispatch(push('/importMultiInventory'));
+        }
         else if (menuItem === "viewUsers") {
             dispatch(push('/users'));
         }

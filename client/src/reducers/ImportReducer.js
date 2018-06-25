@@ -4,9 +4,9 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          CHANGE_IMPORT_STARTED, CHANGE_IMPORT_FULFILLED, CHANGE_IMPORT_REJECTED,
          DELETE_IMPORT_STARTED, DELETE_IMPORT_FULFILLED, DELETE_IMPORT_REJECTED,
          DUPLICATE_IMPORT_STARTED, DUPLICATE_IMPORT_FULFILLED, DUPLICATE_IMPORT_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, FILL_CODE, CLEAR_IMPORT, INPUT_CAPACITY, INPUT_COUNT,
+         FILL_CODE_IMPORT, CLEAR_IMPORT, INPUT_CAPACITY_IMPORT, INPUT_COUNT_IMPORT,
          IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED, SORT_IMPORT,
-         REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT
+         REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT, ADD_IMPORT, ADD_CAPACITY_IMPORT, ADD_COUNT_IMPORT, TRACK_TEXT_IMPORT, REMOVE_FORM_IMPORT
          } from "./../actions/ImportActions";
 
 const initialState = {
@@ -38,7 +38,13 @@ const initialState = {
         box: null
     },
     capacity: null,
-    count: null
+    count: null,
+
+    formList: [],
+    length: null,
+    text: '',
+    id: 0
+    
 }
 
 export default function (state = initialState, action) {
@@ -142,30 +148,18 @@ export default function (state = initialState, action) {
             const error = action.payload;
             return { ...state, isDuplicatingImport: false, duplicatingImportError: error };
         }
-        case CHANGE_POPUP: {
-            const data = action.payload;
-            return {...state, change: data}
-        }
-        case CLOSE_POPUP: {
-            return {...state, change: null}
-        }
-        case TRACK_NUMBER: {
-            var data = action.payload;
-            const number = parseInt(data);
-            return { ...state, quantity : number};
-        }
-        case FILL_CODE:{
+        case FILL_CODE_IMPORT:{
             const data = action.payload;
             return { ...state, defaultImport: {code: data, capacity: 24, box: null} };
         }
         case CLEAR_IMPORT:{
             return { ...state, defaultImport: {code: null, capacity: 24, box: null} };
         }
-        case INPUT_CAPACITY:{
+        case INPUT_CAPACITY_IMPORT:{
             const data = action.payload;
             return { ...state, capacity: data };
         }
-        case INPUT_COUNT:{
+        case INPUT_COUNT_IMPORT:{
             const data = action.payload;
             return { ...state, count: data };
         }
@@ -188,6 +182,52 @@ export default function (state = initialState, action) {
             state.pendingImports.splice(index + 1, 0, response);
             return { ...state};
         }
+        case ADD_IMPORT:{
+            const code = action.payload;
+            if (code && (code + "").trim() !== "") {
+                var newList = state.formList;
+                var id = state.id + 1;
+                newList.push({id: id, code: code, capacity: 24, count: null});
+                return { ...state, formList: newList, id: id, text: ''};
+            }
+            else {
+                return {...state, text: ''};
+            }
+        }
+
+        case ADD_CAPACITY_IMPORT:{
+            const {id, data} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.capacity = data;
+                }
+            });
+            return { ...state }
+        }
+        case ADD_COUNT_IMPORT:{
+            const {id, data} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.count = data;
+                }
+            });
+            return { ...state }
+        }
+        case TRACK_TEXT_IMPORT:{
+            const data = action.payload;
+            return { ...state, text: data };
+        }
+        case REMOVE_FORM_IMPORT: {
+            const id = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.formList.length; i++){
+                if (state.formList[i].id === id ){
+                    index = i;
+                }
+            }
+            state.formList.splice(index,1);
+            return { ...state };
+        }
         default: {
             return state;
         }
@@ -202,7 +242,7 @@ function compareSku(a,b){
     if (idA > idB) {
         comparision = 1;
     }
-    else if (idA < idB){
+    else if (idA < idB) {
         comparision = -1;
     }
     return comparision;

@@ -4,7 +4,7 @@ import { APPROVE_ORDER_STARTED, APPROVE_ORDER_FULFILLED, APPROVE_ORDER_REJECTED,
          CHANGE_ORDER_STARTED, CHANGE_ORDER_FULFILLED, CHANGE_ORDER_REJECTED,
          DELETE_ORDER_STARTED, DELETE_ORDER_FULFILLED, DELETE_ORDER_REJECTED,
          CANCEL_ORDER_STARTED, CANCEL_ORDER_FULFILLED, CANCEL_ORDER_REJECTED,
-         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, SET_VIEWING_ORDER, ERROR_INPUT_ORDER, SET_VIEWING_PROCESSED_ORDER,
+         CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER_ORDER, SET_VIEWING_ORDER, ERROR_INPUT_ORDER, SET_VIEWING_PROCESSED_ORDER,
          SORT_ORDER, REV_ORDER, FILTER_STATUS, FILTER_COMPANY, RENDER_PAGE, RECOVER_PAGE
          } from "./../actions/OrderActions";
 
@@ -189,7 +189,7 @@ export default function (state = initialState, action) {
         case CLOSE_POPUP: {
             return {...state, change: null, errorInput: null, quantity: null }
         }
-        case TRACK_NUMBER: {
+        case TRACK_NUMBER_ORDER: {
             var data = action.payload;
             //const number = parseInt(data);
             return { ...state, quantity : data};

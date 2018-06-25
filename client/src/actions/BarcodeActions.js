@@ -4,7 +4,7 @@ export const GENERATE_CODE_STARTED = "GENERATE_CODE_STARTED";
 export const GENERATE_CODE_FULFILLED = "GENERATE_CODE_FULFILLED";
 export const GENERATE_CODE_REJECTED = "GENERATE_CODE_REJECTED";
 
-export const TRACK_INPUT = "TRACK_INPUT";
+export const TRACK_INPUT_BARCODE = "TRACK_INPUT_BARCODE";
 
 const WS_URL = "http://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=";
 
@@ -29,6 +29,6 @@ export function generateBarcode(data) {
 
 export function trackInput(data){
     return function (dispatch) {
-        dispatch({type: TRACK_INPUT, payload: data});
+        dispatch({type: TRACK_INPUT_BARCODE, payload: data});
     }
 }

@@ -51,11 +51,11 @@ export const SUBMIT_ORDER_REJECTED = "SUBMIT_ORDER_REJECTED";
 
 export const INPUT_SKU = "INPUT_SKU";
 export const INPUT_DESC = "INPUT_DESC";
-export const FILL_DATA = "FILL_DATA";
-export const ERROR_INPUT = "ERROR_INPUT";
+export const FILL_DATA_SINV = "FILL_DATA_SINV";
+export const ERROR_INPUT_SINV = "ERROR_INPUT_SINV";
 export const CLEAR_ERROR = "CLEAR_ERROR";
 
-export const TRACK_NUMBER = "TRACK_NUMBER";
+export const TRACK_NUMBER_SINV = "TRACK_NUMBER_SINV";
 export const OPEN_MODAL = "OPEN_MODAL";
 export const CLOSE_MODAL = "CLOSE_MODAL";
 export const OPEN_ADD = "OPEN_ADD";
@@ -321,13 +321,13 @@ export function inputDesc(data) {
 
 export function fillingData(data){
    return function (dispatch){
-       dispatch({ type : FILL_DATA, payload: data})
+       dispatch({ type : FILL_DATA_SINV, payload: data})
    }
 }
 
 export function errorInput(data){
     return function (dispatch) {
-        dispatch({type: ERROR_INPUT, payload: data});
+        dispatch({type: ERROR_INPUT_SINV, payload: data});
     }
 }
 
@@ -351,7 +351,7 @@ export function closeAdd(){
 
 export function trackNumber(data){
    return function (dispatch){
-       dispatch({ type : TRACK_NUMBER, payload: data})
+       dispatch({ type : TRACK_NUMBER_SINV, payload: data})
    }
 }
 

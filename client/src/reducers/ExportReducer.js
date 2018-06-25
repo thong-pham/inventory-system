@@ -5,9 +5,9 @@ import {
            CHANGE_EXPORT_STARTED, CHANGE_EXPORT_FULFILLED, CHANGE_EXPORT_REJECTED,
            DELETE_EXPORT_STARTED, DELETE_EXPORT_FULFILLED, DELETE_EXPORT_REJECTED,
            DUPLICATE_EXPORT_STARTED, DUPLICATE_EXPORT_FULFILLED, DUPLICATE_EXPORT_REJECTED,
-           CHANGE_POPUP, CLOSE_POPUP, TRACK_NUMBER, FILL_CODE, CLEAR_EXPORT, INPUT_CAPACITY, INPUT_COUNT,
+           FILL_CODE_EXPORT, CLEAR_EXPORT, INPUT_CAPACITY_EXPORT, INPUT_COUNT_EXPORT,
            EXPORT_INVENTORY_STARTED, EXPORT_INVENTORY_FULFILLED, EXPORT_INVENTORY_REJECTED, SORT_EXPORT,
-           REV_EXPORT, NEXT_EXPORT, MODIRY_EXPORT
+           REV_EXPORT, NEXT_EXPORT, MODIRY_EXPORT, ADD_EXPORT, ADD_CAPACITY_EXPORT, ADD_COUNT_EXPORT, TRACK_TEXT_EXPORT, REMOVE_FORM_EXPORT
       } from "./../actions/ExportActions";
 
 const initialState = {
@@ -39,7 +39,12 @@ const initialState = {
         box: null
     },
     capacity: null,
-    count: null
+    count: null,
+
+    formList: [],
+    length: null,
+    text: '',
+    id: 0
 }
 
 export default function (state = initialState, action) {
@@ -143,30 +148,18 @@ export default function (state = initialState, action) {
             const error = action.payload;
             return { ...state, isDuplicatingExport: false, duplicatingExportError: error };
         }
-        case CHANGE_POPUP: {
-            const data = action.payload;
-            return {...state, change: data}
-        }
-        case CLOSE_POPUP: {
-            return {...state, change: null}
-        }
-        case TRACK_NUMBER: {
-            var data = action.payload;
-            const number = parseInt(data);
-            return { ...state, quantity : number};
-        }
-        case FILL_CODE:{
+        case FILL_CODE_EXPORT:{
             const data = action.payload;
             return { ...state, defaultExport: {code: data, capacity: 24, box: null} };
         }
         case CLEAR_EXPORT:{
             return { ...state, defaultExport: {code: null, capacity: 24, box: null} };
         }
-        case INPUT_CAPACITY:{
+        case INPUT_CAPACITY_EXPORT:{
             const data = action.payload;
             return { ...state, capacity: data };
         }
-        case INPUT_COUNT:{
+        case INPUT_COUNT_EXPORT:{
             const data = action.payload;
             return { ...state, count: data };
         }
@@ -188,6 +181,52 @@ export default function (state = initialState, action) {
             state.pendingExports[index].quantity = state.pendingExports[index].count * state.pendingExports[index].capacity;
             state.pendingExports.splice(index + 1, 0, response);
             return { ...state};
+        }
+        case ADD_EXPORT:{
+            const code = action.payload;
+            if (code && (code + "").trim() !== "") {
+                var newList = state.formList;
+                var id = state.id + 1;
+                newList.push({id: id, code: code, capacity: 24, count: null});
+                return { ...state, formList: newList, id: id, text: ''};
+            }
+            else {
+                return {...state, text: ''};
+            }
+        }
+
+        case ADD_CAPACITY_EXPORT:{
+            const {id, data} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.capacity = data;
+                }
+            });
+            return { ...state }
+        }
+        case ADD_COUNT_EXPORT:{
+            const {id, data} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.count = data;
+                }
+            });
+            return { ...state }
+        }
+        case TRACK_TEXT_EXPORT:{
+            const data = action.payload;
+            return { ...state, text: data };
+        }
+        case REMOVE_FORM_EXPORT: {
+            const id = action.payload;
+            var index = 0;
+            for (var i = 0; i < state.formList.length; i++){
+                if (state.formList[i].id === id ){
+                    index = i;
+                }
+            }
+            state.formList.splice(index,1);
+            return { ...state };
         }
         default: {
             return state;

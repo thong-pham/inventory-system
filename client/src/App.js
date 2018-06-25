@@ -29,6 +29,7 @@ import ApproveImport from "./containers/inventory/approveImport";
 import ApproveExport from "./containers/inventory/approveExport";
 
 import ImportInventoryByCamera from "./containers/importInventoryByCamera";
+//import ImportMultiInventory from "./containers/inventory/importMultiInventory";
 
 import AddSubInventory from "./containers/addSubInventory";
 import ViewSubInventories from "./containers/viewSubInventories";

@@ -37,13 +37,13 @@ export const SET_UPDATING_INVENTORY_FULFILLED = "SET_UPDATING_INVENTORY_FULFILLE
 export const CLEAR_INVENTORY_FULFILLED = "CLEAR_INVENTORY_FULFILLED";
 export const REJECT_UPDATING_INVENTORY = "REJECT_UPDATING_INVENTORY";
 
-export const TRACK_NUMBER = "TRACK_NUMBER";
+export const TRACK_NUMBER_INV = "TRACK_NUMBER_INV";
 export const OPEN_MINUS = "OPEN_MINUS";
 export const CLOSE_MINUS = "CLOSE_MINUS";
 export const OPEN_PLUS = "OPEN_PLUS";
 export const CLOSE_PLUS = "CLOSE_PLUS";
-export const ERROR_INPUT = "ERROR_INPUT";
-export const FILL_DATA = "FILL_DATA";
+export const ERROR_INPUT_INV = "ERROR_INPUT_INV";
+export const FILL_DATA_INV = "FILL_DATA_INV";
 export const FILTER_INVENTORY = "FILTER_INVENTORY";
 export const SORT_INVENTORY = "SORT_INVENTORY";
 export const REV_INVENTORY = "REV_INVENTORY";
@@ -51,8 +51,8 @@ export const CHANGE_INVENTORY = "CHANGE_INVENTORY";
 
 export const CLEAR_FAIL = "CLEAR_FAIL";
 export const CLEAR_COMPLETE = "CLEAR_COMPLETE";
-export const RENDER_PAGE = "RENDER_PAGE";
-export const RECOVER_PAGE = "RECOVER_PAGE";
+export const RENDER_PAGE_INV = "RENDER_PAGE_INV";
+export const RECOVER_PAGE_INV = "RECOVER_PAGE_INV";
 
 const WS_URL = URL + "/inventories/";
 
@@ -227,7 +227,7 @@ export function clearInventory() {
 
 export function errorInput(data){
     return function (dispatch) {
-        dispatch({type: ERROR_INPUT, payload: data});
+        dispatch({type: ERROR_INPUT_INV, payload: data});
     }
 }
 
@@ -257,7 +257,7 @@ export function closePlus(){
 
 export function trackNumber(data){
    return function (dispatch){
-       dispatch({ type : TRACK_NUMBER, payload: data})
+       dispatch({ type : TRACK_NUMBER_INV, payload: data})
    }
 }
 
@@ -270,7 +270,7 @@ export function rejectEdit(){
 
 export function fillingData(data){
    return function (dispatch){
-       dispatch({ type : FILL_DATA, payload: data})
+       dispatch({ type : FILL_DATA_INV, payload: data})
    }
 }
 
@@ -312,12 +312,12 @@ export function clearCompletedProducts(){
 
 export function renderPage(data){
    return function (dispatch){
-       dispatch({ type : RENDER_PAGE, payload: data })
+       dispatch({ type : RENDER_PAGE_INV, payload: data })
    }
 }
 
 export function recoverPage(){
    return function (dispatch){
-       dispatch({ type : RECOVER_PAGE })
+       dispatch({ type : RECOVER_PAGE_INV })
    }
 }

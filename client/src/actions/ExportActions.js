@@ -29,15 +29,21 @@ export const EXPORT_INVENTORY_STARTED = "EXPORT_INVENTORY_STARTED";
 export const EXPORT_INVENTORY_FULFILLED = "EXPORT_INVENTORY_FULFILLED";
 export const EXPORT_INVENTORY_REJECTED = "EXPORT_INVENTORY_REJECTED";
 
-export const FILL_CODE = "FILL_CODE";
+export const FILL_CODE_EXPORT = "FILL_CODE_EXPORT";
 export const CLEAR_EXPORT = "CLEAR_EXPORT";
-export const INPUT_CAPACITY = "INPUT_CAPACITY";
-export const INPUT_COUNT = "INPUT_COUNT";
+export const INPUT_CAPACITY_EXPORT = "INPUT_CAPACITY_EXPORT";
+export const INPUT_COUNT_EXPORT = "INPUT_COUNT_EXPORT";
 
 export const SORT_EXPORT = "SORT_EXPORT";
 export const REV_EXPORT = "REV_EXPORT";
 export const NEXT_EXPORT = "NEXT_EXPORT";
 export const MODIRY_EXPORT = "MODIRY_EXPORT";
+
+export const ADD_EXPORT = "ADD_EXPORT";
+export const ADD_CAPACITY_EXPORT = "ADD_CAPACITY_EXPORT";
+export const ADD_COUNT_EXPORT = "ADD_COUNT_EXPORT";
+export const TRACK_TEXT_EXPORT = "TRACK_TEXT_EXPORT";
+export const REMOVE_FORM_EXPORT = "REMOVE_FORM_EXPORT";
 
 const WS_URL = URL + "/inventories/";
 
@@ -159,7 +165,7 @@ export function updateExport(exportData) {
 
 export function fillingCode(data){
    return function (dispatch){
-       dispatch({ type : FILL_CODE, payload: data})
+       dispatch({ type : FILL_CODE_EXPORT, payload: data})
    }
 }
 
@@ -171,13 +177,13 @@ export function clearExport(data){
 
 export function inputCapacity(data){
    return function (dispatch){
-       dispatch({ type : INPUT_CAPACITY, payload: data })
+       dispatch({ type : INPUT_CAPACITY_EXPORT, payload: data })
    }
 }
 
 export function inputCount(data){
    return function (dispatch){
-       dispatch({ type : INPUT_COUNT, payload: data })
+       dispatch({ type : INPUT_COUNT_EXPORT, payload: data })
    }
 }
 
@@ -202,5 +208,35 @@ export function putNextExport(data){
 export function modifyExport(data){
    return function (dispatch){
        dispatch({ type : MODIRY_EXPORT, payload: data })
+   }
+}
+
+export function addToList(data){
+   return function (dispatch){
+       dispatch({ type : ADD_EXPORT, payload: data })
+   }
+}
+
+export function addCapacity(data){
+   return function (dispatch){
+       dispatch({ type : ADD_CAPACITY_EXPORT, payload: data })
+   }
+}
+
+export function addCount(data){
+   return function (dispatch){
+       dispatch({ type : ADD_COUNT_EXPORT, payload: data })
+   }
+}
+
+export function trackText(data){
+   return function (dispatch){
+       dispatch({ type : TRACK_TEXT_EXPORT, payload: data })
+   }
+}
+
+export function removeForm(data){
+   return function (dispatch){
+       dispatch({ type : REMOVE_FORM_EXPORT, payload: data })
    }
 }

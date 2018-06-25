@@ -3,8 +3,8 @@ import { GET_SUBINVENTORIES_STARTED, GET_SUBINVENTORIES_FULFILLED, GET_SUBINVENT
           UPDATE_SUBINVENTORY_STARTED, UPDATE_SUBINVENTORY_FULFILLED, UPDATE_SUBINVENTORY_REJECTED,
           ADD_SUBINVENTORY_STARTED, ADD_SUBINVENTORY_FULFILLED, ADD_SUBINVENTORY_REJECTED,
           DELETE_SUBINVENTORY_STARTED, DELETE_SUBINVENTORY_FULFILLED, DELETE_SUBINVENTORY_REJECTED,
-          SET_UPDATING_SUBINVENTORY_FULFILLED, INPUT_SKU, INPUT_DESC, FILL_DATA, ERROR_INPUT, CLEAR_ERROR,
-          TRACK_NUMBER, OPEN_MODAL, CLOSE_MODAL, OPEN_ADD, CLOSE_ADD,
+          SET_UPDATING_SUBINVENTORY_FULFILLED, INPUT_SKU, INPUT_DESC, FILL_DATA_SINV, ERROR_INPUT_SINV, CLEAR_ERROR,
+          TRACK_NUMBER_SINV, OPEN_MODAL, CLOSE_MODAL, OPEN_ADD, CLOSE_ADD,
           ADD_CART_STARTED, ADD_CART_FULFILLED, ADD_CART_REJECTED,
           GET_CARTS_STARTED, GET_CARTS_FULFILLED, GET_CARTS_REJECTED,
           UPDATE_CART_STARTED, UPDATE_CART_FULFILLED, UPDATE_CART_REJECTED,
@@ -139,11 +139,11 @@ export default function (state = initialState, action) {
             const data = action.payload;
             return { ...state, desc: data };
         }
-        case FILL_DATA:{
+        case FILL_DATA_SINV:{
             const data = action.payload;
             return { ...state, generatedSKU: data.sku, generatedDesc: data.desc }
         }
-        case ERROR_INPUT: {
+        case ERROR_INPUT_SINV: {
             const error = action.payload;
             return {...state, errorInput: error };
         }
@@ -161,7 +161,7 @@ export default function (state = initialState, action) {
         case CLOSE_ADD: {
             return { ...state, openAdd : null, quantity: null };
         }
-        case TRACK_NUMBER: {
+        case TRACK_NUMBER_SINV: {
             var data = action.payload;
             //const number = parseInt(data);
             return { ...state, quantity : data};

@@ -47,8 +47,8 @@ class ApproveImport extends Component {
                 token,
                 id: importData.id,
                 code: importData.code,
-                capacity,
-                count,
+                capacity: Number(capacity),
+                count: Number(count),
                 quantity: capacity * count
             }
             //console.log(data);
@@ -74,7 +74,7 @@ class ApproveImport extends Component {
         if (isNaN(boxCount) || !Number.isInteger(Number(boxCount)) || boxCount === null || boxCount <= 0){
             this.setState({errorInput: "Invalid Input", openModal: null});
         }
-        else if (boxCount >= modalCart.count){
+        else if (Number(boxCount) >= modalCart.count){
             this.setState({errorInput: "Box number has to be less than the current one", openModal: null, boxCount: null});
         }
         else {
