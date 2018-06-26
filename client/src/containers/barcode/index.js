@@ -51,6 +51,54 @@ class BarcodeGenerator extends Component {
             })
     }
 
+    saveBarcode = () => {
+        const { dispatch } = this.props;
+        const { input } = this.props.barcode;
+        axios.get('https://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + input, {responseType: 'blob'})
+            .then(function (response) {
+                const data = response.data;
+                var reader = new window.FileReader();
+                reader.readAsDataURL(data);
+                reader.onload = function () {
+                    var imageDataUrl = reader.result;
+                    var doc = new jsPDF('l', 'in', [1, 2.5]);
+                    doc.setFontSize(12);
+                    doc.addImage(imageDataUrl, 'JPEG', 0.4, 0.2, 1.7, 0.25);
+                    doc.text(0.4,0.7,input);
+                    doc.save(input + ".pdf");
+                }
+            })
+            .catch(function(error){
+                const response = error.response;
+                throw response
+            })
+    }
+
+    saveBarcode2x = () => {
+        const { dispatch } = this.props;
+        const { input } = this.props.barcode;
+        axios.get('https://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + input, {responseType: 'blob'})
+            .then(function (response) {
+                const data = response.data;
+                var reader = new window.FileReader();
+                reader.readAsDataURL(data);
+                reader.onload = function () {
+                    var imageDataUrl = reader.result;
+                    var doc = new jsPDF('l', 'in', [2, 3]);
+                    doc.setFontSize(12);
+                    doc.addImage(imageDataUrl, 'JPEG', 0.4, 0.2, 1.7, 0.25);
+                    doc.text(0.4,0.7,input);
+                    doc.addImage(imageDataUrl, 'JPEG', 0.4, 1.3, 1.7, 0.25);
+                    doc.text(0.4,1.8,input);
+                    doc.save(input + ".pdf");
+                }
+            })
+            .catch(function(error){
+                const response = error.response;
+                throw response
+            })
+    }
+
     render() {
         const { image } = this.state;
         const { barcode, input } = this.props.barcode;
@@ -65,6 +113,7 @@ class BarcodeGenerator extends Component {
                    {(input) ? <Image className="imageRender" src={url} /> : null}
                    <p></p>
                    <Button primary onClick={() => this.saveBarcode()}>Save as PDF</Button>
+                   <Button primary onClick={() => this.saveBarcode2x()}>Save as PDF 2x</Button>
                 </div>
               </Segment>
           </BaseLayout>

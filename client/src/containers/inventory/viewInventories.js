@@ -187,12 +187,10 @@ class ViewInventories extends Component {
                 reader.readAsDataURL(data);
                 reader.onload = function () {
                     var imageDataUrl = reader.result;
-                    var doc = new jsPDF('l', 'in', [2, 3]);
+                    var doc = new jsPDF('l', 'in', [1, 2.5]);
                     doc.setFontSize(12);
                     doc.addImage(imageDataUrl, 'JPEG', 0.4, 0.2, 1.7, 0.25);
                     doc.text(0.4,0.7,sku);
-                    doc.addImage(imageDataUrl, 'JPEG', 0.4, 1.3, 1.7, 0.25);
-                    doc.text(0.4,1.8,sku);
                     doc.save(sku + ".pdf");
                 }
             })
