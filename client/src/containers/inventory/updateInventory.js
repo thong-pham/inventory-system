@@ -101,13 +101,21 @@ class UpdateInventory extends Component {
                 </Message>
             )
         }
+        const renderSelect = ({ input, type, meta: { touched, error }, children }) => (
+              <div className="selectDiv">
+                  <select {...input}>
+                    {children}
+                  </select>
+                  {touched && error && <span>{error}</span>}
+               </div>
+        )
         return (
             <BaseLayout>
                 <Segment textAlign='center'>
                   <Container>
                     <Header as="h2">Update Inventory</Header>
                     {error}
-                    {(inventory !== null) ? <h3>{inventory.sku}</h3> : null}
+                    {(inventory !== null && inventory !== undefined) ? <h3>SKU: {inventory.sku}</h3> : null}
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isUpdatingInventory}>
                         {/*<Form.Field inline>
                             <Label>SKU</Label>
@@ -122,9 +130,10 @@ class UpdateInventory extends Component {
                             <Field name="price" placeholder="Enter the Price" component={this.renderField}></Field>
                         </Form.Field>
                         <Form.Field inline>
-                            <Label>Unit</Label>
-                            {units.map(unit =>
-                               <label className="comboBox" key={unit.id}><Field name="unit" component="input" type="radio" value={unit.key} />{unit.key}</label>)}
+                          <Label>Unit</Label>
+                          <Field name="unit" component={renderSelect}>                        
+                              {units.map(unit => <option key={unit.id} value={unit.key}>{unit.key}</option>)}
+                          </Field>
                         </Form.Field>
                         <Form.Field inline>
                             <Label>Box Capacity</Label>

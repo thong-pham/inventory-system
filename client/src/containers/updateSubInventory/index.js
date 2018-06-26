@@ -53,7 +53,9 @@ class UpdateSubInventory extends Component {
     }
     onSubmit(values, dispatch) {
         const { token } = this.props.auth;
+        const { inventory } = this.props.inventory;
         values.token = token;
+        values.sku = inventory.sku;
         values.productName = values.productName.trim();
         return dispatch(updateSubInventory(values)).then(function (data) {
             dispatch(push("/subInventory"));
@@ -82,10 +84,11 @@ class UpdateSubInventory extends Component {
                   <Container>
                     <Header as="h2">Update Inventory</Header>
                     {error}
+                    {(inventory !== null && inventory !== undefined) ? <h3>SKU: {inventory.sku}</h3> : null}
                     <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isUpdatingInventory}>
-                        <Form.Field inline>
+                        {/*<Form.Field inline>
                             <Field name="sku" placeholder="Enter the SKU" component={this.renderField} disabled={true}></Field>
-                        </Form.Field>
+                        </Form.Field>*/}
                         <Form.Field inline>
                             <Field name="productName" placeholder="Enter the Product Description" component={this.renderField}></Field>
                         </Form.Field>

@@ -279,7 +279,7 @@ class ViewOrder extends Component {
             )
         }
         let orderView = null;
-        if (order !== null) {
+        if (order !== null && order !== undefined) {
             orderView = order.details.map(function (cart) {
                 return (
                     <Table.Row key={cart.id}>

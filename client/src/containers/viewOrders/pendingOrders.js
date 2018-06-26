@@ -23,7 +23,7 @@ class ViewOrders extends Component {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
         if (user.company === 'ISRA'){
-            dispatch(getPendingOrders({ token: token }));
+            //dispatch(getPendingOrders({ token: token }));
             dispatch(getInventories({token: token}));
         }
         else {
@@ -275,7 +275,7 @@ class ViewOrders extends Component {
                 </Table.Row>
             )
         }, this);
-        let tableView = <h4>No Orders Found. Please Add Some </h4>
+        let tableView = <h4>No Pending Orders Found</h4>
         if (pendingOrders.length > 0) {
             tableView = (
                 <Table celled fixed color='blue' sortable>

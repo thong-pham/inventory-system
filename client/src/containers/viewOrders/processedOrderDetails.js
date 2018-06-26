@@ -116,7 +116,8 @@ class ViewProcessedOrder extends Component {
         }
         let error = null;
         let orderView = null;
-        if (order !== null) {
+        //console.log(order);
+        if (order !== null && order !== undefined) {
             orderView = order.details.map(function (cart) {
                 return (
                     <Table.Row key={cart.id}>
