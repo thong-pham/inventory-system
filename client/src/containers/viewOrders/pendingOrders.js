@@ -299,7 +299,7 @@ class ViewOrders extends Component {
         return (
           <BaseLayout>
               <Segment textAlign='center' >
-                  <Header as="h2">Order List</Header>
+                  <Header as="h2">Pending Order List</Header>
                   {error}
                   <Container>
                       {tableView}

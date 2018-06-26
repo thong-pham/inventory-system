@@ -90,7 +90,7 @@ class ViewProcessedOrders extends Component {
             )
         }
         let ordersView = null;
-        if (processedOrders !== null){
+        if (processedOrders !== null && processedOrders !== undefined){
             ordersView = processedOrders.map(function (order) {
                 const detailsView = order.details.map(function(cart){
                     return (
@@ -136,8 +136,8 @@ class ViewProcessedOrders extends Component {
             }, this);
         }
 
-        let tableView = <h4>No Processed Orders Found</h4>
-        if (processedOrders !== null && processedOrders.length > 0) {
+        let tableView = <h4>No Orders Found</h4>
+        if (processedOrders !== null && processedOrders !== undefined && processedOrders.length > 0) {
             tableView = (
                 <Table celled fixed color='blue'>
                     <Table.Header>
