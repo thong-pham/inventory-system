@@ -113,7 +113,6 @@ class BarcodeGenerator extends Component {
                    {(input) ? <Image className="imageRender" src={url} /> : null}
                    <p></p>
                    <Button primary onClick={() => this.saveBarcode()}>Save as PDF</Button>
-                   <Button primary onClick={() => this.saveBarcode2x()}>Save as PDF 2x</Button>
                 </div>
               </Segment>
           </BaseLayout>
