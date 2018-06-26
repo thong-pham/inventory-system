@@ -21,7 +21,7 @@ class ViewProcessedOrders extends Component {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
         if (user.company === 'ISRA'){
-            //dispatch(getProcessedOrders({ token: token }));
+            dispatch(getProcessedOrders({ token: token }));
             dispatch(getCompanies({token: token}));
         }
         else {

@@ -23,7 +23,7 @@ class ViewOrders extends Component {
         const { token, dispatch } = this.props;
         const { user } = this.props.auth;
         if (user.company === 'ISRA'){
-            //dispatch(getPendingOrders({ token: token }));
+            dispatch(getPendingOrders({ token: token }));
             dispatch(getInventories({token: token}));
         }
         else {
