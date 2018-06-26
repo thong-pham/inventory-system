@@ -5,6 +5,10 @@ export const GET_CODES_STARTED = "GET_CODES_STARTED";
 export const GET_CODES_FULFILLED = "GET_CODES_FULFILLED";
 export const GET_CODES_REJECTED = "GET_CODES_REJECTED";
 
+export const GET_ALLCODE_STARTED = "GET_ALLCODE_STARTED";
+export const GET_ALLCODE_FULFILLED = "GET_ALLCODE_FULFILLED";
+export const GET_ALLCODE_REJECTED = "GET_ALLCODE_REJECTED";
+
 export const APPROVE_CODE_STARTED = "APPROVE_CODE_STARTED";
 export const APPROVE_CODE_FULFILLED = "APPROVE_CODE_FULFILLED";
 export const APPROVE_CODE_REJECTED = "APPROVE_CODE_REJECTED";
@@ -38,6 +42,25 @@ export function getAllCode(data) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: GET_CODES_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function getCodes(data) {
+    return function (dispatch) {
+        dispatch({ type: GET_ALLCODE_STARTED });
+        return axios.get(WS_URL + "codes", { headers: { Authorization: data.token } })
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: GET_ALLCODE_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: GET_ALLCODE_REJECTED, payload: response });
                 throw response;
             })
     }

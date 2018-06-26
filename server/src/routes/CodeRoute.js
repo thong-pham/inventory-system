@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCode, getAllCode, removeCode, getCodeByCompany } from "./../services/CodeService";
+import { createCode, getAllCode, removeCode, getCodeByCompany, getCodes } from "./../services/CodeService";
 import { validateCode } from "./../validators/CodeValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
@@ -65,6 +65,19 @@ router.delete('/:id', verifyAuthMiddleware, function (req, res, next) {
 router.get('/',verifyAuthMiddleware, function (req, res, next) {
     //const key = req.body.key;
     getAllCode(function (err, codes) {
+        if (err) {
+            console.log(err);
+            res.status(500).send("An error happens in the backend");
+        }
+        else {
+            res.status(200).send(codes);
+        }
+    });
+});
+
+router.get('/codes',verifyAuthMiddleware, function (req, res, next) {
+    //const key = req.body.key;
+    getCodes(function (err, codes) {
         if (err) {
             console.log(err);
             res.status(500).send("An error happens in the backend");

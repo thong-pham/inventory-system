@@ -217,6 +217,10 @@ export function getCodeByCompany(company, callback){
     ],callback);
 }
 
+export function getCodes(callback){
+    getAllCodeDAO(callback);
+}
+
 function getUserRoles(roles) {
     const isStoreManager = roles.indexOf("storeManager") >= 0;
     const isSales = roles.indexOf("sales") >= 0;

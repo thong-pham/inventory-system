@@ -13,6 +13,10 @@ const WAIT_INTERVAL = 1000;
 import { addToList, addCapacity, addCount, trackText, exportInventory, removeForm
         } from "./../../actions/ExportActions";
 
+import { getCodes } from "./../../actions/CodeActions";
+
+import { getInventories } from "./../../actions/InventoryActions";
+
 class ExportInventory extends Component {
     state = {
         errorInput: null,
@@ -20,6 +24,8 @@ class ExportInventory extends Component {
     }
     componentWillMount() {
         const { token, dispatch } = this.props;
+        dispatch(getCodes({token: token}));
+        dispatch(getInventories({token: token}));
         this.timer = null;
     }
 
@@ -33,7 +39,38 @@ class ExportInventory extends Component {
     handleCode = () => {
         const { dispatch } = this.props;
         const { text } = this.props.export;
-        dispatch(addToList(text));
+        const { allCode } = this.props.code;
+        const { backUpInv } = this.props.inventory;
+        var data = {note: null};
+        var mainSku = null;
+        if (text && (text + "").trim() !== ""){
+            allCode.forEach(function(code){
+                  if (code.key === text){
+                      data.text = text;
+                      mainSku = code.mainSku;
+                  }
+            });
+            if (data.text === text){
+                backUpInv.forEach(function(inv){
+                    if (mainSku === inv.sku){
+                        data.capacity = inv.capacity;
+                    }
+                });
+
+                if (!data.capacity){
+                    data.note = "This product is not available!!!";
+                }
+            }
+            else {
+                data.text = text;
+                data.note = "This code does not exists!!!";
+            }
+
+        }
+        else {
+            data.text = "";
+        }
+        dispatch(addToList(data));
     }
 
     handleCapacity = (e, id) => {
@@ -124,13 +161,13 @@ class ExportInventory extends Component {
                             {exportData.code}
                         </Table.Cell>
                         <Table.Cell>
-                              <Input defaultValue={exportData.capacity} onChange={(e) => this.handleCapacity(e, exportData.id)} />
+                              {(exportData.capacity) ? <p>{exportData.capacity}</p> : <p>{exportData.note}</p>}
                         </Table.Cell>
                         <Table.Cell>
-                              <Input onChange={(e) => this.handleCount(e, exportData.id)}/>
+                              {(exportData.capacity) ? <Input defaultValue={exportData.count} onChange={(e) => this.handleCount(e, exportData.id)}/> : null}
                         </Table.Cell>
                         <Table.Cell>
-                            <Button size='tiny' primary onClick={() => this.onExport(exportData.id)}>Export</Button>
+                            {(exportData.capacity) ? <Button size='tiny' primary onClick={() => this.onImport(exportData.id)}>Import</Button> : null}
                             <Button size='tiny' color='red' onClick={() => this.onDelete(exportData.id)}>Remove</Button>
                         </Table.Cell>
                     </Table.Row>
@@ -180,7 +217,8 @@ function mapStatesToProps(state) {
         token: state.auth.token,
         export: state.exportData,
         auth: state.auth,
-        inventory: state.inventory
+        inventory: state.inventory,
+        code: state.code
     }
 }
 

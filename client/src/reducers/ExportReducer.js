@@ -183,11 +183,11 @@ export default function (state = initialState, action) {
             return { ...state};
         }
         case ADD_EXPORT:{
-            const code = action.payload;
-            if (code && (code + "").trim() !== "") {
+            const data = action.payload;
+            if (data.text && (data.text + "").trim() !== "") {
                 var newList = state.formList;
                 var id = state.id + 1;
-                newList.push({id: id, code: code, capacity: 24, count: null});
+                newList.push({id: id, code: data.text, capacity: data.capacity, count: 1, note: data.note});
                 return { ...state, formList: newList, id: id, text: ''};
             }
             else {

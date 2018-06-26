@@ -1,7 +1,8 @@
 import { GET_CODES_STARTED, GET_CODES_FULFILLED, GET_CODES_REJECTED,
         ADD_CODE_STARTED, ADD_CODE_FULFILLED, ADD_CODE_REJECTED,
         DELETE_CODE_STARTED, DELETE_CODE_FULFILLED, DELETE_CODE_REJECTED,
-        ADD_POPUP, CLOSE_POPUP, TRACK_INPUT, ERROR_INPUT_CODE
+        ADD_POPUP, CLOSE_POPUP, TRACK_INPUT, ERROR_INPUT_CODE,
+        GET_ALLCODE_STARTED, GET_ALLCODE_FULFILLED, GET_ALLCODE_REJECTED
         } from "./../actions/CodeActions";
 
 const initialState = {
@@ -16,7 +17,8 @@ const initialState = {
     skuList: [],
     openAdd: null,
     codeInput: null,
-    errorInput: null
+    errorInput: null,
+    allCode: []
 }
 
 export default function (state = initialState, action) {
@@ -29,6 +31,17 @@ export default function (state = initialState, action) {
             return { ...state, isFetchingCodes: false, codes: data };
         }
         case GET_CODES_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isFetchingCodes: false, fetchingCodesError: error };
+        }
+        case GET_ALLCODE_STARTED: {
+            return { ...state, isFetchingCodes: true };
+        }
+        case GET_ALLCODE_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isFetchingCodes: false, allCode: data };
+        }
+        case GET_ALLCODE_REJECTED: {
             const error = action.payload.data;
             return { ...state, isFetchingCodes: false, fetchingCodesError: error };
         }

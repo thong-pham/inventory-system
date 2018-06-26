@@ -36,10 +36,12 @@ class BarcodeGenerator extends Component {
                 reader.readAsDataURL(data);
                 reader.onload = function () {
                     var imageDataUrl = reader.result;
-                    var doc = new jsPDF('l', 'in', [1, 2.5]);
+                    var doc = new jsPDF('l', 'in', [2, 3]);
                     doc.setFontSize(12);
-                    doc.addImage(imageDataUrl, 'PNG', 0.1, 0.05, 2.3, 0.7);
-                    doc.text(0.1,0.95,input);
+                    doc.addImage(imageDataUrl, 'JPEG', 0.4, 0.2, 1.7, 0.25);
+                    doc.text(0.4,0.7,input);
+                    doc.addImage(imageDataUrl, 'JPEG', 0.4, 1.3, 1.7, 0.25);
+                    doc.text(0.4,1.8,input);
                     doc.save(input + ".pdf");
                 }
             })

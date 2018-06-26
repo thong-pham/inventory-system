@@ -10,8 +10,12 @@ import './../../styles/custom.css';
 
 const WAIT_INTERVAL = 1000;
 
-import { addToList, addCapacity, addCount, trackText, importInventory, removeForm
+import { addToList, addCapacity, addCount, trackText, importInventory, removeForm,
         } from "./../../actions/ImportActions";
+
+import { getCodes } from "./../../actions/CodeActions";
+
+import { getInventories } from "./../../actions/InventoryActions";
 
 class ImportInventory extends Component {
     state = {
@@ -20,6 +24,8 @@ class ImportInventory extends Component {
     }
     componentWillMount() {
         const { token, dispatch } = this.props;
+        dispatch(getCodes({token: token}));
+        dispatch(getInventories({token: token}));
         this.timer = null;
     }
 
@@ -33,7 +39,38 @@ class ImportInventory extends Component {
     handleCode = () => {
         const { dispatch } = this.props;
         const { text } = this.props.import;
-        dispatch(addToList(text));
+        const { allCode } = this.props.code;
+        const { backUpInv } = this.props.inventory;
+        var data = {note: null};
+        var mainSku = null;
+        if (text && (text + "").trim() !== ""){
+            allCode.forEach(function(code){
+                  if (code.key === text){
+                      data.text = text;
+                      mainSku = code.mainSku;
+                  }
+            });
+            if (data.text === text){
+                backUpInv.forEach(function(inv){
+                    if (mainSku === inv.sku){
+                        data.capacity = inv.capacity;
+                    }
+                });
+
+                if (!data.capacity){
+                    data.note = "This product is not available!!!";
+                }
+            }
+            else {
+                data.text = text;
+                data.note = "This code does not exists!!!";
+            }
+
+        }
+        else {
+            data.text = "";
+        }
+        dispatch(addToList(data));
     }
 
     handleCapacity = (e, id) => {
@@ -95,9 +132,18 @@ class ImportInventory extends Component {
 
     render() {
         const { errorInput, successInput, value } = this.state;
-        const { formList, text } = this.props.import;
+        const { formList, text, importingInventoryError } = this.props.import;
         let error = null;
         let success = null;
+
+        if (importingInventoryError) {
+            error = (
+                <Message negative>
+                    <Message.Header>Error while Importing Inventory</Message.Header>
+                    <p>{importingInventoryError}</p>
+                </Message>
+            )
+        }
 
         if (errorInput) {
             error = (
@@ -124,13 +170,13 @@ class ImportInventory extends Component {
                             {importData.code}
                         </Table.Cell>
                         <Table.Cell>
-                              <Input defaultValue={importData.capacity} onChange={(e) => this.handleCapacity(e, importData.id)} />
+                              {(importData.capacity) ? <p>{importData.capacity}</p> : <p>{importData.note}</p>}
                         </Table.Cell>
                         <Table.Cell>
-                              <Input onChange={(e) => this.handleCount(e, importData.id)}/>
+                              {(importData.capacity) ? <Input defaultValue={importData.count} onChange={(e) => this.handleCount(e, importData.id)}/> : null}
                         </Table.Cell>
                         <Table.Cell>
-                            <Button size='tiny' primary onClick={() => this.onImport(importData.id)}>Import</Button>
+                            {(importData.capacity) ? <Button size='tiny' primary onClick={() => this.onImport(importData.id)}>Import</Button> : null}
                             <Button size='tiny' color='red' onClick={() => this.onDelete(importData.id)}>Remove</Button>
                         </Table.Cell>
                     </Table.Row>
@@ -180,7 +226,8 @@ function mapStatesToProps(state) {
         token: state.auth.token,
         import: state.importData,
         auth: state.auth,
-        inventory: state.inventory
+        inventory: state.inventory,
+        code: state.code
     }
 }
 
