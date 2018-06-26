@@ -71,11 +71,12 @@ class ViewProcessedOrder extends Component {
               5: {columnWidth: 60},
             }
         });
-        doc.save("order-report.pdf")
+        doc.save("order-" + idParam + ".pdf")
     }
 
     saveAsExcel = () => {
         const { order } = this.props.order;
+        const idParam = this.props.location.pathname.split("/")[2];
         var data = [];
         var header = [
                         {value: 'ID', type: 'string'},
@@ -99,7 +100,7 @@ class ViewProcessedOrder extends Component {
             data.push(row);
         });
         const config = {
-          filename: 'order-report',
+          filename: 'order-' + idParam,
           sheet: {
             data: data
           }
@@ -131,7 +132,7 @@ class ViewProcessedOrder extends Component {
             }, this);
         }
 
-        let tableView = <h4>No Order Found. Please Add Some </h4>
+        let tableView = <h4>No Order Found</h4>
         if (order !== null) {
             tableView = (
                 <Table celled columns={9}>
