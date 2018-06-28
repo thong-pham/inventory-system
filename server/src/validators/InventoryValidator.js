@@ -72,6 +72,16 @@ export function validateImportInventory(data, callback) {
     }
 }
 
+export function validateImportAllInventory(data, callback) {
+    var errors = {};
+    if (Object.keys(errors).length === 0) {
+        callback();
+    }
+    else {
+        callback(errors);
+    }
+}
+
 export function validateDuplicateImport(data, callback) {
     var errors = {};
     if (!data.id) {

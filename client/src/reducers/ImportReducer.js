@@ -6,7 +6,8 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          DUPLICATE_IMPORT_STARTED, DUPLICATE_IMPORT_FULFILLED, DUPLICATE_IMPORT_REJECTED,
          FILL_CODE_IMPORT, CLEAR_IMPORT, INPUT_CAPACITY_IMPORT, INPUT_COUNT_IMPORT,
          IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED, SORT_IMPORT,
-         REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT, ADD_IMPORT, ADD_CAPACITY_IMPORT, ADD_COUNT_IMPORT, TRACK_TEXT_IMPORT, REMOVE_FORM_IMPORT
+         REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT, ADD_IMPORT, ADD_CAPACITY_IMPORT, ADD_COUNT_IMPORT, TRACK_TEXT_IMPORT, REMOVE_FORM_IMPORT,
+         IMPORT_ALLINVENTORY_STARTED, IMPORT_ALLINVENTORY_FULFILLED, IMPORT_ALLINVENTORY_REJECTED
          } from "./../actions/ImportActions";
 
 const initialState = {
@@ -54,9 +55,20 @@ export default function (state = initialState, action) {
         }
         case IMPORT_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isImportingInventory: false, importingInventoryError: null, nextImport: data };
+            return { ...state, isImportingInventory: false, importingInventoryError: null };
         }
         case IMPORT_INVENTORY_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isImportingInventory: false, importingInventoryError: error };
+        }
+        case IMPORT_ALLINVENTORY_STARTED: {
+            return { ...state, isImportingInventory: true };
+        }
+        case IMPORT_ALLINVENTORY_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isImportingInventory: false, importingInventoryError: null, formList: [] };
+        }
+        case IMPORT_ALLINVENTORY_REJECTED: {
             const error = action.payload.data;
             return { ...state, isImportingInventory: false, importingInventoryError: error };
         }

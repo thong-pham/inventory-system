@@ -29,6 +29,10 @@ export const IMPORT_INVENTORY_STARTED = "IMPORT_INVENTORY_STARTED";
 export const IMPORT_INVENTORY_FULFILLED = "IMPORT_INVENTORY_FULFILLED";
 export const IMPORT_INVENTORY_REJECTED = "IMPORT_INVENTORY_REJECTED";
 
+export const IMPORT_ALLINVENTORY_STARTED = "IMPORT_ALLINVENTORY_STARTED";
+export const IMPORT_ALLINVENTORY_FULFILLED = "IMPORT_ALLINVENTORY_FULFILLED";
+export const IMPORT_ALLINVENTORY_REJECTED = "IMPORT_ALLINVENTORY_REJECTED";
+
 export const FILL_CODE_IMPORT = "FILL_CODE_IMPORT";
 export const CLEAR_IMPORT = "CLEAR_IMPORT";
 export const INPUT_CAPACITY_IMPORT = "INPUT_CAPACITY_IMPORT";
@@ -80,6 +84,25 @@ export function importInventory(data) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: IMPORT_INVENTORY_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function importAllInventory(data) {
+    return function (dispatch) {
+        dispatch({ type: IMPORT_ALLINVENTORY_STARTED });
+        return axios.post(WS_URL + "importAllInventory", data)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: IMPORT_ALLINVENTORY_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: IMPORT_ALLINVENTORY_REJECTED, payload: response });
                 throw response;
             })
     }

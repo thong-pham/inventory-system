@@ -10,7 +10,7 @@ import './../../styles/custom.css';
 
 const WAIT_INTERVAL = 1000;
 
-import { addToList, addCapacity, addCount, trackText, importInventory, removeForm,
+import { addToList, addCapacity, addCount, trackText, importInventory, removeForm, importAllInventory
         } from "./../../actions/ImportActions";
 
 import { getCodes } from "./../../actions/CodeActions";
@@ -91,14 +91,14 @@ class ImportInventory extends Component {
         const { dispatch } = this.props;
         var data = null;
         var index = null;
-
+        var check = true;
         formList.forEach(function(form){
             if (form.id === id){
                 var capacity = form.capacity;
                 var count = form.count;
                 if (isNaN(capacity) || !Number.isInteger(Number(capacity)) || capacity === null || capacity <= 0 ||
                     isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0){
-                    alert("Invalid Input");
+                    check = false;
                 }
                 else {
                     data = {
@@ -114,6 +114,47 @@ class ImportInventory extends Component {
                 }
             }
         });
+
+        if (!check){
+            this.setState({errorInput: "This input is invalid"});
+        }
+        else {
+            this.setState({errorInput: null});
+        }
+
+    }
+
+    onImportAll = () => {
+        const { dispatch, token } = this.props;
+        const { formList } = this.props.import;
+        var check = true;
+        if (formList.length !== 0){
+            formList.forEach(function(form){
+                var capacity = form.capacity;
+                var count = form.count;
+                if (isNaN(capacity) || !Number.isInteger(Number(capacity)) || capacity === null || capacity <= 0 ||
+                    isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0){
+                    check = false;
+                }
+                else if (check) {
+                    form.quantity = form.count * form.capacity;
+                }
+            });
+
+            if (check){
+                const data = {
+                    formList,
+                    token
+                }
+                dispatch(importAllInventory(data));
+            }
+            else{
+                this.setState({errorInput: "One or more input is invalid"});
+            }
+        }
+        else {
+            this.setState({errorInput: "This list is empty"});
+        }
 
     }
 
@@ -210,10 +251,11 @@ class ImportInventory extends Component {
                     {error}
                     {success}
                     <Container>
-                      <Responsive minWidth={415}>
                           <Input value={text} onChange={this.handleChange}/>
+                          {(formList.length > 0) ? <div style={{textAlign: 'right'}}>
+                              <Button primary onClick={this.onImportAll}>Import All</Button>
+                          </div> : null }
                           {tableView}
-                      </Responsive>
                     </Container>
                 </Segment>
             </BaseLayout>

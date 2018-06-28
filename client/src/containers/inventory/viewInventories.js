@@ -180,7 +180,7 @@ class ViewInventories extends Component {
 
     saveBarcode = (sku) => {
         const { dispatch } = this.props;
-        axios.get('https://bwipjs-api.metafloor.com/?bcid=code128&scaleY=1&text=' + sku, {responseType: 'blob'})
+        axios.get('https://api-bwipjs.metafloor.com/?bcid=code128&scaleY=1&text=' + sku, {responseType: 'blob'})
             .then(function (response) {
                 const data = response.data;
                 var reader = new window.FileReader();

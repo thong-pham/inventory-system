@@ -7,7 +7,8 @@ import {
            DUPLICATE_EXPORT_STARTED, DUPLICATE_EXPORT_FULFILLED, DUPLICATE_EXPORT_REJECTED,
            FILL_CODE_EXPORT, CLEAR_EXPORT, INPUT_CAPACITY_EXPORT, INPUT_COUNT_EXPORT,
            EXPORT_INVENTORY_STARTED, EXPORT_INVENTORY_FULFILLED, EXPORT_INVENTORY_REJECTED, SORT_EXPORT,
-           REV_EXPORT, NEXT_EXPORT, MODIRY_EXPORT, ADD_EXPORT, ADD_CAPACITY_EXPORT, ADD_COUNT_EXPORT, TRACK_TEXT_EXPORT, REMOVE_FORM_EXPORT
+           REV_EXPORT, NEXT_EXPORT, MODIRY_EXPORT, ADD_EXPORT, ADD_CAPACITY_EXPORT, ADD_COUNT_EXPORT, TRACK_TEXT_EXPORT, REMOVE_FORM_EXPORT,
+           EXPORT_ALLINVENTORY_STARTED, EXPORT_ALLINVENTORY_FULFILLED, EXPORT_ALLINVENTORY_REJECTED
       } from "./../actions/ExportActions";
 
 const initialState = {
@@ -54,9 +55,20 @@ export default function (state = initialState, action) {
         }
         case EXPORT_INVENTORY_FULFILLED: {
             const data = action.payload;
-            return { ...state, isExportingInventory: false, exportingInventoryError: null, nextExport: data };
+            return { ...state, isExportingInventory: false, exportingInventoryError: null };
         }
         case EXPORT_INVENTORY_REJECTED: {
+            const error = action.payload.data;
+            return { ...state, isExportingInventory: false, exportingInventoryError: error };
+        }
+        case EXPORT_ALLINVENTORY_STARTED: {
+            return { ...state, isExportingInventory: true };
+        }
+        case EXPORT_ALLINVENTORY_FULFILLED: {
+            const data = action.payload;
+            return { ...state, isExportingInventory: false, exportingInventoryError: null, formList: [] };
+        }
+        case EXPORT_ALLINVENTORY_REJECTED: {
             const error = action.payload.data;
             return { ...state, isExportingInventory: false, exportingInventoryError: error };
         }

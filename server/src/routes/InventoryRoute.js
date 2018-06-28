@@ -6,7 +6,7 @@ import { createInventory, approveInventory, approveInventoryOut, removeInventory
         exportInventory, getPendingExports, updateExport, removeExport, duplicateExport
        } from "./../services/InventoryService";
 import { getSubInventoriesByCompany, getSubInventories } from "./../services/SubInventoryService";
-import { validateCreateInventory, validateUpdateInventory, validateImportInventory, validateDuplicateImport } from "./../validators/InventoryValidator"
+import { validateCreateInventory, validateUpdateInventory, validateImportInventory, validateDuplicateImport, validateImportAllInventory } from "./../validators/InventoryValidator"
 import { verifyAuthMiddleware } from "./../utils/AuthUtil";
 
 const router = Router();
@@ -424,6 +424,50 @@ router.post('/importInventory', verifyAuthMiddleware, function (req, res, next) 
     });
 });
 
+router.post('/importAllInventory', verifyAuthMiddleware, function (req, res, next) {
+    validateImportAllInventory(req.body, function (err) {
+        if (err) {
+            console.log(err);
+            res.status(400).send("Data missing");
+        }
+        else {
+            const userSession = req.session;
+            const { formList } = req.body;
+            var indexCount = 0;
+            var errorMessage = "";
+            var completeMessage = "";
+            formList.forEach(function(form){
+                const { code, quantity, capacity, count } = form;
+                const data = { code, quantity, capacity, count, userSession };
+                importInventory(data, function (err, importData) {
+                    if (err) {
+                        if (err.message === "Not Enough Permission to import Inventory") {
+                            //res.status(401).send(err.message);
+                        }
+                        else if (err.message === "This code does not exists"){
+                            //res.status(402).send(err.message);
+                            errorMessage = errorMessage + code + " | ";
+                        }
+                        else {
+                            //console.log(err);
+                            //res.status(500).send(err);
+                        }
+                    }
+                    else {
+                        //res.status(201).send("Add Successfully");
+                        completeMessage = completeMessage + code + " | ";
+                    }
+                    indexCount += 1;
+
+                    if ( indexCount === formList.length ){
+                        res.status(200).send({errorMessage: errorMessage, completeMessage: completeMessage});
+                    }
+                });
+            });
+        }
+    });
+});
+
 router.post('/exportInventory', verifyAuthMiddleware, function (req, res, next) {
     validateImportInventory(req.body, function (err) {
         if (err) {
@@ -451,6 +495,50 @@ router.post('/exportInventory', verifyAuthMiddleware, function (req, res, next) 
                     const message = quantity + " items have been added";
                     res.status(201).send(exportData);
                 }
+            });
+        }
+    });
+});
+
+router.post('/exportAllInventory', verifyAuthMiddleware, function (req, res, next) {
+    validateImportAllInventory(req.body, function (err) {
+        if (err) {
+            console.log(err);
+            res.status(400).send("Data missing");
+        }
+        else {
+            const userSession = req.session;
+            const { formList } = req.body;
+            var indexCount = 0;
+            var errorMessage = "";
+            var completeMessage = "";
+            formList.forEach(function(form){
+                const { code, quantity, capacity, count } = form;
+                const data = { code, quantity, capacity, count, userSession };
+                exportInventory(data, function (err, exportData) {
+                    if (err) {
+                        if (err.message === "Not Enough Permission to import Inventory") {
+                            //res.status(401).send(err.message);
+                        }
+                        else if (err.message === "This code does not exists"){
+                            //res.status(402).send(err.message);
+                            errorMessage = errorMessage + code + " | ";
+                        }
+                        else {
+                            //console.log(err);
+                            //res.status(500).send(err);
+                        }
+                    }
+                    else {
+                        //res.status(201).send("Add Successfully");
+                        completeMessage = completeMessage + code + " | ";
+                    }
+                    indexCount += 1;
+
+                    if ( indexCount === formList.length ){
+                        res.status(200).send({errorMessage: errorMessage, completeMessage: completeMessage});
+                    }
+                });
             });
         }
     });

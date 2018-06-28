@@ -29,6 +29,10 @@ export const EXPORT_INVENTORY_STARTED = "EXPORT_INVENTORY_STARTED";
 export const EXPORT_INVENTORY_FULFILLED = "EXPORT_INVENTORY_FULFILLED";
 export const EXPORT_INVENTORY_REJECTED = "EXPORT_INVENTORY_REJECTED";
 
+export const EXPORT_ALLINVENTORY_STARTED = "EXPORT_ALLINVENTORY_STARTED";
+export const EXPORT_ALLINVENTORY_FULFILLED = "EXPORT_ALLINVENTORY_FULFILLED";
+export const EXPORT_ALLINVENTORY_REJECTED = "EXPORT_ALLINVENTORY_REJECTED";
+
 export const FILL_CODE_EXPORT = "FILL_CODE_EXPORT";
 export const CLEAR_EXPORT = "CLEAR_EXPORT";
 export const INPUT_CAPACITY_EXPORT = "INPUT_CAPACITY_EXPORT";
@@ -80,6 +84,25 @@ export function exportInventory(data) {
             .catch(function (error) {
                 const response = error.response;
                 dispatch({ type: EXPORT_INVENTORY_REJECTED, payload: response });
+                throw response;
+            })
+    }
+}
+
+export function exportAllInventory(data) {
+    return function (dispatch) {
+        dispatch({ type: EXPORT_ALLINVENTORY_STARTED });
+        return axios.post(WS_URL + "exportAllInventory", data)
+            .then(function (response) {
+                return response.data;
+            })
+            .then(function (data) {
+                dispatch({ type: EXPORT_ALLINVENTORY_FULFILLED, payload: data });
+                return data;
+            })
+            .catch(function (error) {
+                const response = error.response;
+                dispatch({ type: EXPORT_ALLINVENTORY_REJECTED, payload: response });
                 throw response;
             })
     }
