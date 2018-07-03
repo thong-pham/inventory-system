@@ -9,7 +9,7 @@ import { ADD_INVENTORY_STARTED, ADD_INVENTORY_FULFILLED, ADD_INVENTORY_REJECTED,
          FILTER_INVENTORY, SORT_INVENTORY, REV_INVENTORY, CHANGE_INVENTORY,
          RECOVER_INVENTORY_STARTED, RECOVER_INVENTORY_FULFILLED, RECOVER_INVENTORY_REJECTED,
          DELETE_INVENTORY_TRASH_STARTED, DELETE_INVENTORY_TRASH_FULFILLED, DELETE_INVENTORY_TRASH_REJECTED,
-         CLEAR_FAIL, CLEAR_COMPLETE, RENDER_PAGE_INV, RECOVER_PAGE_INV
+         CLEAR_FAIL, CLEAR_COMPLETE, RENDER_PAGE_INV, RECOVER_PAGE_INV, CHANGE_DISPLAY
          } from "./../actions/InventoryActions";
 
 const initialState = {
@@ -47,7 +47,10 @@ const initialState = {
     completedProducts: null,
     failedProducts: null,
     allPages: [],
-    activePage: 1
+    activePage: 1,
+    displayNumber: 15,
+    filteredInv: [],
+    search : false
 }
 
 export default function (state = initialState, action) {
@@ -69,9 +72,10 @@ export default function (state = initialState, action) {
             return { ...state, isFetchingInventories: true };
         }
         case GET_INVENTORIES_FULFILLED: {
+            const displayNumber = state.displayNumber;
             const data = action.payload;
-            const page = Math.ceil(data.length/10);
-            const max = 10;
+            const page = Math.ceil(data.length/displayNumber);
+            const max = displayNumber;
             var newInv = [];
 
             for (var i = 0; i < page; i++){
@@ -94,9 +98,10 @@ export default function (state = initialState, action) {
             return { ...state, inventories: state.allPages[data-1], activePage: data};
         }
         case RECOVER_PAGE_INV: {
+            const displayNumber = state.displayNumber;
             const data = state.backUpInv;
-            const page = Math.ceil(data.length/10);
-            const max = 10;
+            const page = Math.ceil(data.length/displayNumber);
+            const max = displayNumber;
             var newInv = [];
 
             for (var i = 0; i < page; i++){
@@ -108,7 +113,7 @@ export default function (state = initialState, action) {
                 }
                 newInv.push(temp);
             }
-            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1 };
+            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1, search: false, filteredInv: [] };
         }
         case DELETE_INVENTORY_STARTED: {
             return { ...state, isDeletingInventory: true };
@@ -241,10 +246,10 @@ export default function (state = initialState, action) {
         }
         case FILTER_INVENTORY: {
             const data = action.payload;
-            state.inventories = state.backUpInv;
+            const displayNumber = state.displayNumber;
             var list = data.split(' ');
 
-            const newInv = state.inventories.filter((element) => {
+            state.filteredInv = state.backUpInv.filter((element) => {
                   var count = 0;
                   for (var i = 0; i < list.length; i++){
                       if (element.productName.en.toLowerCase().includes(list[i])){
@@ -253,20 +258,206 @@ export default function (state = initialState, action) {
                   }
                   if (count === list.length) return element;
             });
+            if (state.filteredInv.length > 0){
+                const page = Math.ceil(state.filteredInv.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
 
-            return { ...state, inventories: newInv };
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < state.filteredInv.length) {
+                            temp.push(state.filteredInv[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+                state.inventories = newInv[0];
+                state.allPages = newInv;
+            }
+            else {
+                state.inventories = [];
+                state.allPages = [];
+            }
+
+            return { ...state, activePage: 1, search: true };
         }
         case SORT_INVENTORY:{
-            const data = action.payload;
-            if (data === 'sku') state.inventories.sort(compareSku);
-            else if (data === 'productName.en') state.inventories.sort(compareDesc);
-            else if (data === 'price') state.inventories.sort(comparePrice);
-            else if (data === 'stock') state.inventories.sort(compareStock);
-            return { ...state };
+            const option = action.payload;
+            const displayNumber = state.displayNumber;
+            //var data = [];
+            if (!state.search) {
+                if (option === 'sku'){
+                    state.backUpInv.sort(compareSku);
+                    const page = Math.ceil(state.backUpInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.backUpInv.length) {
+                                temp.push(state.backUpInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'productName.en') {
+                    state.backUpInv.sort(compareDesc);
+                    const page = Math.ceil(state.backUpInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.backUpInv.length) {
+                                temp.push(state.backUpInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'price') {
+                    state.backUpInv.sort(comparePrice);
+                    const page = Math.ceil(state.backUpInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.backUpInv.length) {
+                                temp.push(state.backUpInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'stock') {
+                    state.backUpInv.sort(compareStock);
+                    const page = Math.ceil(state.backUpInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.backUpInv.length) {
+                                temp.push(state.backUpInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+            }
+            else {
+                if (option === 'sku'){
+                    state.filteredInv.sort(compareSku);
+                    const page = Math.ceil(state.filteredInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.filteredInv.length) {
+                                temp.push(state.filteredInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'productName.en') {
+                    state.filteredInv.sort(compareDesc);
+                    const page = Math.ceil(state.filteredInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.filteredInv.length) {
+                                temp.push(state.filteredInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'price') {
+                    state.filteredInv.sort(comparePrice);
+                    const page = Math.ceil(state.filteredInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.filteredInv.length) {
+                                temp.push(state.filteredInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'stock') {
+                    state.filteredInv.sort(compareStock);
+                    const page = Math.ceil(state.filteredInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.filteredInv.length) {
+                                temp.push(state.filteredInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+            }
+
+
+            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1 };
         }
         case REV_INVENTORY:{
-            state.inventories.reverse();
-            return { ...state };
+            const displayNumber = state.displayNumber;
+            if (!state.search){
+                state.backUpInv.reverse();
+                const page = Math.ceil(state.backUpInv.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
+
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < state.backUpInv.length) {
+                            temp.push(state.backUpInv[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+            }
+            else {
+                state.filteredInv.reverse();
+                const page = Math.ceil(state.filteredInv.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
+
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < state.filteredInv.length) {
+                            temp.push(state.filteredInv[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+            }
+
+            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1 };
         }
         case CHANGE_INVENTORY: {
             const data = action.payload;
@@ -280,6 +471,38 @@ export default function (state = initialState, action) {
         }
         case CLEAR_COMPLETE:{
             return { ...state, completedProducts: null };
+        }
+        case CHANGE_DISPLAY:{
+            const displayNumber = action.payload;
+            var data = [];
+            if (!state.search) {
+                data = state.backUpInv;
+            }
+            else {
+                data = state.filteredInv;
+            }
+            if (data.length > 0){
+                const page = Math.ceil(data.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
+
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < data.length) {
+                            temp.push(data[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+                state.inventories = newInv[0];
+                state.allPages = newInv;
+            }
+            else {
+                state.inventories = [];
+                state.allPages = [];
+            }
+            return { ...state, displayNumber, activePage: 1 };
         }
         default: {
             return state;

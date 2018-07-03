@@ -10,7 +10,7 @@ import './../../styles/custom.css';
 
 const WAIT_INTERVAL = 1000;
 
-import { addToList, addCapacity, addCount, trackText, exportInventory, removeForm, exportAllInventory
+import { addToList, addToListManual, addCapacity, addCount, trackText, trackTextManual, exportInventory, removeForm, exportAllInventory
         } from "./../../actions/ExportActions";
 
 import { getCodes } from "./../../actions/CodeActions";
@@ -27,6 +27,48 @@ class ExportInventory extends Component {
         dispatch(getCodes({token: token}));
         dispatch(getInventories({token: token}));
         this.timer = null;
+    }
+
+    handleManual = (e) => {
+        const { dispatch } = this.props;
+        dispatch(trackTextManual(e.target.value));
+    }
+
+    addManual = () => {
+        const { dispatch } = this.props;
+        const text = this.props.export.textManual;
+        const { allCode } = this.props.code;
+        const { backUpInv } = this.props.inventory;
+        var data = {note: null};
+        var mainSku = null;
+        if (text && (text + "").trim() !== ""){
+            allCode.forEach(function(code){
+                  if (code.key === text){
+                      data.text = text;
+                      mainSku = code.mainSku;
+                  }
+            });
+            if (data.text === text){
+                backUpInv.forEach(function(inv){
+                    if (mainSku === inv.sku){
+                        data.capacity = inv.capacity;
+                    }
+                });
+
+                if (!data.capacity){
+                    data.note = "This product is not available!!!";
+                }
+            }
+            else {
+                data.text = text;
+                data.note = "This code does not exists!!!";
+            }
+
+        }
+        else {
+            data.text = "";
+        }
+        dispatch(addToListManual(data));
     }
 
     handleChange = (e) => {
@@ -173,7 +215,7 @@ class ExportInventory extends Component {
 
     render() {
         const { errorInput, successInput } = this.state;
-        const { formList, text } = this.props.export;
+        const { formList, text, textManual } = this.props.export;
         let error = null;
         let success = null;
 
@@ -231,6 +273,13 @@ class ExportInventory extends Component {
                     <Table.Body>
                         {exportsView}
                     </Table.Body>
+                    <Table.Footer>
+                      <Table.Row>
+                        <Table.HeaderCell colSpan='4' textAlign='right'>
+                            <Button primary onClick={this.onEXportAll}>Export All</Button>
+                        </Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Footer>
                 </Table>
             )
         }
@@ -242,10 +291,19 @@ class ExportInventory extends Component {
                     {error}
                     {success}
                     <Container>
-                          <Input value={text} onChange={this.handleChange}/>
-                          {(formList.length > 0) ? <div style={{textAlign: 'right'}}>
-                              <Button primary onClick={this.onExportAll}>Export All</Button>
-                          </div> : null }
+                        <Grid columns={2}>
+                          <Grid.Row>
+                              <Grid.Column className="columnForInput" textAlign='center'>
+                                  <Label>For scan only</Label>
+                                  <Input value={text} onChange={this.handleChange}/>
+                              </Grid.Column>
+                              <Grid.Column className="columnForButton" textAlign='center'>
+                                  <Label>Input Manually</Label>
+                                  <Input value={textManual} onChange={this.handleManual}/>
+                                  <Button primary onClick={this.addManual}>Add</Button>
+                              </Grid.Column>
+                            </Grid.Row>
+                          </Grid>
                           {tableView}
                     </Container>
                 </Segment>

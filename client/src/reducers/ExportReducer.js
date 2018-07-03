@@ -8,7 +8,7 @@ import {
            FILL_CODE_EXPORT, CLEAR_EXPORT, INPUT_CAPACITY_EXPORT, INPUT_COUNT_EXPORT,
            EXPORT_INVENTORY_STARTED, EXPORT_INVENTORY_FULFILLED, EXPORT_INVENTORY_REJECTED, SORT_EXPORT,
            REV_EXPORT, NEXT_EXPORT, MODIRY_EXPORT, ADD_EXPORT, ADD_CAPACITY_EXPORT, ADD_COUNT_EXPORT, TRACK_TEXT_EXPORT, REMOVE_FORM_EXPORT,
-           EXPORT_ALLINVENTORY_STARTED, EXPORT_ALLINVENTORY_FULFILLED, EXPORT_ALLINVENTORY_REJECTED
+           EXPORT_ALLINVENTORY_STARTED, EXPORT_ALLINVENTORY_FULFILLED, EXPORT_ALLINVENTORY_REJECTED, TRACK_TEXT_MANUAL_EXPORT, ADD_EXPORT_MANUAL
       } from "./../actions/ExportActions";
 
 const initialState = {
@@ -45,7 +45,8 @@ const initialState = {
     formList: [],
     length: null,
     text: '',
-    id: 0
+    id: 0,
+    textManual: ''
 }
 
 export default function (state = initialState, action) {
@@ -207,6 +208,19 @@ export default function (state = initialState, action) {
             }
         }
 
+        case ADD_EXPORT_MANUAL:{
+            const data = action.payload;
+            if (data.text && (data.text + "").trim() !== "") {
+                var newList = state.formList;
+                var id = state.id + 1;
+                newList.push({id: id, code: data.text, capacity: data.capacity, count: 1, note: data.note});
+                return { ...state, formList: newList, id: id, textManual: ''};
+            }
+            else {
+                return {...state, textManual: ''};
+            }
+        }
+
         case ADD_CAPACITY_EXPORT:{
             const {id, data} = action.payload;
             state.formList.forEach(function(form){
@@ -228,6 +242,10 @@ export default function (state = initialState, action) {
         case TRACK_TEXT_EXPORT:{
             const data = action.payload;
             return { ...state, text: data };
+        }
+        case TRACK_TEXT_MANUAL_EXPORT:{
+            const data = action.payload;
+            return { ...state, textManual: data };
         }
         case REMOVE_FORM_EXPORT: {
             const id = action.payload;

@@ -7,7 +7,7 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          FILL_CODE_IMPORT, CLEAR_IMPORT, INPUT_CAPACITY_IMPORT, INPUT_COUNT_IMPORT,
          IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED, SORT_IMPORT,
          REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT, ADD_IMPORT, ADD_CAPACITY_IMPORT, ADD_COUNT_IMPORT, TRACK_TEXT_IMPORT, REMOVE_FORM_IMPORT,
-         IMPORT_ALLINVENTORY_STARTED, IMPORT_ALLINVENTORY_FULFILLED, IMPORT_ALLINVENTORY_REJECTED
+         IMPORT_ALLINVENTORY_STARTED, IMPORT_ALLINVENTORY_FULFILLED, IMPORT_ALLINVENTORY_REJECTED, TRACK_TEXT_MANUAL_IMPORT, ADD_IMPORT_MANUAL
          } from "./../actions/ImportActions";
 
 const initialState = {
@@ -44,7 +44,8 @@ const initialState = {
     formList: [],
     length: null,
     text: '',
-    id: 0
+    id: 0,
+    textManual: ''
 
 }
 
@@ -206,6 +207,18 @@ export default function (state = initialState, action) {
                 return {...state, text: ''};
             }
         }
+        case ADD_IMPORT_MANUAL:{
+            const data = action.payload;
+            if (data.text && (data.text + "").trim() !== "") {
+                var newList = state.formList;
+                var id = state.id + 1;
+                newList.push({id: id, code: data.text, capacity: data.capacity, count: 1, note: data.note});
+                return { ...state, formList: newList, id: id, textManual: ''};
+            }
+            else {
+                return {...state, textManual: ''};
+            }
+        }
 
         case ADD_CAPACITY_IMPORT:{
             const {id, data} = action.payload;
@@ -229,6 +242,10 @@ export default function (state = initialState, action) {
             const data = action.payload;
             return { ...state, text: data };
         }
+        case TRACK_TEXT_MANUAL_IMPORT:{
+            const data = action.payload;
+            return { ...state, textManual: data };
+        }
         case REMOVE_FORM_IMPORT: {
             const id = action.payload;
             var index = 0;
@@ -240,6 +257,7 @@ export default function (state = initialState, action) {
             state.formList.splice(index,1);
             return { ...state };
         }
+
         default: {
             return state;
         }

@@ -53,6 +53,7 @@ export const CLEAR_FAIL = "CLEAR_FAIL";
 export const CLEAR_COMPLETE = "CLEAR_COMPLETE";
 export const RENDER_PAGE_INV = "RENDER_PAGE_INV";
 export const RECOVER_PAGE_INV = "RECOVER_PAGE_INV";
+export const CHANGE_DISPLAY = "CHANGE_DISPLAY";
 
 const WS_URL = URL + "/inventories/";
 
@@ -319,5 +320,11 @@ export function renderPage(data){
 export function recoverPage(){
    return function (dispatch){
        dispatch({ type : RECOVER_PAGE_INV })
+   }
+}
+
+export function changeDisplay(number){
+   return function (dispatch){
+       dispatch({ type : CHANGE_DISPLAY, payload: number })
    }
 }

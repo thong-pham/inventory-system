@@ -44,9 +44,11 @@ export const NEXT_EXPORT = "NEXT_EXPORT";
 export const MODIRY_EXPORT = "MODIRY_EXPORT";
 
 export const ADD_EXPORT = "ADD_EXPORT";
+export const ADD_EXPORT_MANUAL = "ADD_EXPORT_MANUAL";
 export const ADD_CAPACITY_EXPORT = "ADD_CAPACITY_EXPORT";
 export const ADD_COUNT_EXPORT = "ADD_COUNT_EXPORT";
 export const TRACK_TEXT_EXPORT = "TRACK_TEXT_EXPORT";
+export const TRACK_TEXT_MANUAL_EXPORT = "TRACK_TEXT_MANUAL_EXPORT";
 export const REMOVE_FORM_EXPORT = "REMOVE_FORM_EXPORT";
 
 const WS_URL = URL + "/inventories/";
@@ -240,6 +242,12 @@ export function addToList(data){
    }
 }
 
+export function addToListManual(data){
+   return function (dispatch){
+       dispatch({ type : ADD_EXPORT_MANUAL, payload: data })
+   }
+}
+
 export function addCapacity(data){
    return function (dispatch){
        dispatch({ type : ADD_CAPACITY_EXPORT, payload: data })
@@ -255,6 +263,12 @@ export function addCount(data){
 export function trackText(data){
    return function (dispatch){
        dispatch({ type : TRACK_TEXT_EXPORT, payload: data })
+   }
+}
+
+export function trackTextManual(data){
+   return function (dispatch){
+       dispatch({ type : TRACK_TEXT_MANUAL_EXPORT, payload: data })
    }
 }
 

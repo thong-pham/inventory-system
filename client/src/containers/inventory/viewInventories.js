@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search, Pagination } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search, Pagination, Dropdown } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 import axios from 'axios';
 import jsPDF from 'jspdf';
@@ -10,7 +10,7 @@ import BaseLayout from "./../baseLayout";
 import './../../styles/custom.css';
 
 import { getInventories, deleteInventory, rejectEdit, updateInventory, sortInventory, reverseInventory, changeInventory,
-         trackNumber, openPlus, closePlus, openMinus, closeMinus, filterInventory, renderPage, recoverPage } from "./../../actions/InventoryActions";
+         trackNumber, openPlus, closePlus, openMinus, closeMinus, filterInventory, renderPage, recoverPage, changeDisplay } from "./../../actions/InventoryActions";
 
 import { generateBarcode } from "./../../actions/BarcodeActions";
 
@@ -156,6 +156,7 @@ class ViewInventories extends Component {
         const { dispatch } = this.props;
         const { column, direction } = this.state;
         const { inventories } = this.props.inventory;
+        console.log(column);
         if (column !== clickedColumn){
             this.setState({
               column: clickedColumn,
@@ -173,8 +174,7 @@ class ViewInventories extends Component {
 
     handlePaginationChange = (e, data) => {
         const { dispatch } = this.props;
-        //console.log(data.activePage);
-        this.setState({column: null});
+        //this.setState({column: null});
         dispatch(renderPage(data.activePage));
     }
 
@@ -200,13 +200,23 @@ class ViewInventories extends Component {
             })
     }
 
+    handleDisplay = (e, data) => {
+        const { dispatch } = this.props;
+        dispatch(changeDisplay(data.value));
+    }
+
     render() {
         const { column, direction, errorInput } = this.state;
         const { user } = this.props.auth;
         const { inventories, isFetchingInventories, fetchingInventoriesError, isDeletingInventory,
                 deletingInventoryError, isUpdatingInventory, updatingInventoryError } = this.props.inventory;
-        const { quantity, openPlus, openMinus, activePage, allPages } = this.props.inventory;
-
+        const { quantity, openPlus, openMinus, activePage, allPages, displayNumber } = this.props.inventory;
+        var displayOptions = [
+                              {key:1, text:'15', value: 15},
+                              {key:2, text:'50', value: 50},
+                              {key:3, text:'100', value: 100},
+                              {key:4, text:'250', value: 250}
+                            ];
         let error = null;
         if (fetchingInventoriesError) {
             error = (
@@ -341,9 +351,23 @@ class ViewInventories extends Component {
                   <Header as="h2">Inventory List</Header>
                   {error}
                   <Container>
-                      <div style={{textAlign: 'right'}}>
-                        <Input onChange={this.handleSearch} placeholder='Search by description...' />
-                      </div>
+                    <Grid columns={2}>
+                      <Grid.Row>
+                        <Grid.Column className="columnForInput" textAlign='left'>
+                            <Dropdown
+                              onChange={this.handleDisplay}
+                              options={displayOptions}
+                              placeholder=''
+                              selection
+                              compact
+                              value={displayNumber}
+                            />
+                        </Grid.Column>
+                            <Grid.Column className="columnForButton" textAlign='right'>
+                                <Input onChange={this.handleSearch} placeholder='Search by description...' />
+                            </Grid.Column>
+                        </Grid.Row>
+                      </Grid>
                       {tableView}
                   </Container>
               </Segment>
