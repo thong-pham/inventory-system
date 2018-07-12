@@ -29,46 +29,6 @@ class ViewInventories extends Component {
             dispatch(push("/subInventory"));
         }
         dispatch(getInventories({ token: token }));
-        this.getShippingRates(function(data){
-            console.log(data);
-        });
-    }
-
-    getShippingRates = (callback) => {
-      var request = new XMLHttpRequest();
-
-      request.open('POST', 'https://ssapi.shipstation.com/shipments/getrates');
-      request.setRequestHeader('Access-Control-Allow-Origin', '*');
-      request.setRequestHeader('Access-Control-Allow-Headers', 'X-Requested-With, Origin, Accept, Content-Type, Authorization, X-Powered-By, Content-Length, Connection');
-      request.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-      request.setRequestHeader('Access-Control-Allow-Credentials', true);
-      request.setRequestHeader('Content-Type', 'application/json');
-      request.setRequestHeader('Authorization', 'Basic MmFlYTQ2NzliZjRhNGRlOGJlZDM5MmZiNTBkNDhkNDA6NDg5ZDYwY2RhMDY3NDJhYzhkODhjZGFkYTM0OTA3ZjA=');
-
-      request.onreadystatechange = function () {
-          if (this.readyState === 4 && this.status === 200) {
-              var data = JSON.parse(this.responseText);
-              callback(data[0]);
-          }
-      };
-
-        var body = {
-          'carrierCode': 'fedex',
-          'serviceCode': 'fedex_ground',
-          'packageCode': 'package',
-          'fromPostalCode': '92704',
-          'toState': 'CA',
-          'toCountry': 'US',
-          'toPostalCode': '91791',
-          'toCity': 'West Covina',
-          'weight': {
-            'value': 5,
-            'units': 'lb'
-          },
-          'confirmation': 'delivery',
-          'residential': false
-       };
-       request.send(JSON.stringify(body));
     }
 
     onPressEdit = (inventory) => {
