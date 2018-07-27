@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Grid, Input, Modal } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Grid, Input, Modal, Dropdown, Pagination } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -9,11 +9,14 @@ import './../../styles/custom.css';
 
 import { getSubInventories, getSubInventoriesByCompany, deleteSubInventory,
         openAdd, closeAdd, trackNumber, showModal, closeModal,
-        addCart, updateCart, deleteCart, submitOrder, getCarts, clearError, clearInventory
+        addCart, updateCart, deleteCart, submitOrder, getCarts, clearError, clearInventory, filterInventory, recoverPage, renderPage, changeDisplay,
+        sortInventory, reverseInventory
       } from "./../../actions/SubInventoryActions";
 
 class ViewSubInventory extends Component {
     state = {
+        column: null,
+        direction: null,
         errorInput: null
     }
     componentWillMount() {
@@ -130,12 +133,61 @@ class ViewSubInventory extends Component {
         dispatch(deleteCart(cart));
     }
 
+    handleSearch = (e) => {
+        const { dispatch } = this.props;
+        if (e.target.value !== "") dispatch(filterInventory(e.target.value));
+        else dispatch(recoverPage());
+    }
+
+    handlePaginationChange = (e, data) => {
+        const { dispatch } = this.props;
+        //this.setState({column: null});
+        dispatch(renderPage(data.activePage));
+    }
+
+    handleDisplay = (e, data) => {
+        const { dispatch } = this.props;
+        dispatch(changeDisplay(data.value));
+    }
+
+    handleSort = clickedColumn => () => {
+        const { dispatch } = this.props;
+        const { column, direction } = this.state;
+        const { inventories } = this.props.inventory;
+        //console.log(column);
+        if (column !== clickedColumn){
+            this.setState({
+              column: clickedColumn,
+              direction: 'ascending',
+            });
+            dispatch(sortInventory(clickedColumn));
+        }
+        else {
+            this.setState({
+               direction: direction === 'ascending' ? 'descending' : 'ascending',
+            });
+            dispatch(reverseInventory());
+        }
+    }
+
+    handlePaginationChange = (e, data) => {
+        const { dispatch } = this.props;
+        //this.setState({column: null});
+        dispatch(renderPage(data.activePage));
+    }
+
     render() {
-        const { errorInput } = this.state;
+        const { column, direction, errorInput } = this.state;
         const { user } = this.props.auth;
         const { inventories, isFetchingInventories, fetchingInventoriesError, deletingsInventoriesError, updatingInventoriesError,
                 openAdd, closeAdd, quantity, modalCart, modal,
-                pendingCarts } = this.props.inventory;
+                pendingCarts, activePage, allPages, displayNumber  } = this.props.inventory;
+        var displayOptions = [
+                              {key:1, text:'15', value: 15},
+                              {key:2, text:'50', value: 50},
+                              {key:3, text:'100', value: 100},
+                              {key:4, text:'250', value: 250}
+                            ];
         let error = null;
         if (fetchingInventoriesError) {
             error = (
@@ -217,7 +269,7 @@ class ViewSubInventory extends Component {
                   <Table.Cell>{cart.quantity}</Table.Cell>
                   <Table.Cell>{cart.status}</Table.Cell>
                   <Table.Cell >
-                      <Button onClick={this.onRemoveCart.bind(this, cart)}>Remove</Button>
+                      <Button color='red' onClick={this.onRemoveCart.bind(this, cart)}>Remove</Button>
                   </Table.Cell>
               </Table.Row>
             )
@@ -225,12 +277,12 @@ class ViewSubInventory extends Component {
         let tableView = <h4>No Inventories Found. Please Add Some </h4>
         if (inventories.length > 0) {
             tableView = (
-                <Table celled fixed color='blue'>
+                <Table sortable celled fixed color='blue'>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell width={1}>SKU</Table.HeaderCell>
-                            <Table.HeaderCell width={3}>Product Description</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Main Stock</Table.HeaderCell>
+                            <Table.HeaderCell width={1} sorted={column === 'sku' ? direction : null} onClick={this.handleSort('sku')}>SKU</Table.HeaderCell>
+                            <Table.HeaderCell width={3} sorted={column === 'productName.en' ? direction : null} onClick={this.handleSort('productName.en')}>Product Description</Table.HeaderCell>
+                            <Table.HeaderCell width={2} sorted={column === 'stock' ? direction : null} onClick={this.handleSort('stock')}>Main Stock</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell width={1}>Unit</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
@@ -239,6 +291,13 @@ class ViewSubInventory extends Component {
                     <Table.Body>
                         {inventoriesView}
                     </Table.Body>
+                    <Table.Footer>
+                      <Table.Row>
+                        <Table.HeaderCell colSpan='6' textAlign='right'>
+                            <Pagination pointing activePage={activePage} onPageChange={this.handlePaginationChange} totalPages={allPages.length} />
+                        </Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Footer>
                 </Table>
             )
         }
@@ -288,7 +347,25 @@ class ViewSubInventory extends Component {
                 <Segment textAlign='center'>
                     <Header as="h2">Inventory List</Header>
                     {error}
-                    <Container>              
+                    <Container>
+
+                        <Grid columns={2}>
+                          <Grid.Row>
+                            <Grid.Column className="columnForInput" textAlign='left'>
+                              <Dropdown
+                                onChange={this.handleDisplay}
+                                options={displayOptions}
+                                placeholder=''
+                                selection
+                                compact
+                                value={displayNumber}
+                              />
+                            </Grid.Column>
+                                <Grid.Column className="columnForButton" textAlign='right'>
+                                    <Input onChange={this.handleSearch} placeholder='Search by description...' />
+                                </Grid.Column>
+                            </Grid.Row>
+                          </Grid>
                         {tableView}
                         {modalView}
                     </Container>
@@ -297,7 +374,7 @@ class ViewSubInventory extends Component {
                       <Container>
                           <Header as="h2">Cart List</Header>
                           {cartList}
-                          { (pendingCarts.length > 0) ? <Button onClick={this.onSubmit.bind(this)}>Submit</Button> : null}
+                          { (pendingCarts.length > 0) ? <Button primary onClick={this.onSubmit.bind(this)}>Submit</Button> : null}
                       </Container>
                 </Segment>
             </BaseLayout>

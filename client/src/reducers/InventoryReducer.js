@@ -121,12 +121,19 @@ export default function (state = initialState, action) {
         case DELETE_INVENTORY_FULFILLED: {
             const id = action.payload;
             var index = 0;
+            var backIndex = 0;
             for (var i = 0; i < state.inventories.length; i++){
                 if (state.inventories[i].id === id ){
                     index = i;
                 }
             }
+            for (var i = 0; i < state.backUpInv.length; i++){
+                if (state.backUpInv[i].id === id ){
+                    backIndex = i;
+                }
+            }
             state.inventories.splice(index,1);
+            state.backUpInv.splice(backIndex,1);
             return { ...state, isDeletingInventory: false, deletingInventoryError: null };
         }
         case DELETE_INVENTORY_REJECTED: {

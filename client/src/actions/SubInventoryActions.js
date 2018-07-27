@@ -60,6 +60,12 @@ export const OPEN_MODAL = "OPEN_MODAL";
 export const CLOSE_MODAL = "CLOSE_MODAL";
 export const OPEN_ADD = "OPEN_ADD";
 export const CLOSE_ADD = "CLOSE_ADD";
+export const FILTER_SUBINVENTORY = "FILTER_SUBINVENTORY";
+export const RECOVER_PAGE_SINV = "RECOVER_PAGE_SINV";
+export const RENDER_PAGE_SINV = "RENDER_PAGE_SINV";
+export const CHANGE_DISPLAY_SUB = "CHANGE_DISPLAY_SUB";
+export const SORT_SUBINVENTORY = "SORT_SUBINVENTORY";
+export const REV_SUBINVENTORY = "REV_SUBINVENTORY"
 
 export const SET_UPDATING_SUBINVENTORY_FULFILLED = "SET_UPDATING_SUBINVENTORY_FULFILLED";
 export const CLEAR_INVENTORY_FULFILLED = "CLEAR_INVENTORY_FULFILLED";
@@ -371,4 +377,40 @@ export function clearInventory() {
     return function (dispatch) {
         dispatch({ type: CLEAR_INVENTORY_FULFILLED });
     }
+}
+
+export function filterInventory(data){
+   return function (dispatch){
+       dispatch({ type : FILTER_SUBINVENTORY, payload: data})
+   }
+}
+
+export function recoverPage(){
+   return function (dispatch){
+       dispatch({ type : RECOVER_PAGE_SINV })
+   }
+}
+
+export function renderPage(data){
+   return function (dispatch){
+       dispatch({ type : RENDER_PAGE_SINV, payload: data })
+   }
+}
+
+export function changeDisplay(number){
+   return function (dispatch){
+       dispatch({ type : CHANGE_DISPLAY_SUB, payload: number })
+   }
+}
+
+export function sortInventory(data){
+   return function (dispatch){
+       dispatch({ type : SORT_SUBINVENTORY, payload: data})
+   }
+}
+
+export function reverseInventory(){
+   return function (dispatch){
+       dispatch({ type : REV_SUBINVENTORY })
+   }
 }

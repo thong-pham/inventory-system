@@ -11,11 +11,13 @@ import { GET_SUBINVENTORIES_STARTED, GET_SUBINVENTORIES_FULFILLED, GET_SUBINVENT
           DELETE_CART_STARTED, DELETE_CART_FULFILLED, DELETE_CART_REJECTED,
           SUBMIT_ORDER_STARTED, SUBMIT_ORDER_FULFILLED, SUBMIT_ORDER_REJECTED, CLEAR_INVENTORY_FULFILLED,
           RECOVER_SUBINVENTORY_STARTED, RECOVER_SUBINVENTORY_FULFILLED, RECOVER_SUBINVENTORY_REJECTED,
-          DELETE_SUBINVENTORY_TRASH_STARTED, DELETE_SUBINVENTORY_TRASH_FULFILLED, DELETE_SUBINVENTORY_TRASH_REJECTED
+          DELETE_SUBINVENTORY_TRASH_STARTED, DELETE_SUBINVENTORY_TRASH_FULFILLED, DELETE_SUBINVENTORY_TRASH_REJECTED,
+          FILTER_SUBINVENTORY, RECOVER_PAGE_SINV, RENDER_PAGE_SINV, CHANGE_DISPLAY_SUB, SORT_SUBINVENTORY, REV_SUBINVENTORY
          } from "./../actions/SubInventoryActions";
 
 const initialState = {
     inventories: [],
+    backUpInv: [],
     inventory: null,
     inventoriesInTrash: [],
     isAddingInventory: false,
@@ -56,6 +58,11 @@ const initialState = {
     openAdd: null,
     addIcon: true,
     closeIcon: false,
+    allPages: [],
+    activePage: 1,
+    displayNumber: 15,
+    filteredInv: [],
+    search : false
 }
 
 export default function (state = initialState, action) {
@@ -76,8 +83,22 @@ export default function (state = initialState, action) {
             return { ...state, isFetchingInventories: true };
         }
         case GET_SUBINVENTORIES_FULFILLED: {
+            const displayNumber = state.displayNumber;
             const data = action.payload;
-            return { ...state, isFetchingInventories: false, inventories: data };
+            const page = Math.ceil(data.length/displayNumber);
+            const max = displayNumber;
+            var newInv = [];
+
+            for (var i = 0; i < page; i++){
+                var temp = [];
+                for (var j = i*max; j < (i+1)*max; j++){
+                    if (j < data.length) {
+                        temp.push(data[j]);
+                    }
+                }
+                newInv.push(temp);
+            }
+            return { ...state, isFetchingInventories: false, inventories: newInv[0], allPages: newInv, backUpInv: data, activePage: 1 };
         }
         case GET_SUBINVENTORIES_REJECTED: {
             const error = action.payload.data;
@@ -118,13 +139,19 @@ export default function (state = initialState, action) {
         case DELETE_SUBINVENTORY_FULFILLED: {
             const id = action.payload;
             var index = 0;
+            var backIndex = 0;
             for (var i = 0; i < state.inventories.length; i++){
                 if (state.inventories[i].id === id ){
                     index = i;
                 }
             }
+            for (var i = 0; i < state.backUpInv.length; i++){
+                if (state.backUpInv[i].id === id ){
+                    backIndex = i;
+                }
+            }
             state.inventories.splice(index,1);
-            //newInv.splice(index,1);
+            state.backUpInv.splice(backIndex,1);
             return { ...state, isDeletingInventory: false, deletingsInventoriesError: null };
         }
         case DELETE_SUBINVENTORY_REJECTED: {
@@ -278,8 +305,287 @@ export default function (state = initialState, action) {
             const error = action.payload.data;
             return { ...state, isDeletingInventoryInTrash: false, deletingInventoryInTrashError: error };
         }
+        case FILTER_SUBINVENTORY: {
+            const data = action.payload;
+            const displayNumber = state.displayNumber;
+            var list = data.split(' ');
+
+            state.filteredInv = state.backUpInv.filter((element) => {
+                  var count = 0;
+                  for (var i = 0; i < list.length; i++){
+                      if (element.productName.en.toLowerCase().includes(list[i])){
+                          count += 1;
+                      }
+                  }
+                  if (count === list.length) return element;
+            });
+            if (state.filteredInv.length > 0){
+                const page = Math.ceil(state.filteredInv.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
+
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < state.filteredInv.length) {
+                            temp.push(state.filteredInv[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+                state.inventories = newInv[0];
+                state.allPages = newInv;
+            }
+            else {
+                state.inventories = [];
+                state.allPages = [];
+            }
+
+            return { ...state, activePage: 1, search: true };
+        }
+        case RENDER_PAGE_SINV:{
+            const data = action.payload;
+            return { ...state, inventories: state.allPages[data-1], activePage: data};
+        }
+        case RECOVER_PAGE_SINV: {
+            const displayNumber = state.displayNumber;
+            const data = state.backUpInv;
+            const page = Math.ceil(data.length/displayNumber);
+            const max = displayNumber;
+            var newInv = [];
+
+            for (var i = 0; i < page; i++){
+                var temp = [];
+                for (var j = i*max; j < (i+1)*max; j++){
+                    if (j < data.length) {
+                        temp.push(data[j]);
+                    }
+                }
+                newInv.push(temp);
+            }
+            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1, search: false, filteredInv: [] };
+        }
+        case CHANGE_DISPLAY_SUB:{
+            const displayNumber = action.payload;
+            var data = [];
+            if (!state.search) {
+                data = state.backUpInv;
+            }
+            else {
+                data = state.filteredInv;
+            }
+            if (data.length > 0){
+                const page = Math.ceil(data.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
+
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < data.length) {
+                            temp.push(data[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+                state.inventories = newInv[0];
+                state.allPages = newInv;
+            }
+            else {
+                state.inventories = [];
+                state.allPages = [];
+            }
+            return { ...state, displayNumber, activePage: 1 };
+        }
+        case SORT_SUBINVENTORY:{
+            const option = action.payload;
+            const displayNumber = state.displayNumber;
+            //var data = [];
+            if (!state.search) {
+                if (option === 'sku'){
+                    state.backUpInv.sort(compareSku);
+                    const page = Math.ceil(state.backUpInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.backUpInv.length) {
+                                temp.push(state.backUpInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'productName.en') {
+                    state.backUpInv.sort(compareDesc);
+                    const page = Math.ceil(state.backUpInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.backUpInv.length) {
+                                temp.push(state.backUpInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'stock') {
+                    state.backUpInv.sort(compareStock);
+                    const page = Math.ceil(state.backUpInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.backUpInv.length) {
+                                temp.push(state.backUpInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+            }
+            else {
+                if (option === 'sku'){
+                    state.filteredInv.sort(compareSku);
+                    const page = Math.ceil(state.filteredInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.filteredInv.length) {
+                                temp.push(state.filteredInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'productName.en') {
+                    state.filteredInv.sort(compareDesc);
+                    const page = Math.ceil(state.filteredInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.filteredInv.length) {
+                                temp.push(state.filteredInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+                else if (option === 'stock') {
+                    state.filteredInv.sort(compareStock);
+                    const page = Math.ceil(state.filteredInv.length/displayNumber);
+                    const max = displayNumber;
+                    var newInv = [];
+
+                    for (var i = 0; i < page; i++){
+                        var temp = [];
+                        for (var j = i*max; j < (i+1)*max; j++){
+                            if (j < state.filteredInv.length) {
+                                temp.push(state.filteredInv[j]);
+                            }
+                        }
+                        newInv.push(temp);
+                    }
+                }
+            }
+
+
+            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1 };
+        }
+        case REV_SUBINVENTORY:{
+            const displayNumber = state.displayNumber;
+            if (!state.search){
+                state.backUpInv.reverse();
+                const page = Math.ceil(state.backUpInv.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
+
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < state.backUpInv.length) {
+                            temp.push(state.backUpInv[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+            }
+            else {
+                state.filteredInv.reverse();
+                const page = Math.ceil(state.filteredInv.length/displayNumber);
+                const max = displayNumber;
+                var newInv = [];
+
+                for (var i = 0; i < page; i++){
+                    var temp = [];
+                    for (var j = i*max; j < (i+1)*max; j++){
+                        if (j < state.filteredInv.length) {
+                            temp.push(state.filteredInv[j]);
+                        }
+                    }
+                    newInv.push(temp);
+                }
+            }
+
+            return { ...state, inventories: newInv[0], allPages: newInv, activePage: 1 };
+        }
         default: {
             return state;
         }
     }
+}
+
+function compareSku(a,b){
+    const idA = a.sku;
+    const idB = b.sku;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
+}
+
+function compareDesc(a,b){
+    const idA = a.productName.en;
+    const idB = b.productName.en;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
+}
+
+function compareStock(a,b){
+    const idA = a.mainStock;
+    const idB = b.mainStock;
+
+    let comparision = 0;
+    if (idA > idB) {
+        comparision = 1;
+    }
+    else if (idA < idB){
+        comparision = -1;
+    }
+    return comparision;
 }

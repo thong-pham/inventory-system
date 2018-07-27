@@ -156,7 +156,7 @@ class ViewInventories extends Component {
         const { dispatch } = this.props;
         const { column, direction } = this.state;
         const { inventories } = this.props.inventory;
-        console.log(column);
+        //console.log(column);
         if (column !== clickedColumn){
             this.setState({
               column: clickedColumn,
