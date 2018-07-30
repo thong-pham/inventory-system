@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Grid, Input, Modal, Dropdown, Pagination } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Grid, Input, Modal, Dropdown, Pagination, Label } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 
 import BaseLayout from "./../baseLayout";
@@ -17,7 +17,9 @@ class ViewSubInventory extends Component {
     state = {
         column: null,
         direction: null,
-        errorInput: null
+        errorInput: null,
+        searchType: 'SKU',
+        searchKey: ''
     }
     componentWillMount() {
         const { token, dispatch } = this.props;
@@ -135,8 +137,15 @@ class ViewSubInventory extends Component {
 
     handleSearch = (e) => {
         const { dispatch } = this.props;
-        if (e.target.value !== "") dispatch(filterInventory(e.target.value));
-        else dispatch(recoverPage());
+        const { searchType } = this.state;
+        if (e.target.value !== ""){
+            this.setState({searchKey: e.target.value});
+            dispatch(filterInventory({key: e.target.value, type: searchType}));
+        }
+        else {
+            this.setState({searchKey: ''});
+            dispatch(recoverPage());
+        }
     }
 
     handlePaginationChange = (e, data) => {
@@ -176,8 +185,14 @@ class ViewSubInventory extends Component {
         dispatch(renderPage(data.activePage));
     }
 
+    handleSearchOtion = (e, data) => {
+        const { dispatch } = this.props;
+        this.setState({searchType: data.value, searchKey: ''});
+        dispatch(recoverPage());
+    }
+
     render() {
-        const { column, direction, errorInput } = this.state;
+        const { column, direction, errorInput, searchType, searchKey } = this.state;
         const { user } = this.props.auth;
         const { inventories, isFetchingInventories, fetchingInventoriesError, deletingsInventoriesError, updatingInventoriesError,
                 openAdd, closeAdd, quantity, modalCart, modal,
@@ -187,6 +202,10 @@ class ViewSubInventory extends Component {
                               {key:2, text:'50', value: 50},
                               {key:3, text:'100', value: 100},
                               {key:4, text:'250', value: 250}
+                            ];
+        var searchOptions = [
+                              {key:1, text:'SKU', value: 'SKU'},
+                              {key:2, text:'Description', value: 'Description'}
                             ];
         let error = null;
         if (fetchingInventoriesError) {
@@ -351,19 +370,30 @@ class ViewSubInventory extends Component {
 
                         <Grid columns={2}>
                           <Grid.Row>
-                            <Grid.Column className="columnForInput" textAlign='left'>
-                              <Dropdown
-                                onChange={this.handleDisplay}
-                                options={displayOptions}
-                                placeholder=''
-                                selection
-                                compact
-                                value={displayNumber}
-                              />
-                            </Grid.Column>
-                                <Grid.Column className="columnForButton" textAlign='right'>
-                                    <Input onChange={this.handleSearch} placeholder='Search by description...' />
-                                </Grid.Column>
+                              <Grid.Column className="columnForInput" textAlign='left'>
+                                <Label color='teal'>View &nbsp;
+                                <Dropdown
+                                  onChange={this.handleDisplay}
+                                  options={displayOptions}
+                                  placeholder=''
+                                  selection
+                                  compact
+                                  value={displayNumber}
+                                />
+                                </Label>
+                              </Grid.Column>
+                              <Grid.Column className="columnForButton" textAlign='right'>
+                                  <Dropdown
+                                    onChange={this.handleSearchOtion}
+                                    options={searchOptions}
+                                    placeholder=''
+                                    selection
+                                    value={searchType}
+                                  />
+                                  {(searchType === 'Description') ? <Input onChange={this.handleSearch} value={searchKey} placeholder='Search by description...' /> :
+                                        <Input onChange={this.handleSearch} value={searchKey} placeholder='Search by SKU...' />
+                                  }
+                              </Grid.Column>
                             </Grid.Row>
                           </Grid>
                         {tableView}

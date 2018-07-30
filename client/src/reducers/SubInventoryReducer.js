@@ -306,18 +306,28 @@ export default function (state = initialState, action) {
             return { ...state, isDeletingInventoryInTrash: false, deletingInventoryInTrashError: error };
         }
         case FILTER_SUBINVENTORY: {
-            const data = action.payload;
+            const {key, type} = action.payload;
             const displayNumber = state.displayNumber;
-            var list = data.split(' ');
+            var list = key.split(' ');
 
             state.filteredInv = state.backUpInv.filter((element) => {
                   var count = 0;
-                  for (var i = 0; i < list.length; i++){
-                      if (element.productName.en.toLowerCase().includes(list[i])){
-                          count += 1;
+                  if (type === 'SKU'){
+                      for (var i = 0; i < list.length; i++){
+                          if (element.sku.toLowerCase().includes(list[i])){
+                              count += 1;
+                          }
                       }
+                      if (count === list.length) return element;
                   }
-                  if (count === list.length) return element;
+                  else if (type === 'Description'){
+                      for (var i = 0; i < list.length; i++){
+                          if (element.productName.en.toLowerCase().includes(list[i])){
+                              count += 1;
+                          }
+                      }
+                      if (count === list.length) return element;
+                  }
             });
             if (state.filteredInv.length > 0){
                 const page = Math.ceil(state.filteredInv.length/displayNumber);
