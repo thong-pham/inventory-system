@@ -314,7 +314,7 @@ export default function (state = initialState, action) {
                   var count = 0;
                   if (type === 'SKU'){
                       for (var i = 0; i < list.length; i++){
-                          if (element.sku.toLowerCase().includes(list[i])){
+                          if (element.sku.toLowerCase().includes(list[i].toLowerCase())){
                               count += 1;
                           }
                       }
@@ -322,7 +322,7 @@ export default function (state = initialState, action) {
                   }
                   else if (type === 'Description'){
                       for (var i = 0; i < list.length; i++){
-                          if (element.productName.en.toLowerCase().includes(list[i])){
+                          if (element.productName.en.toLowerCase().includes(list[i].toLowerCase())){
                               count += 1;
                           }
                       }
