@@ -94,7 +94,7 @@ class ViewInventories extends Component {
                 stock: newStock,
                 token: token
             }
-            //console.log(data);
+            console.log(data);
             dispatch(updateInventory(data)).then(function(data){
                 dispatch(changeInventory({id: inventory.id, stock: inventory.stock + Number(quantity)}));
             });

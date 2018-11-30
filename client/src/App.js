@@ -68,7 +68,7 @@ const store = createStore(
     reducers,
     undefined,
     compose(
-        applyMiddleware(middleware, thunk)
+        applyMiddleware(middleware, logger, thunk)
     )
 )
 
@@ -85,7 +85,7 @@ class App extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <div>Loading...</div>
+                <div>Loading Page...</div>
             );
         }
         else {
