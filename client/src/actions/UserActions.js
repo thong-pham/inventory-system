@@ -294,3 +294,9 @@ export function errorInput(){
         dispatch({type: ERROR_INPUT_USER});
     }
 }
+
+export function debug(){
+    return function(dispatch){
+        dispatch({});
+    }
+}
