@@ -54,9 +54,3 @@ export function logoutUser() {
         dispatch({ type: USER_LOGOUT_FULFILLED });
     }
 }
-
-export function validate() {
-    return function(dispatch) {
-        dispatch({});
-    }
-}
