@@ -328,9 +328,3 @@ export function changeDisplay(number){
        dispatch({ type : CHANGE_DISPLAY, payload: number })
    }
 }
-
-export function checkOut(){
-    return function (dispatch){
-        dispatch({});
-    }
-}
