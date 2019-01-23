@@ -88,7 +88,7 @@ class App extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <div>Loading...</div>
+                <div>Loading ...</div>
             );
         }
         else {
