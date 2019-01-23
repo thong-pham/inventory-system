@@ -37,6 +37,7 @@ import orders from "./src/routes/OrderRoute";
 import carts from "./src/routes/CartRoute";
 import code from "./src/routes/CodeRoute";
 import features from "./src/routes/FeatureRoute"
+import locations from "./src/routes/LocationRoute"
 
 app.use('/users', users);
 app.use('/inventories', inventories);
@@ -46,6 +47,7 @@ app.use('/orders', orders);
 app.use('/carts', carts);
 app.use('/code', code);
 app.use('/features', features)
+app.use('/locations', locations)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

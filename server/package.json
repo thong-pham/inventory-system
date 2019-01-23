@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nohup nodemon --exec babel-node ./bin/www > output3.txt &"
+    "start": "nohup nodemon --exec babel-node ./bin/www > output4.txt &"
   },
   "dependencies": {
     "async": "^2.6.0",
-    "bcrypt": "^2.0.0",
+    "bcrypt": "^3.0.0",
     "body-parser": "^1.18.2",
     "config": "^1.30.0",
     "cookie-parser": "^1.4.3",
@@ -22,7 +22,8 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-preset-env": "^1.6.1",
-    "nodemon": "^1.17.3"
+    "nodemon": "^1.17.5"
   }
 }

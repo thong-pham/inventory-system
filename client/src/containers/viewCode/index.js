@@ -209,7 +209,7 @@ class ViewCode extends Component {
                     <Grid.Row>
                         <Grid.Column>
                            <p>{keyCode.value}</p>
-                          </Grid.Column>
+                        </Grid.Column>
                         <Grid.Column textAlign='right'>
                             <Icon name='trash outline' onClick={this.openConfirm}/>
                             <Confirm open={openConfirm} onCancel={this.handleCancel} onConfirm={() => this.onPressDelete(keyCode)} />

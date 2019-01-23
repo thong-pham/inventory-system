@@ -400,8 +400,8 @@ router.post('/importInventory', verifyAuthMiddleware, function (req, res, next) 
         }
         else {
             const userSession = req.session;
-            const { code, quantity, capacity, count } = req.body;
-            const data = { code, quantity, capacity, count, userSession };
+            const { code, quantity, capacity, count, location } = req.body;
+            const data = { code, quantity, capacity, count, location, userSession };
             importInventory(data, function (err, importData) {
                 if (err) {
                     if (err.message === "Not Enough Permission to import Inventory") {

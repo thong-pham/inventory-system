@@ -15,6 +15,7 @@ import importReducer from "./../reducers/ImportReducer";
 import exportReducer from "./../reducers/ExportReducer";
 import featureReducer from "./../reducers/FeatureReducer";
 import barcodeReducer from "./../reducers/BarcodeReducer";
+import locationReducer from "./../reducers/LocationReducer";
 
 export default combineReducers({
     router: routerReducer,
@@ -29,5 +30,6 @@ export default combineReducers({
     importData: importReducer,
     exportData: exportReducer,
     feature: featureReducer,
-    barcode: barcodeReducer
+    barcode: barcodeReducer,
+    location: locationReducer
 });

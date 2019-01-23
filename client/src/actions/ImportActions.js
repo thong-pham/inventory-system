@@ -50,6 +50,7 @@ export const ADD_COUNT_IMPORT = "ADD_COUNT_IMPORT";
 export const TRACK_TEXT_IMPORT = "TRACK_TEXT_IMPORT";
 export const TRACK_TEXT_MANUAL_IMPORT = "TRACK_TEXT_MANUAL_IMPORT";
 export const REMOVE_FORM_IMPORT = "REMOVE_FORM_IMPORT";
+export const TRACK_LOCATION = "TRACK_LOCATION";
 
 const WS_URL = URL + "/inventories/";
 
@@ -269,6 +270,12 @@ export function trackText(data){
 export function trackTextManual(data){
    return function (dispatch){
        dispatch({ type : TRACK_TEXT_MANUAL_IMPORT, payload: data })
+   }
+}
+
+export function trackLocation(data){
+   return function (dispatch){
+       dispatch({ type : TRACK_LOCATION, payload: data })
    }
 }
 

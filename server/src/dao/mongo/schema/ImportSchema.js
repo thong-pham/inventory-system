@@ -13,6 +13,8 @@ const ImportSchema = mongoose.Schema({
 
     count: { type: Number, required: true },
 
+    location: { type: String, required: false },
+
     username: { type: String, required: true },
 
     status: { type: String, required: true, enum: ["approved", "pending"] },
