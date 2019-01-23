@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Responsive, Input, Grid, Modal, Label } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Responsive, Input, Grid, Modal, Label, Dropdown } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 import axios from 'axios';
 
@@ -10,12 +10,14 @@ import './../../styles/custom.css';
 
 const WAIT_INTERVAL = 1000;
 
-import { addToList, addToListManual, addCapacity, addCount, trackText, trackTextManual, importInventory, removeForm, importAllInventory
+import { addToList, addToListManual, addCapacity, addCount, trackText, trackTextManual, importInventory,
+        removeForm, importAllInventory, trackLocation
         } from "./../../actions/ImportActions";
 
 import { getCodes } from "./../../actions/CodeActions";
 
 import { getInventories } from "./../../actions/InventoryActions";
+import { getLocations } from "./../../actions/LocationActions";
 
 class ImportInventory extends Component {
     state = {
@@ -26,6 +28,7 @@ class ImportInventory extends Component {
         const { token, dispatch } = this.props;
         dispatch(getCodes({token: token}));
         dispatch(getInventories({token: token}));
+        dispatch(getLocations({token: token}));
         this.timer = null;
     }
 
@@ -148,8 +151,10 @@ class ImportInventory extends Component {
                       quantity: form.count * form.capacity,
                       capacity: form.capacity,
                       count: form.count,
+                      location: form.location,
                       token: token
                     }
+                    //console.log(data);
                     dispatch(importInventory(data)).then(function(data){
                           dispatch(removeForm(id));
                     });
@@ -213,9 +218,28 @@ class ImportInventory extends Component {
         this.setState({successInput: null});
     }
 
+    chooseLocation = (e, data, id) => {
+        const { dispatch } = this.props;
+        dispatch(trackLocation({location: data.value, id: id}));
+    }
+
     render() {
         const { errorInput, successInput, value } = this.state;
-        const { formList, text, importingInventoryError, textManual } = this.props.import;
+        const { formList, text, importingInventoryError, textManual, location } = this.props.import;
+        const { locations } = this.props.location;
+
+        let locationList = [];
+        let locationKey = 1;
+        locations.forEach(location => {
+            const data = {
+                key: locationKey,
+                text: location.name,
+                value: location.name
+            }
+            locationList.push(data);
+            locationKey += 1;
+        })
+
         let error = null;
         let success = null;
 
@@ -258,6 +282,15 @@ class ImportInventory extends Component {
                         <Table.Cell>
                               {(importData.capacity) ? <Input defaultValue={importData.count} onChange={(e) => this.handleCount(e, importData.id)}/> : null}
                         </Table.Cell>
+                        <Table.Cell className="tableRowVisible">
+                          <Dropdown
+                            onChange={(e, data) => this.chooseLocation(e, data, importData.id)}
+                            options={locationList}
+                            placeholder='Choose a location'
+                            selection
+                            value={location}
+                          />
+                        </Table.Cell>
                         <Table.Cell>
                             {(importData.capacity) ? <Button size='tiny' primary onClick={() => this.onImport(importData.id)}>Import</Button> : null}
                             <Button size='tiny' color='red' onClick={() => this.onDelete(importData.id)}>Remove</Button>
@@ -276,6 +309,7 @@ class ImportInventory extends Component {
                             <Table.HeaderCell>Scanning Code</Table.HeaderCell>
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell>Box Count</Table.HeaderCell>
+                            <Table.HeaderCell>Location</Table.HeaderCell>
                             <Table.HeaderCell>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -284,7 +318,7 @@ class ImportInventory extends Component {
                     </Table.Body>
                     <Table.Footer>
                       <Table.Row>
-                        <Table.HeaderCell colSpan='4' textAlign='right'>
+                        <Table.HeaderCell colSpan='5' textAlign='right'>
                             <Button primary onClick={this.onImportAll}>Import All</Button>
                         </Table.HeaderCell>
                       </Table.Row>
@@ -327,7 +361,8 @@ function mapStatesToProps(state) {
         import: state.importData,
         auth: state.auth,
         inventory: state.inventory,
-        code: state.code
+        code: state.code,
+        location: state.location
     }
 }
 

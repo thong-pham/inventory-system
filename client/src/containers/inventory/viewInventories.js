@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search, Pagination, Dropdown, Label } from "semantic-ui-react";
+import { Segment, Header, Message, Table, Icon, Container, Button, Input, Modal, Grid, Search, Pagination, Dropdown, Label, Popup } from "semantic-ui-react";
 import { push } from 'react-router-redux';
 import axios from 'axios';
 import jsPDF from 'jspdf';
@@ -94,7 +94,7 @@ class ViewInventories extends Component {
                 stock: newStock,
                 token: token
             }
-            //console.log(data);
+            console.log(data);
             dispatch(updateInventory(data)).then(function(data){
                 dispatch(changeInventory({id: inventory.id, stock: inventory.stock + Number(quantity)}));
             });
@@ -272,9 +272,15 @@ class ViewInventories extends Component {
         const page = Math.ceil(inventories.length/3);
 
         const inventoriesView = inventories.map(function (inventory) {
+            let location = '';
+            inventory.location.forEach(loc => {
+                location += loc + ", ";
+            })
             return (
                 <Table.Row key={inventory.id}>
-                    <Table.Cell>{inventory.sku}</Table.Cell>
+                    <Table.Cell>
+                        <Popup trigger={<div>{inventory.sku}</div>} content={location}/>                     
+                    </Table.Cell>
                     <Table.Cell>{inventory.productName.en}</Table.Cell>
                     <Table.Cell>{inventory.price}</Table.Cell>
                     <Table.Cell>{inventory.unit}</Table.Cell>
