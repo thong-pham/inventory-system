@@ -63,3 +63,7 @@ export function getNextSizeId(callback) {
 export function getNextUnitId(callback) {
     incrementCounter("unit", callback);
 }
+
+export function getNextLocationId(callback) {
+    incrementCounter("location", callback);
+}

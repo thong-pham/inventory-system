@@ -71,9 +71,9 @@
    height: 45px !important;
 }
 
-.inventoryDropdown {
+/* .inventoryDropdown {
     height: 220 !important;
-}
+} */
 
 .orderDropdown {
     height: 75 !important;
@@ -101,6 +101,10 @@
 .imageRender {
     margin-left: auto;
     margin-right: auto
+}
+
+.tableRowVisible {
+    overflow: visible !important;
 }
 
 @media only screen and (max-width: 1280px) {

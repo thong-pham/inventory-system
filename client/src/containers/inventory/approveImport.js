@@ -202,6 +202,7 @@ class ApproveImport extends Component {
                             </div> : null }
                     </Table.Cell>
                     <Table.Cell>{importData.quantity}</Table.Cell>
+                    <Table.Cell>{importData.location}</Table.Cell>
                     <Table.Cell>{importData.createdAt.slice(0,10)}</Table.Cell>
                     <Table.Cell>{importData.username}</Table.Cell>
                     <Table.Cell >
@@ -226,6 +227,7 @@ class ApproveImport extends Component {
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell>Box Count</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
+                            <Table.HeaderCell>Location</Table.HeaderCell>
                             <Table.HeaderCell>Date</Table.HeaderCell>
                             <Table.HeaderCell>Imported By</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>
@@ -245,6 +247,7 @@ class ApproveImport extends Component {
                     <p>Box Capacity: {importData.capacity}</p>
                     <p>Box Count: {importData.count}</p>
                     <p>Quantity: {importData.quantity}</p>
+                    <p>Quantity: {importData.location}</p>
                     <p>Status: {importData.status}</p>
                     <p>Imported By: {importData.username}</p>
                     { (isStoreManager) ? <Button color='green'  onClick={() => this.onPressApprove(importData)}><Icon name='checkmark' />Approve</Button> : null }

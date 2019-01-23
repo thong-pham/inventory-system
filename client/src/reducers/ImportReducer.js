@@ -7,7 +7,8 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          FILL_CODE_IMPORT, CLEAR_IMPORT, INPUT_CAPACITY_IMPORT, INPUT_COUNT_IMPORT,
          IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED, SORT_IMPORT,
          REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT, ADD_IMPORT, ADD_CAPACITY_IMPORT, ADD_COUNT_IMPORT, TRACK_TEXT_IMPORT, REMOVE_FORM_IMPORT,
-         IMPORT_ALLINVENTORY_STARTED, IMPORT_ALLINVENTORY_FULFILLED, IMPORT_ALLINVENTORY_REJECTED, TRACK_TEXT_MANUAL_IMPORT, ADD_IMPORT_MANUAL
+         IMPORT_ALLINVENTORY_STARTED, IMPORT_ALLINVENTORY_FULFILLED, IMPORT_ALLINVENTORY_REJECTED, TRACK_TEXT_MANUAL_IMPORT, ADD_IMPORT_MANUAL,
+         TRACK_LOCATION
          } from "./../actions/ImportActions";
 
 const initialState = {
@@ -45,8 +46,8 @@ const initialState = {
     length: null,
     text: '',
     id: 0,
-    textManual: ''
-
+    textManual: '',
+    location: ''
 }
 
 export default function (state = initialState, action) {
@@ -200,7 +201,7 @@ export default function (state = initialState, action) {
             if (data.text && (data.text + "").trim() !== "") {
                 var newList = state.formList;
                 var id = state.id + 1;
-                newList.push({id: id, code: data.text, capacity: data.capacity, count: 1, note: data.note});
+                newList.push({id: id, code: data.text, capacity: data.capacity, count: 1, location:'', note: data.note});
                 return { ...state, formList: newList, id: id, text: ''};
             }
             else {
@@ -212,7 +213,7 @@ export default function (state = initialState, action) {
             if (data.text && (data.text + "").trim() !== "") {
                 var newList = state.formList;
                 var id = state.id + 1;
-                newList.push({id: id, code: data.text, capacity: data.capacity, count: 1, note: data.note});
+                newList.push({id: id, code: data.text, capacity: data.capacity, count: 1, location: '', note: data.note});
                 return { ...state, formList: newList, id: id, textManual: ''};
             }
             else {
@@ -256,6 +257,16 @@ export default function (state = initialState, action) {
             }
             state.formList.splice(index,1);
             return { ...state };
+        }
+
+        case TRACK_LOCATION: {
+            const {id, location} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.location = location;
+                }
+            });
+            return { ...state, location: location }
         }
 
         default: {

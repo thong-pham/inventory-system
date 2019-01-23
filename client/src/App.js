@@ -51,6 +51,9 @@ import ViewProcessedOrder from "./containers/viewOrders/processedOrderDetails";
 
 import Barcode from "./containers/barcode";
 
+import ViewLocations from "./containers/location/viewLocations"
+import AddLocation from "./containers/location/addLocation"
+
 const history = createHistory();
 const logger = createLogger();
 
@@ -120,6 +123,8 @@ class App extends Component {
                             <Route exact path="/barcode" component={Barcode} />
                             <Route exact path="/inventoriesInTrash" component={ViewInventoriesTrash} />
                             <Route exact path="/subInventoriesInTrash" component={ViewSubInventoriesTrash} />
+                            <Route exact path="/locations" component={ViewLocations} />
+                            <Route exact path="/addLocation" component={AddLocation} />
                         </div>
                     </ConnectedRouter>
                 </Provider>

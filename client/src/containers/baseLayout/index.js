@@ -80,6 +80,9 @@ class BaseLayout extends Component {
         else if (menuItem === "viewSubInventoriesTrash") {
             dispatch(push('/subInventoriesInTrash'));
         }
+        else if (menuItem === "viewLocations") {
+            dispatch(push('/locations'));
+        }
         else if (menuItem === "logout") {
             dispatch(logoutUser());
             dispatch(push('/login'));
@@ -361,6 +364,7 @@ class BaseLayout extends Component {
                       <Dropdown.Item onClick={this.handleClick.bind(this, "exportInventory")}><Icon name='add' />Export Inventory</Dropdown.Item>
                       <Dropdown.Item onClick={this.handleClick.bind(this, "approveImport")}><Icon name='unordered list' />Pending Imports</Dropdown.Item>
                       <Dropdown.Item onClick={this.handleClick.bind(this, "approveExport")}><Icon name='unordered list' />Pending Exports</Dropdown.Item>
+                      <Dropdown.Item onClick={this.handleClick.bind(this, "viewLocations")}><Icon name='unordered list' />Locations</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </Menu.Item>

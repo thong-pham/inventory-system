@@ -39,6 +39,13 @@ import {
       removeCodeByMainSku as removeCodeByMainSkuDAO
       } from "./../dao/mongo/impl/CodeDAO";
 
+import {
+        getLocationById as getLocationByIdDAO,
+        getLocationByName as getLocationByNameDAO,
+        updateLocationByName as updateLocationByNameDAO,
+        updateLocationById as updateLocationByIdDAO
+        } from "./../dao/mongo/impl/LocationDAO";
+
 export function createInventory(data, callback) {
     async.waterfall([
         function (waterfallCallback) {
@@ -257,14 +264,72 @@ export function approveInventory(data, callback) {
                                     price: inventory.price,
                                     stock: newStock,
                                 }
-                            }
+                            },
+                            location: importData.location
                         }
                     }
-                    updateInventoryByIdDAO(inventory.id, update, waterfallCallback);
+                    updateInventoryByIdDAO(inventory.id, update, function(err, inventory){
+                        if (err){
+                            waterfallCallback(err);
+                        }
+                        else if (inventory){
+                            waterfallCallback(null, importData)
+                        }
+                    });
                  }
             });
         },
-        function(inventory, waterfallCallback){
+        function(importData, waterfallCallback){
+            getLocationByNameDAO(importData.location, function(err, location){
+                if (err){
+                    waterfallCallback(err);
+                }
+                else if (location){
+                    let update = null;
+                    let exist = false;
+                    if (location.products.length > 0){
+                        location.products.forEach(product => {
+                            if (product.sku === importData.sku){
+                                product.quantity += importData.quantity;
+                                exist = true;
+                            }
+                        })
+                        if (exist){
+                            update = {
+                                products: location.products,
+                                total: location.total + importData.quantity
+                            }
+                        }
+                        else {
+                            location.products.push({
+                                sku: importData.sku,
+                                quantity: importData.quantity
+                            })
+                            update = {
+                                products: location.products,
+                                total: location.total + importData.quantity
+                            }
+                        }
+                        console.log(update);
+                        updateLocationByNameDAO(importData.location, update, waterfallCallback);
+                    }
+                    else {
+                        update = {
+                            $push: {
+                                products: {
+                                    sku: importData.sku,
+                                    quantity: importData.quantity
+                                }
+                            },
+                            total: location.total + importData.quantity
+                        };
+                        console.log(update);
+                        updateLocationByNameDAO(importData.location, update, waterfallCallback);
+                    }
+                }
+            })
+        },
+        function(location, waterfallCallback){
             const id = data.id;
             removeImportByIdDAO(id, waterfallCallback);
         }
@@ -616,6 +681,7 @@ export function importInventory(data, callback){
                                       quantity: data.quantity,
                                       capacity: data.capacity,
                                       count: data.count,
+                                      location: data.location,
                                       username: username,
                                       status: "pending"
                                    }
