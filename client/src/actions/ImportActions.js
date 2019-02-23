@@ -50,7 +50,9 @@ export const ADD_COUNT_IMPORT = "ADD_COUNT_IMPORT";
 export const TRACK_TEXT_IMPORT = "TRACK_TEXT_IMPORT";
 export const TRACK_TEXT_MANUAL_IMPORT = "TRACK_TEXT_MANUAL_IMPORT";
 export const REMOVE_FORM_IMPORT = "REMOVE_FORM_IMPORT";
-export const TRACK_LOCATION = "TRACK_LOCATION";
+export const TRACK_LOCATION_IMPORT = "TRACK_LOCATION_IMPORT";
+export const TRACK_LOCATION_SCAN_IMPORT = "TRACK_LOCATION_SCAN_IMPORT";
+export const RESET_LOCATION_IMPORT = "RESET_LOCATION_IMPORT";
 
 const WS_URL = URL + "/inventories/";
 
@@ -275,7 +277,7 @@ export function trackTextManual(data){
 
 export function trackLocation(data){
    return function (dispatch){
-       dispatch({ type : TRACK_LOCATION, payload: data })
+       dispatch({ type : TRACK_LOCATION_IMPORT, payload: data })
    }
 }
 
@@ -283,4 +285,16 @@ export function removeForm(data){
    return function (dispatch){
        dispatch({ type : REMOVE_FORM_IMPORT, payload: data })
    }
+}
+
+export function resetLocation(){
+    return function (dispatch){
+        dispatch({ type: RESET_LOCATION_IMPORT })
+    }
+}
+
+export function trackLocationScan(data){
+    return function (dispatch){
+        dispatch({ type: TRACK_LOCATION_SCAN_IMPORT, payload: data })
+    }
 }

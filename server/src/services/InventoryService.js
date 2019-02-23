@@ -250,24 +250,46 @@ export function approveInventory(data, callback) {
                 }
                 else {
                     const newStock = importData.quantity + inventory.stock;
-                    const update = {
-                        status: "approved",
-                        stock: newStock,
-                        $push: {
-                            history: {
-                                action: "updated",
-                                userId: data.userSession.userId,
-                                timestamp: new Date((new Date()).getTime() + (3600000*(-7))),
-                                payload: {
-                                    sku: inventory.sku,
-                                    productName: inventory.productName,
-                                    price: inventory.price,
-                                    stock: newStock,
+                    let update = null
+                    if (inventory.location.indexOf(importData.location) >= 0) {
+                        update = {
+                            status: "approved",
+                            stock: newStock,
+                            $push: {
+                                history: {
+                                    action: "updated",
+                                    userId: data.userSession.userId,
+                                    timestamp: new Date((new Date()).getTime() + (3600000*(-7))),
+                                    payload: {
+                                        sku: inventory.sku,
+                                        productName: inventory.productName,
+                                        price: inventory.price,
+                                        stock: newStock,
+                                    }
                                 }
-                            },
-                            location: importData.location
+                            }
+                        }
+                    } else {
+                        update = {
+                            status: "approved",
+                            stock: newStock,
+                            $push: {
+                                history: {
+                                    action: "updated",
+                                    userId: data.userSession.userId,
+                                    timestamp: new Date((new Date()).getTime() + (3600000*(-7))),
+                                    payload: {
+                                        sku: inventory.sku,
+                                        productName: inventory.productName,
+                                        price: inventory.price,
+                                        stock: newStock,
+                                    }
+                                },
+                                location: importData.location
+                            }
                         }
                     }
+                    
                     updateInventoryByIdDAO(inventory.id, update, function(err, inventory){
                         if (err){
                             waterfallCallback(err);
@@ -276,7 +298,7 @@ export function approveInventory(data, callback) {
                             waterfallCallback(null, importData)
                         }
                     });
-                 }
+                }
             });
         },
         function(importData, waterfallCallback){
@@ -290,24 +312,24 @@ export function approveInventory(data, callback) {
                     if (location.products.length > 0){
                         location.products.forEach(product => {
                             if (product.sku === importData.sku){
-                                product.quantity += importData.quantity;
+                                product.quantity += Number(importData.quantity);
                                 exist = true;
                             }
                         })
                         if (exist){
                             update = {
                                 products: location.products,
-                                total: location.total + importData.quantity
+                                total: location.total + Number(importData.quantity)
                             }
                         }
                         else {
                             location.products.push({
                                 sku: importData.sku,
-                                quantity: importData.quantity
+                                quantity: Number(importData.quantity)
                             })
                             update = {
                                 products: location.products,
-                                total: location.total + importData.quantity
+                                total: location.total + Number(importData.quantity)
                             }
                         }
                         console.log(update);
@@ -318,10 +340,10 @@ export function approveInventory(data, callback) {
                             $push: {
                                 products: {
                                     sku: importData.sku,
-                                    quantity: importData.quantity
+                                    quantity: Number(importData.quantity)
                                 }
                             },
-                            total: location.total + importData.quantity
+                            total: location.total + Number(importData.quantity)
                         };
                         console.log(update);
                         updateLocationByNameDAO(importData.location, update, waterfallCallback);
@@ -374,7 +396,7 @@ export function approveInventoryOut(data, callback) {
                 }
             })
         },
-        function(exportData, waterfallCallback){
+        function(exportData, waterfallCallback) {
             getInventoryBySkuDAO(exportData.sku, function(err, inventory){
                 if (err){
                     waterfallCallback(err);
@@ -386,7 +408,8 @@ export function approveInventoryOut(data, callback) {
                     }
                     else {
                         const newStock = inventory.stock - exportData.quantity;
-                        const update = {
+                        let update = null;
+                        update = {
                             status: "approved",
                             stock: newStock,
                             $push: {
@@ -403,12 +426,84 @@ export function approveInventoryOut(data, callback) {
                                 }
                             }
                         }
-                        updateInventoryByIdDAO(inventory.id, update, waterfallCallback);
+                        updateInventoryByIdDAO(inventory.id, update, function(err, inventory){
+                            if (err){
+                                waterfallCallback(err);
+                            }
+                            else if (inventory){
+                                waterfallCallback(null, exportData)
+                            }
+                        });
                     }
                  }
             });
         },
-        function(inventory, waterfallCallback){
+        function(exportData, waterfallCallback) {
+            getLocationByNameDAO(exportData.location, function(err, location){
+                let empty = false;
+                if (err){
+                    waterfallCallback(err);
+                }
+                else if (location){
+                    let update = null;
+                    let exist = false;
+                    if (location.products.length > 0){
+                        location.products.forEach(product => {
+                            if (product.sku === exportData.sku){
+                                product.quantity -= Number(exportData.quantity);
+                                exist = true;
+                                if (product.quantity === 0) {
+                                    location.products.splice(location.products.indexOf(product), 1)
+                                    empty = true;
+                                }
+                            }
+                        })
+                        if (exist){
+                            update = {
+                                products: location.products,
+                                total: location.total - Number(exportData.quantity)
+                            }
+                        }
+                        else {
+                            const err = new Error("This product does not exist");
+                            waterfallCallback(err);
+                        }
+                        // console.log(update);
+                        updateLocationByNameDAO(exportData.location, update, function(err, location) {
+                            if (err) {
+                                waterfallCallback(err);
+                            } else if (location) {
+                                waterfallCallback(null, empty, exportData);
+                            }
+                        });
+                        
+                    }
+                    else {
+                        const err = new Error("This location is empty");
+                        waterfallCallback(err);
+                    }
+                }
+            })
+        },
+        function(empty, exportData, waterfallCallback) {
+            if (empty) {
+                getInventoryBySkuDAO(exportData.sku, function(err, inventory) {
+                    if (err) {
+                        waterfallCallback(err);
+                    } else if (inventory) {
+                        inventory.location.splice(inventory.location.indexOf(exportData.location), 1);
+                        const update = {
+                            location: inventory.location
+                        }
+                        updateInventoryByIdDAO(inventory.id, update, waterfallCallback);
+                    }
+                })
+            } else {
+                waterfallCallback();
+            }
+            
+        },
+        function(inventory, waterfallCallback) {
             const id = data.id;
             removeExportByIdDAO(id, waterfallCallback);
         }
@@ -735,6 +830,7 @@ export function exportInventory(data, callback){
                                        quantity: data.quantity,
                                        capacity: data.capacity,
                                        count: data.count,
+                                       location: data.location,
                                        username: username,
                                        status: "pending"
                                     }

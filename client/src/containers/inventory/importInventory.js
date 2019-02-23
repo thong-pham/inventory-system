@@ -11,7 +11,7 @@ import './../../styles/custom.css';
 const WAIT_INTERVAL = 1000;
 
 import { addToList, addToListManual, addCapacity, addCount, trackText, trackTextManual, importInventory,
-        removeForm, importAllInventory, trackLocation
+        removeForm, importAllInventory, trackLocation, resetLocation, trackLocationScan
         } from "./../../actions/ImportActions";
 
 import { getCodes } from "./../../actions/CodeActions";
@@ -22,13 +22,15 @@ import { getLocations } from "./../../actions/LocationActions";
 class ImportInventory extends Component {
     state = {
         errorInput: null,
-        successInput: null
+        successInput: null,
+        locationScanOn: false
     }
     componentWillMount() {
         const { token, dispatch } = this.props;
         dispatch(getCodes({token: token}));
         dispatch(getInventories({token: token}));
         dispatch(getLocations({token: token}));
+        dispatch(resetLocation());
         this.timer = null;
     }
 
@@ -134,18 +136,26 @@ class ImportInventory extends Component {
         const { token, user } = this.props.auth;
         const { formList } = this.props.import;
         const { dispatch } = this.props;
+        const { locations } = this.props.location;
         var data = null;
-        var index = null;
         var check = true;
+        var checkLocation = false;
         formList.forEach(function(form){
             if (form.id === id){
                 var capacity = form.capacity;
                 var count = form.count;
+                var location = form.location;                
+                locations.forEach(loc => {
+                    if (loc.name === location) {
+                        checkLocation = true;
+                    }
+                })
                 if (isNaN(capacity) || !Number.isInteger(Number(capacity)) || capacity === null || capacity <= 0 ||
-                    isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0){
+                    isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0 ||
+                    location === '' || location === null){
                     check = false;
                 }
-                else {
+                else if (checkLocation) {
                     data = {
                       code: form.code,
                       quantity: form.count * form.capacity,
@@ -157,6 +167,7 @@ class ImportInventory extends Component {
                     //console.log(data);
                     dispatch(importInventory(data)).then(function(data){
                           dispatch(removeForm(id));
+                          dispatch(resetLocation());
                     });
                 }
             }
@@ -164,6 +175,8 @@ class ImportInventory extends Component {
 
         if (!check){
             this.setState({errorInput: "This input is invalid"});
+        } else if (!checkLocation) {
+            this.setState({errorInput: "This location does not exist"});
         }
         else {
             this.setState({errorInput: null});
@@ -180,7 +193,8 @@ class ImportInventory extends Component {
                 var capacity = form.capacity;
                 var count = form.count;
                 if (isNaN(capacity) || !Number.isInteger(Number(capacity)) || capacity === null || capacity <= 0 ||
-                    isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0){
+                    isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0 ||
+                    location === '' || location === null){
                     check = false;
                 }
                 else if (check) {
@@ -193,7 +207,9 @@ class ImportInventory extends Component {
                     formList,
                     token
                 }
-                dispatch(importAllInventory(data));
+                dispatch(importAllInventory(data)).then(function(data){
+                    dispatch(resetLocation());
+                });
             }
             else{
                 this.setState({errorInput: "One or more input is invalid"});
@@ -223,9 +239,23 @@ class ImportInventory extends Component {
         dispatch(trackLocation({location: data.value, id: id}));
     }
 
+    resetLocation = () => {
+        const { dispatch } = this.props;
+        dispatch(resetLocation());
+    }
+
+    switchScan = () => {
+        this.setState({locationScanOn: !this.state.locationScanOn});
+    }
+
+    handleLocationScan = (location, id) => {
+        const { dispatch } = this.props;
+        dispatch(trackLocationScan({location, id}));
+    }
+
     render() {
-        const { errorInput, successInput, value } = this.state;
-        const { formList, text, importingInventoryError, textManual, location } = this.props.import;
+        const { errorInput, successInput, locationScanOn } = this.state;
+        const { formList, text, importingInventoryError, textManual, location, locationScan } = this.props.import;
         const { locations } = this.props.location;
 
         let locationList = [];
@@ -283,13 +313,14 @@ class ImportInventory extends Component {
                               {(importData.capacity) ? <Input defaultValue={importData.count} onChange={(e) => this.handleCount(e, importData.id)}/> : null}
                         </Table.Cell>
                         <Table.Cell className="tableRowVisible">
-                          <Dropdown
+                          { (!locationScanOn) ? <Dropdown
                             onChange={(e, data) => this.chooseLocation(e, data, importData.id)}
                             options={locationList}
                             placeholder='Choose a location'
                             selection
                             value={location}
-                          />
+                          /> : null }
+                          { (locationScanOn) ? <Input value={locationScan} onChange={(e) => this.handleLocationScan(e.target.value, importData.id)}/> : null }
                         </Table.Cell>
                         <Table.Cell>
                             {(importData.capacity) ? <Button size='tiny' primary onClick={() => this.onImport(importData.id)}>Import</Button> : null}
@@ -309,7 +340,7 @@ class ImportInventory extends Component {
                             <Table.HeaderCell>Scanning Code</Table.HeaderCell>
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell>Box Count</Table.HeaderCell>
-                            <Table.HeaderCell>Location</Table.HeaderCell>
+                            <Table.HeaderCell>Location <Button primary onClick={this.switchScan}>Scan</Button></Table.HeaderCell>
                             <Table.HeaderCell>Options</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
