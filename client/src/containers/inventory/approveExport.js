@@ -210,6 +210,7 @@ class ApproveExport extends Component {
                             </div> : null }
                     </Table.Cell>
                     <Table.Cell>{exportData.quantity}</Table.Cell>
+                    <Table.Cell>{exportData.location}</Table.Cell>
                     <Table.Cell>{exportData.createdAt.slice(0,10)}</Table.Cell>
                     <Table.Cell>{exportData.username}</Table.Cell>
                     <Table.Cell >
@@ -234,6 +235,7 @@ class ApproveExport extends Component {
                             <Table.HeaderCell>Box Capacity</Table.HeaderCell>
                             <Table.HeaderCell>Box Count</Table.HeaderCell>
                             <Table.HeaderCell>Quantity</Table.HeaderCell>
+                            <Table.HeaderCell>Location</Table.HeaderCell>
                             <Table.HeaderCell>Date</Table.HeaderCell>
                             <Table.HeaderCell>Exported By</Table.HeaderCell>
                             <Table.HeaderCell width={2}>Options</Table.HeaderCell>

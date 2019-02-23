@@ -8,7 +8,7 @@ import { APPROVE_IMPORT_STARTED, APPROVE_IMPORT_FULFILLED, APPROVE_IMPORT_REJECT
          IMPORT_INVENTORY_STARTED, IMPORT_INVENTORY_FULFILLED, IMPORT_INVENTORY_REJECTED, SORT_IMPORT,
          REV_IMPORT, NEXT_IMPORT, MODIRY_IMPORT, ADD_IMPORT, ADD_CAPACITY_IMPORT, ADD_COUNT_IMPORT, TRACK_TEXT_IMPORT, REMOVE_FORM_IMPORT,
          IMPORT_ALLINVENTORY_STARTED, IMPORT_ALLINVENTORY_FULFILLED, IMPORT_ALLINVENTORY_REJECTED, TRACK_TEXT_MANUAL_IMPORT, ADD_IMPORT_MANUAL,
-         TRACK_LOCATION
+         TRACK_LOCATION_IMPORT, RESET_LOCATION_IMPORT, TRACK_LOCATION_SCAN_IMPORT
          } from "./../actions/ImportActions";
 
 const initialState = {
@@ -47,7 +47,8 @@ const initialState = {
     text: '',
     id: 0,
     textManual: '',
-    location: ''
+    location: '',
+    locationScan: ''
 }
 
 export default function (state = initialState, action) {
@@ -259,7 +260,7 @@ export default function (state = initialState, action) {
             return { ...state };
         }
 
-        case TRACK_LOCATION: {
+        case TRACK_LOCATION_IMPORT: {
             const {id, location} = action.payload;
             state.formList.forEach(function(form){
                 if (form.id === id){
@@ -267,6 +268,20 @@ export default function (state = initialState, action) {
                 }
             });
             return { ...state, location: location }
+        }
+
+        case RESET_LOCATION_IMPORT: {
+            return { ...state, location: '', locationScan: '' }
+        }
+
+        case TRACK_LOCATION_SCAN_IMPORT: {
+            const {id, location} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.location = location;
+                }
+            });
+            return { ...state, locationScan: location }
         }
 
         default: {

@@ -11,7 +11,8 @@ import {
 } from "./../dao/mongo/impl/LocationDAO";
 
 import {
-    getInventoryBySku as getInventoryBySkuDAO
+    getInventoryBySku as getInventoryBySkuDAO,
+    updateInventoryById as updateInventoryByIdDAO
 } from "./../dao/mongo/impl/InventoryDAO";
 
 import { getNextLocationId } from "./CounterService";
@@ -102,14 +103,14 @@ export function moveProduct(data, callback) {
                 else if (location) {
                     location.products.forEach(product => { 
                         if (product.sku === data.product_sku){
-                            product.quantity -= data.quantity;
+                            product.quantity -= Number(data.quantity);
                             if (product.quantity === 0){
                                 const index = location.products.indexOf(product);
                                 location.products.splice(index,1);
                             }
                         }
                     })
-                    location.total -= data.quantity;
+                    location.total -= Number(data.quantity);
                     const update = {
                         products: location.products,
                         total: location.total
@@ -130,12 +131,12 @@ export function moveProduct(data, callback) {
                 else if (loc) {
                     let exits = false;
                     loc.products.forEach(product => {
-                        if (product.sku === data.product_sku){
-                            product.quantity += data.quantity;
+                        if (product.sku === data.product_sku) {
+                            product.quantity += Number(data.quantity);
                             exits = true;
                         }
                     })
-                    loc.total += data.quantity;
+                    loc.total += Number(data.quantity);
                     
                     if (exits){
                         const update = {
@@ -149,10 +150,10 @@ export function moveProduct(data, callback) {
                             $push: {
                                 products: {
                                     sku: data.product_sku,
-                                    quantity: data.quantity
+                                    quantity: Number(data.quantity)
                                 }
                             },
-                            total: location.total + data.quantity
+                            total: location.total + Number(data.quantity)
                         };
                         updateLocationByNameDAO(data.newLocation, update, waterfallCallback)
                     }
@@ -213,7 +214,25 @@ export function removeLocation(data, callback){
                     waterfallCallback(err);
                 }
             });
-        }
+        },
+        // function(location, waterfallCallback) {
+        //     location.products.forEach(product => {
+        //         getInventoryBySkuDAO(product.sku, function(err, inventory){
+        //             if (err) {
+        //                 waterfallCallback(err);
+        //             }
+        //             else if (inventory){
+        //                 if (inventory.location.indexOf(location.name) >= 0) {
+        //                     const location = inventory.location.splice(inventory.location.indexOf(location.name), 1);
+        //                     const update = {
+        //                         location: location
+        //                     }
+        //                     updateInventoryByIdDAO(inventory.id, update, waterfallCallback);
+        //                 }
+        //             }
+        //         })
+        //     })
+        // }
     ],callback)
 }
 

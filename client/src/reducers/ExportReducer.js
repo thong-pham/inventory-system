@@ -8,7 +8,8 @@ import {
            FILL_CODE_EXPORT, CLEAR_EXPORT, INPUT_CAPACITY_EXPORT, INPUT_COUNT_EXPORT,
            EXPORT_INVENTORY_STARTED, EXPORT_INVENTORY_FULFILLED, EXPORT_INVENTORY_REJECTED, SORT_EXPORT,
            REV_EXPORT, NEXT_EXPORT, MODIRY_EXPORT, ADD_EXPORT, ADD_CAPACITY_EXPORT, ADD_COUNT_EXPORT, TRACK_TEXT_EXPORT, REMOVE_FORM_EXPORT,
-           EXPORT_ALLINVENTORY_STARTED, EXPORT_ALLINVENTORY_FULFILLED, EXPORT_ALLINVENTORY_REJECTED, TRACK_TEXT_MANUAL_EXPORT, ADD_EXPORT_MANUAL
+           EXPORT_ALLINVENTORY_STARTED, EXPORT_ALLINVENTORY_FULFILLED, EXPORT_ALLINVENTORY_REJECTED, TRACK_TEXT_MANUAL_EXPORT, ADD_EXPORT_MANUAL,
+           TRACK_LOCATION_EXPORT, RESET_LOCATION_EXPORT, TRACK_LOCATION_SCAN_EXPORT
       } from "./../actions/ExportActions";
 
 const initialState = {
@@ -46,7 +47,9 @@ const initialState = {
     length: null,
     text: '',
     id: 0,
-    textManual: ''
+    textManual: '',
+    location: '',
+    locationScan: ''
 }
 
 export default function (state = initialState, action) {
@@ -258,6 +261,31 @@ export default function (state = initialState, action) {
             state.formList.splice(index,1);
             return { ...state };
         }
+
+        case TRACK_LOCATION_EXPORT: {
+            const {id, location} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.location = location;
+                }
+            });
+            return { ...state, location: location }
+        }
+
+        case RESET_LOCATION_EXPORT: {
+            return { ...state, location: '', locationScan: '' }
+        }
+
+        case TRACK_LOCATION_SCAN_EXPORT: {
+            const {id, location} = action.payload;
+            state.formList.forEach(function(form){
+                if (form.id === id){
+                    form.location = location;
+                }
+            });
+            return { ...state, locationScan: location }
+        }
+
         default: {
             return state;
         }
