@@ -437,8 +437,8 @@ router.post('/importAllInventory', verifyAuthMiddleware, function (req, res, nex
             var errorMessage = "";
             var completeMessage = "";
             formList.forEach(function(form){
-                const { code, quantity, capacity, count } = form;
-                const data = { code, quantity, capacity, count, userSession };
+                const { code, quantity, capacity, count, location } = form;
+                const data = { code, quantity, capacity, count, location, userSession };
                 importInventory(data, function (err, importData) {
                     if (err) {
                         if (err.message === "Not Enough Permission to import Inventory") {
@@ -513,8 +513,8 @@ router.post('/exportAllInventory', verifyAuthMiddleware, function (req, res, nex
             var errorMessage = "";
             var completeMessage = "";
             formList.forEach(function(form){
-                const { code, quantity, capacity, count } = form;
-                const data = { code, quantity, capacity, count, userSession };
+                const { code, quantity, capacity, count, location } = form;
+                const data = { code, quantity, capacity, count, location, userSession };
                 exportInventory(data, function (err, exportData) {
                     if (err) {
                         if (err.message === "Not Enough Permission to import Inventory") {

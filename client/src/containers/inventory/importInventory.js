@@ -133,9 +133,8 @@ class ImportInventory extends Component {
     }
 
     onImport = (id) => {
-        const { token, user } = this.props.auth;
+        const { dispatch, token } = this.props;
         const { formList } = this.props.import;
-        const { dispatch } = this.props;
         const { locations } = this.props.location;
         var data = null;
         var check = true;
@@ -187,22 +186,30 @@ class ImportInventory extends Component {
     onImportAll = () => {
         const { dispatch, token } = this.props;
         const { formList } = this.props.import;
+        const { locations } = this.props.location;
         var check = true;
+        var checkLocation = 0;
         if (formList.length !== 0){
             formList.forEach(function(form){
                 var capacity = form.capacity;
                 var count = form.count;
+                var location = form.location;
+                locations.forEach(loc => {
+                    if (loc.name === location) {
+                        checkLocation++;
+                    }
+                })
                 if (isNaN(capacity) || !Number.isInteger(Number(capacity)) || capacity === null || capacity <= 0 ||
                     isNaN(count) || !Number.isInteger(Number(count)) || count === null || count <= 0 ||
                     location === '' || location === null){
                     check = false;
                 }
-                else if (check) {
+                else {
                     form.quantity = form.count * form.capacity;
                 }
             });
 
-            if (check){
+            if (check && checkLocation === formList.length){
                 const data = {
                     formList,
                     token
@@ -211,8 +218,10 @@ class ImportInventory extends Component {
                     dispatch(resetLocation());
                 });
             }
-            else{
+            else if (!check){
                 this.setState({errorInput: "One or more input is invalid"});
+            } else if (checkLocation !== formList.length) {
+                this.setState({errorInput: "One or more location do not exist"});
             }
         }
         else {
@@ -318,9 +327,9 @@ class ImportInventory extends Component {
                             options={locationList}
                             placeholder='Choose a location'
                             selection
-                            value={location}
+                            value={importData.location}
                           /> : null }
-                          { (locationScanOn) ? <Input value={locationScan} onChange={(e) => this.handleLocationScan(e.target.value, importData.id)}/> : null }
+                          { (locationScanOn) ? <Input value={importData.location} onChange={(e) => this.handleLocationScan(e.target.value, importData.id)}/> : null }
                         </Table.Cell>
                         <Table.Cell>
                             {(importData.capacity) ? <Button size='tiny' primary onClick={() => this.onImport(importData.id)}>Import</Button> : null}
