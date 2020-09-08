@@ -82,7 +82,7 @@ class Login extends Component {
           <Container textAlign='center' className="mainContainer">
             <Segment textAlign='center' className="mainContainer">
               <Container>
-                  <Header as="h2">Chakir Hospitality Inventory System</Header>
+                  <Header as="h2">Inventory System</Header>
                   <Header as="h2">Login</Header>
                   {error}
                   <Form onSubmit={handleSubmit(this.onSubmit.bind(this))} loading={isLoggingIn}>

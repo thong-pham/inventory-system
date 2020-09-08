@@ -1,6 +1,6 @@
 {
     "mongo": {
-        "host": "ds115045.mlab.com",
+        "host": "cluster0.98vff.mongodb.net",
         "port": 15045,
         "database": "inventory-system",
         "username": "jackpham",
