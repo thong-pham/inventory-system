@@ -13,7 +13,7 @@
     "cookie-parser": "^1.4.3",
     "debug": "^3.1.0",
     "ejs": "^2.5.8",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "jsonwebtoken": "^8.2.1",
     "mongoose": "^5.0.14",
     "morgan": "^1.9.0",
